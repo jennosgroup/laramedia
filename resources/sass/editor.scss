@@ -1,0 +1,89 @@
+#laramedia-file-editor-body-left {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    flex-grow: 0;
+    width: 100%;
+    padding: 20px;
+    background-color: #eee;
+    border-right: 1px solid #ccc;
+
+    img {
+        max-width: 100%;
+        width: auto;
+        height: auto;
+        max-height: 400px;
+    }
+}
+
+#laramedia-file-editor-body-right {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 20px;
+    background-color: #f9f9f9;
+    overflow-y: auto;
+}
+
+.laramedia-file-editor-items-separator {
+    margin-bottom: 20px;
+}
+
+.laramedia-file-editor-item-title {
+    font-weight: bold;
+}
+
+.laramedia-file-editor-route-button img {
+    margin-right: 6px;
+    max-height: 20px;
+    width: auto;
+    height: auto;
+}
+
+#laramedia-file-editor-trash-button,
+#laramedia-file-editor-save-button,
+#laramedia-file-editor-restore-button,
+#laramedia-file-editor-delete-button {
+    display: none;
+}
+
+#laramedia-file-editor-trash-button,
+#laramedia-file-editor-delete-button {
+    background-color: #A93226;
+}
+
+#laramedia-file-editor-trash-button:hover,
+#laramedia-file-editor-delete-button:hover {
+    background-color: #C0392B;
+}
+
+#laramedia-file-editor-save-button {
+    background-color: #1F618D;
+}
+
+#laramedia-file-editor-save-button:hover {
+    background-color: #2471A3;
+}
+
+#laramedia-file-editor-restore-button {
+    background-color: #196F3D;
+}
+
+#laramedia-file-editor-restore-button:hover {
+    background-color: #1E8449;
+}
+
+@media screen and (min-width: 968px) {
+    #laramedia-file-editor-body-left {
+        width: 50%;
+        img {
+            max-height: 100%;
+        }
+    }
+
+    #laramedia-file-editor-body-right {
+        width: 50%;
+    }
+}

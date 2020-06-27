@@ -1,0 +1,125 @@
+/* Actions Bar Container */
+#laramedia-actions-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-top: 16px;
+}
+
+/* Left Section of Actions Bar */
+#laramedia-actions-left-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+
+/* Right Section of Actions Bar */
+#laramedia-actions-right-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+/* bar select box container */
+.laramedia-action-select-box-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    padding: 0;
+    background-color: #f5f5f5;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    margin-right: 1px;
+    margin-bottom: 1px;
+    height: 40px;
+}
+
+/* hack to get the dropdown arrow for the select box */
+.laramedia-action-select-box-container::after {
+    content: "";
+    width: 0;
+    height: 0;
+    position: absolute;
+    pointer-events: none;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    top: 16px;
+    right: 12px;
+    border-top: 8px solid black;
+    opacity: 0.5;
+}
+
+/* select box styling - remove browser defaults */
+.laramedia-action-select-box {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border: none;
+    border-radius: 0;
+    background-color: transparent;
+    padding: 0 28px 0 12px;
+}
+
+/* remove the outline from the select box */
+.laramedia-action-select-box:focus {
+    outline: none;
+}
+
+/* remove MS dropdown icon */
+.laramedia-action-select-box::-ms-expand {
+    display: none;
+}
+
+/* make listing section standard size as they only contain an icon */
+.laramedia-action-icon-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    width: 72px;
+    height: 40px;
+
+    img {
+        height: 20px;
+        width: auto;
+        max-width: 100%;
+    }
+}
+
+/* Active Icon Container */
+#laramedia-active-icon-container {
+    background-color: #7FB3D5;
+    margin-right: 2px;
+}
+
+#laramedia-active-icon-container.active,
+#laramedia-active-icon-container:hover {
+    background-color: #1F618D;
+}
+
+#laramedia-trash-icon-container {
+    background-color: #E6B0AA;
+}
+
+#laramedia-trash-icon-container.active,
+#laramedia-trash-icon-container:hover {
+    background-color: #C0392B;
+}
+
+/* Search Container */
+#laramedia-search-container {
+    margin-left: 12px;
+    padding: 0;
+    height: 40px;
+}
+
+/* Search Input */
+#laramedia-search {
+    background-color: #fff;
+    width: 170px;
+    height: 100%;
+    padding: 0 12px;
+    border: none;
+    margin: 0;
+}

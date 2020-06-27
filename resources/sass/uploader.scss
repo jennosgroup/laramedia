@@ -1,0 +1,29 @@
+#laramedia-file-uploader-header {
+    background-color: #f9f9f9;
+    border-bottom: 1px solid #eee;
+}
+
+#laramedia-file-uploader-footer {
+    background-color: #f9f9f9;
+    border-top: 1px solid #eee;
+}
+
+#laramedia-file-uploader-body.laramedia-modal-body {
+    flex-direction: column;
+    padding: 24px;
+}
+
+#laramedia-uploader-visibility-select-box {
+    margin-bottom: 16px;
+    flex-shrink: 0;
+}
+
+#laramedia-drag-drop-area {
+    display: flex;
+    flex-grow: 1;
+    width: 100%;
+
+    .uppy-Root {
+        width: 100%;
+    }
+}

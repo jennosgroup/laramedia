@@ -1,0 +1,28 @@
+#laramedia-file-selector-header {
+    background-color: #f9f9f9;
+    border-bottom: 1px solid #eee;
+}
+
+#laramedia-file-selector-body {
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    padding: 0 24px 24px 24px;
+
+    #laramedia-files-container {
+        overflow-y: auto;
+    }
+}
+
+#laramedia-file-selector-footer {
+    background-color: #f9f9f9;
+    border-top: 1px solid #eee;
+
+    button {
+        border-radius: 0;
+    }
+}
+
+#laramedia-file-selector-body #laramedia-search {
+    background-color: #f5f5f5;
+}
