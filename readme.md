@@ -54,18 +54,39 @@ Next, you need to setup a route to be the home for the media. This can be anythi
 
 ### Bulk Options
 
-Type Filter
-Visibility Filter
-Ownership Filter
-Active Section
-Trash Section
-Search
+From the media home page, you can bulk trash, restore and permanently delete items. You can set a policy in the laramedia.php config file to determine who can perform bulk actions.
 
-Hover
-Save Button
-Trash Button
-Restore Button
-Destroy Button
-File Editor
+When you hover over a file on the media home page, a checkbox will appear. All checked items will be actionable through the bulk action.
 
+### Type Filter
+
+You can search/get media based on their type.
+
+### Visibility Filter
+
+You can search/get media based on their visibility type.
+
+### Ownership Filter
+
+You can search/get media based on the ownership of the upload.
+
+### Active Section
+
+The default view for the media files is the active section (non-trashed files)
+
+### Trash Section
+
+Items in the trash can be viewed by clicking on the trash icon.
+
+### Search
+
+You can perform search for media files.
+
+### Save, Trash, Restore & Delete Button
+
+When you click on a file from the media home page, you have the ability to edit, trash, restore & delete by clicking the relevant button on the button right of the file preview.
+
+### Public & Private Upload
+
+Public uploads are intended to be viewed by anyone while private uploads are not visible. On the media home page, which is intended to be password protected, the private files can be previewed.
 public or private upload
