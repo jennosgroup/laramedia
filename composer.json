@@ -1,0 +1,30 @@
+{
+    "name": "jenryollivierre/laramedia",
+    "description": "A file manager package for your laravel application.",
+    "authors": [
+        {
+            "name": "Jenry Ollivierre",
+            "email": "jenry@jenryollivierre.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Laramedia\\": "src/"
+        }
+    },
+    "require": {
+        "intervention/image": "^2.0"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Laramedia\\Providers\\AppServiceProvider"
+            ],
+            "aliases": {
+                "LaramediaConfig": "Laramedia\\Facades\\Config"
+            }
+        }
+    },
+    "minimum-stability": "dev",
+    "stable": false
+}
