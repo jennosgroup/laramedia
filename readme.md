@@ -52,7 +52,24 @@ Next, you need to setup a route to be the home for the media. This can be anythi
 
 ## Policies
 
-You can set policies that controls all the actions. As per normal laravel convention, you can define your policies in the EventServiceProvider file. Use `Laramedia\Models\Media` as the model and define your own policy class. When you have defined your policy class methods, you then set the corresponding method to the policy keys in the laramedia.php config file. 'active_section', 'trash_section', 'create', 'view', 'download', 'update', 'trash', 'restore', 'delete', 'files', 'options', 'trash_bulk', 'restore_bulk', 'delete_bulk'
+You can set policies that controls all the actions. As per normal laravel convention, you can define your policies in the EventServiceProvider file. Use `Laramedia\Models\Media` as the model and define your own policy class. When you have defined your policy class methods, you then set the corresponding method to the policy keys in the laramedia.php config file. 
+
+'active_section' controls who sees the active files.
+'trash_section' controls who sees the trashed files.
+'create' controls who can create a file uplaod.
+'view' controls who can preview a file.
+'download' controls who can download a file.
+'update' controls who can update a file.
+'trash' controls who can trash a file.
+'restore' controls who can restore a file.
+'delete' controls who can permanently delete a file.
+'files' controls who can fetch files (view files on media home page and through searches etc)
+'options' controls who can fetch the upload options.
+'trash_bulk' controls who can bulk trash files.
+'restore_bulk' controls who can bulk restore files.
+'delete_bulk' controls who can bulk delete files.
+
+If these are set to null, then they will pass as true.
 
 ## Features
 
