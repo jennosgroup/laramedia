@@ -111,3 +111,11 @@ When you click on a file from the media home page, you have the ability to edit,
 
 Public uploads are intended to be viewed by anyone while private uploads are not visible. On the media home page, which is intended to be password protected, the private files can be previewed.
 public or private upload
+
+## Security Vulnerabilities
+
+If you discover a security vulnerability, please send an e-mail to Jenry Ollivierre via [jenry@jenryollivierre.com](mailto:jenry@jenryollivierre.com). All security vulnerabilities will be attended to promptly.
+
+## License
+
+The Laramedia package is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
