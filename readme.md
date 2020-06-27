@@ -50,6 +50,10 @@ Ensure that the CSRF Token is defined in the head section as well. `<meta name="
 
 Next, you need to setup a route to be the home for the media. This can be anything you desire. All of the package route names are prefixed with 'laramedia' so there isn't much chance of collision with route names. You can also change the route prefix within the package config file. After you have a route setup and a view, include the view `@include('laramedia::home')`. That's it, everything will now work like magic.
 
+## Policies
+
+You can set policies that controls all the actions. As per normal laravel convention, you can define your policies in the EventServiceProvider file. Use `Laramedia\Models\Media` as the model and define your own policy class. When you have defined your policy class methods, you then set the corresponding method to the policy keys in the laramedia.php config file. 'active_section', 'trash_section', 'create', 'view', 'download', 'update', 'trash', 'restore', 'delete', 'files', 'options', 'trash_bulk', 'restore_bulk', 'delete_bulk'
+
 ## Features
 
 ### Bulk Options
