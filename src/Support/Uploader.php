@@ -400,17 +400,17 @@ class Uploader
      * @param  string  $filename
      * @param  string  $cutId
      *
-     * @return \Intervention\Image\Image|bool
+     * @return bool
      */
-    protected function storeCut(Image $image, string $filename, string $cutId) : Image
+    protected function storeCut(Image $image, string $filename, string $cutId): bool
     {
         $path = $this->getPathRelativeToDisk($cutId);
 
         if (! Storage::disk($this->getDisk())->exists($path)) {
-            Storage::disk($this->getDisk())::makeDirectory($path, 0755, true, true);
+            Storage::disk($this->getDisk())->makeDirectory($path, 0755, true, true);
         }
 
-        return Storage::disk($this->getDisk())->put($path.'/'.$filename, $image);
+        return Storage::disk($this->getDisk())->put($path.'/'.$filename, (string) $image->encode());
     }
 
     /**

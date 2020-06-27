@@ -17,7 +17,7 @@ class Media extends Model
      *
      * @var array
      */
-    private array $cache = [];
+    private array $mediaCache = [];
 
     /**
      * The file instance.
@@ -474,7 +474,7 @@ class Media extends Model
      */
     private function existsInCache($key): bool
     {
-        return isset($this->cache[$key]);
+        return isset($this->mediaCache[$key]);
     }
 
     /**
@@ -486,7 +486,7 @@ class Media extends Model
      */
     private function getFromCache($key)
     {
-        return $this->cache[$key] ?? null;
+        return $this->mediaCache[$key] ?? null;
     }
 
     /**
@@ -499,6 +499,6 @@ class Media extends Model
      */
     private function setInCache($key, $value)
     {
-        $this->cache[$key] = $value;
+        $this->mediaCache[$key] = $value;
     }
 }

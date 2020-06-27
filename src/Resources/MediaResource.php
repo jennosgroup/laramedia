@@ -31,10 +31,10 @@ class MediaResource extends JsonResource
         $attributes['readable_size'] = $this->resource->getReadableFileSize();
 
         // Permissions
-        $attributes['can_trash'] = Auth::user()->can('trash', $this->resource);
-        $attributes['can_delete'] = Auth::user()->can('delete', $this->resource);
-        $attributes['can_restore'] = Auth::user()->can('restore', $this->resource);
-        $attributes['can_update'] = Auth::user()->can('update', $this->resource);
+        $attributes['can_trash'] = Config::can('trash', $this->resource);
+        $attributes['can_delete'] = Config::can('delete', $this->resource);
+        $attributes['can_restore'] = Config::can('restore', $this->resource);
+        $attributes['can_update'] = Config::can('update', $this->resource);
 
         // Add routes
         $attributes['preview_route'] = route('laramedia.show', $this->id);
