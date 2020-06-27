@@ -6,7 +6,7 @@ Laramedia is a media manager for your laravel application.
 
 ## Installation
 
-Install with composer command `composer require jenryollivierre/Laramedia`.
+Install with composer command `composer require jennosgroup/Laramedia`.
 
 ## Setup
 
