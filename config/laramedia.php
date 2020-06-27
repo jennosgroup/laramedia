@@ -383,9 +383,8 @@ return [
     | Type Filters
     |--------------------------------------------------------------------------
     |
-    | The media types to chose from. You can add your own category of media type
-    | and defined which type of files will be returned when that category is
-    | selected.
+    | The media types to chose from when that category is selected. Do not change
+    | the 'type_filters' keys.
     |
     | Specify either the mime or the extension i.e 'image/*' or 'png'
     | or a combination of both. If you want to specify mime wildcard, ensure
@@ -417,7 +416,8 @@ return [
     |--------------------------------------------------------------------------
     |
     | The type filters that will show up for the user to filter their search.
-    | Only filters defined in 'type_filters' config are allowed.
+    |
+    | Accepted 'image', 'audio', 'video', 'document', 'media', 'none_image'.
     |
     */
 
