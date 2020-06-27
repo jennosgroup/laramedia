@@ -50,7 +50,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | The maximum file size in kilobytes, that is allowed for an upload.
-    | Defaults to 128 MB.
+    | Defaults to 128 MB. This
     |
     */
 
