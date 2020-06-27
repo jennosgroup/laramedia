@@ -1,0 +1,601 @@
+/* Actions Bar Container */
+
+#laramedia-actions-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-top: 16px;
+}
+
+/* Left Section of Actions Bar */
+
+#laramedia-actions-left-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+/* Right Section of Actions Bar */
+
+#laramedia-actions-right-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* bar select box container */
+
+.laramedia-action-select-box-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  padding: 0;
+  background-color: #f5f5f5;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  margin-right: 1px;
+  margin-bottom: 1px;
+  height: 40px;
+}
+
+/* hack to get the dropdown arrow for the select box */
+
+.laramedia-action-select-box-container::after {
+  content: "";
+  width: 0;
+  height: 0;
+  position: absolute;
+  pointer-events: none;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  top: 16px;
+  right: 12px;
+  border-top: 8px solid black;
+  opacity: 0.5;
+}
+
+/* select box styling - remove browser defaults */
+
+.laramedia-action-select-box {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border: none;
+  border-radius: 0;
+  background-color: transparent;
+  padding: 0 28px 0 12px;
+}
+
+/* remove the outline from the select box */
+
+.laramedia-action-select-box:focus {
+  outline: none;
+}
+
+/* remove MS dropdown icon */
+
+.laramedia-action-select-box::-ms-expand {
+  display: none;
+}
+
+/* make listing section standard size as they only contain an icon */
+
+.laramedia-action-icon-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  width: 72px;
+  height: 40px;
+}
+
+.laramedia-action-icon-container img {
+  height: 20px;
+  width: auto;
+  max-width: 100%;
+}
+
+/* Active Icon Container */
+
+#laramedia-active-icon-container {
+  background-color: #7FB3D5;
+  margin-right: 2px;
+}
+
+#laramedia-active-icon-container.active,
+#laramedia-active-icon-container:hover {
+  background-color: #1F618D;
+}
+
+#laramedia-trash-icon-container {
+  background-color: #E6B0AA;
+}
+
+#laramedia-trash-icon-container.active,
+#laramedia-trash-icon-container:hover {
+  background-color: #C0392B;
+}
+
+/* Search Container */
+
+#laramedia-search-container {
+  margin-left: 12px;
+  padding: 0;
+  height: 40px;
+}
+
+/* Search Input */
+
+#laramedia-search {
+  background-color: #fff;
+  width: 170px;
+  height: 100%;
+  padding: 0 12px;
+  border: none;
+  margin: 0;
+}
+
+#laramedia-file-editor-body-left {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  flex-grow: 0;
+  width: 100%;
+  padding: 20px;
+  background-color: #eee;
+  border-right: 1px solid #ccc;
+}
+
+#laramedia-file-editor-body-left img {
+  max-width: 100%;
+  width: auto;
+  height: auto;
+  max-height: 400px;
+}
+
+#laramedia-file-editor-body-right {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 20px;
+  background-color: #f9f9f9;
+  overflow-y: auto;
+}
+
+.laramedia-file-editor-items-separator {
+  margin-bottom: 20px;
+}
+
+.laramedia-file-editor-item-title {
+  font-weight: bold;
+}
+
+.laramedia-file-editor-route-button img {
+  margin-right: 6px;
+  max-height: 20px;
+  width: auto;
+  height: auto;
+}
+
+#laramedia-file-editor-trash-button,
+#laramedia-file-editor-save-button,
+#laramedia-file-editor-restore-button,
+#laramedia-file-editor-delete-button {
+  display: none;
+}
+
+#laramedia-file-editor-trash-button,
+#laramedia-file-editor-delete-button {
+  background-color: #A93226;
+}
+
+#laramedia-file-editor-trash-button:hover,
+#laramedia-file-editor-delete-button:hover {
+  background-color: #C0392B;
+}
+
+#laramedia-file-editor-save-button {
+  background-color: #1F618D;
+}
+
+#laramedia-file-editor-save-button:hover {
+  background-color: #2471A3;
+}
+
+#laramedia-file-editor-restore-button {
+  background-color: #196F3D;
+}
+
+#laramedia-file-editor-restore-button:hover {
+  background-color: #1E8449;
+}
+
+@media screen and (min-width: 968px) {
+  #laramedia-file-editor-body-left {
+    width: 50%;
+  }
+
+  #laramedia-file-editor-body-left img {
+    max-height: 100%;
+  }
+
+  #laramedia-file-editor-body-right {
+    width: 50%;
+  }
+}
+
+#laramedia-upload-button-container {
+  display: flex;
+  justify-content: flex-end;
+}
+
+#laramedia-no-files-container {
+  margin-top: 20px;
+  padding: 48px 24px;
+  display: none;
+  justify-content: center;
+  background-color: #fff;
+}
+
+#laramedia-no-files-container img {
+  max-height: 100%;
+  height: auto;
+  max-width: 100%;
+  width: auto;
+}
+
+#laramedia-files-container {
+  margin: 20px -4px 0 -4px;
+  padding: 0;
+  display: none;
+  flex-wrap: wrap;
+  list-style: none;
+}
+
+.laramedia-item-container {
+  position: relative;
+  margin: 4px;
+  border: 1px solid #eee;
+  cursor: pointer;
+}
+
+.laramedia-item-inner-container {
+  width: 120px;
+  height: 120px;
+  background-color: #fff;
+}
+
+.laramedia-item-checkbox-container {
+  display: none;
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  margin: 0;
+  padding: 0;
+}
+
+.laramedia-item-preview-image {
+  padding: 4px;
+  width: 100%;
+  height: 100%;
+}
+
+.laramedia-item-file-icon,
+.laramedia-item-file-name-container {
+  height: 60px;
+}
+
+.laramedia-item-file-icon {
+  display: flex;
+  justify-content: center;
+  background-color: #f9f9f9;
+  border-bottom: 1px solid #eee;
+}
+
+.laramedia-item-file-icon img {
+  padding: 6px;
+  width: auto;
+  height: auto;
+  max-height: 100%;
+  max-width: 100%;
+}
+
+.laramedia-item-file-name {
+  width: 100%;
+  height: 100%;
+  padding: 6px;
+  line-height: 1;
+  overflow-y: auto;
+  text-align: center;
+  word-wrap: break-word;
+}
+
+.laramedia-modal-container {
+  display: flex;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 24px;
+  background-color: rgba(0, 0, 0, 0.65);
+  z-index: 1000;
+}
+
+.laramedia-modal-inner-container {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  flex-grow: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.laramedia-modal-header,
+.laramedia-modal-body,
+.laramedia-modal-footer {
+  width: 100%;
+}
+
+.laramedia-modal-header {
+  display: flex;
+  justify-content: space-between;
+  flex-shrink: 0;
+  height: 48px;
+  background-color: #fff;
+}
+
+.laramedia-modal-header-title {
+  display: flex;
+  align-items: center;
+  padding-left: 16px;
+  padding-right: 16px;
+  font-weight: bolder;
+}
+
+.laramedia-modal-header-buttons {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.laramedia-modal-bar-button {
+  height: 48px;
+  width: 48px;
+  padding: 12px;
+  font-size: 24px;
+  line-height: 1;
+  text-align: center;
+  align-self: center;
+}
+
+.laramedia-modal-bar-button img {
+  max-height: 100%;
+  height: auto;
+  width: auto;
+  max-width: 100%;
+}
+
+.laramedia-modal-body {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  overflow-y: auto;
+  background-color: #fff;
+}
+
+.laramedia-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  flex-shrink: 0;
+  height: 48px;
+  background-color: #fff;
+}
+
+.laramedia-modal-footer .laramedia-modal-bar-button {
+  border: none;
+}
+
+@media screen and (min-width: 968px) {
+  .laramedia-modal-body {
+    flex-direction: row;
+  }
+}
+
+#laramedia-file-selector-header {
+  background-color: #f9f9f9;
+  border-bottom: 1px solid #eee;
+}
+
+#laramedia-file-selector-body {
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  padding: 0 24px 24px 24px;
+}
+
+#laramedia-file-selector-body #laramedia-files-container {
+  overflow-y: auto;
+}
+
+#laramedia-file-selector-footer {
+  background-color: #f9f9f9;
+  border-top: 1px solid #eee;
+}
+
+#laramedia-file-selector-footer button {
+  border-radius: 0;
+}
+
+#laramedia-file-selector-body #laramedia-search {
+  background-color: #f5f5f5;
+}
+
+#laramedia-spinner-overlay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 100vh;
+  padding: 24px;
+  background-color: rgba(0, 0, 0, 0.45);
+  z-index: 1000000;
+}
+
+#laramedia-spinner {
+  color: official;
+  display: inline-block;
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+
+#laramedia-spinner div {
+  transform-origin: 40px 40px;
+  -webkit-animation: laramedia-spinner 1.2s linear infinite;
+          animation: laramedia-spinner 1.2s linear infinite;
+}
+
+#laramedia-spinner div:after {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 3px;
+  left: 37px;
+  width: 6px;
+  height: 18px;
+  border-radius: 20%;
+  background: #fff;
+}
+
+#laramedia-spinner div:nth-child(1) {
+  transform: rotate(0deg);
+  -webkit-animation-delay: -1.1s;
+          animation-delay: -1.1s;
+}
+
+#laramedia-spinner div:nth-child(2) {
+  transform: rotate(30deg);
+  -webkit-animation-delay: -1s;
+          animation-delay: -1s;
+}
+
+#laramedia-spinner div:nth-child(3) {
+  transform: rotate(60deg);
+  -webkit-animation-delay: -0.9s;
+          animation-delay: -0.9s;
+}
+
+#laramedia-spinner div:nth-child(4) {
+  transform: rotate(90deg);
+  -webkit-animation-delay: -0.8s;
+          animation-delay: -0.8s;
+}
+
+#laramedia-spinner div:nth-child(5) {
+  transform: rotate(120deg);
+  -webkit-animation-delay: -0.7s;
+          animation-delay: -0.7s;
+}
+
+#laramedia-spinner div:nth-child(6) {
+  transform: rotate(150deg);
+  -webkit-animation-delay: -0.6s;
+          animation-delay: -0.6s;
+}
+
+#laramedia-spinner div:nth-child(7) {
+  transform: rotate(180deg);
+  -webkit-animation-delay: -0.5s;
+          animation-delay: -0.5s;
+}
+
+#laramedia-spinner div:nth-child(8) {
+  transform: rotate(210deg);
+  -webkit-animation-delay: -0.4s;
+          animation-delay: -0.4s;
+}
+
+#laramedia-spinner div:nth-child(9) {
+  transform: rotate(240deg);
+  -webkit-animation-delay: -0.3s;
+          animation-delay: -0.3s;
+}
+
+#laramedia-spinner div:nth-child(10) {
+  transform: rotate(270deg);
+  -webkit-animation-delay: -0.2s;
+          animation-delay: -0.2s;
+}
+
+#laramedia-spinner div:nth-child(11) {
+  transform: rotate(300deg);
+  -webkit-animation-delay: -0.1s;
+          animation-delay: -0.1s;
+}
+
+#laramedia-spinner div:nth-child(12) {
+  transform: rotate(330deg);
+  -webkit-animation-delay: 0s;
+          animation-delay: 0s;
+}
+
+@-webkit-keyframes laramedia-spinner {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes laramedia-spinner {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+#laramedia-file-uploader-header {
+  background-color: #f9f9f9;
+  border-bottom: 1px solid #eee;
+}
+
+#laramedia-file-uploader-footer {
+  background-color: #f9f9f9;
+  border-top: 1px solid #eee;
+}
+
+#laramedia-file-uploader-body.laramedia-modal-body {
+  flex-direction: column;
+  padding: 24px;
+}
+
+#laramedia-uploader-visibility-select-box {
+  margin-bottom: 16px;
+  flex-shrink: 0;
+}
+
+#laramedia-drag-drop-area {
+  display: flex;
+  flex-grow: 1;
+  width: 100%;
+}
+
+#laramedia-drag-drop-area .uppy-Root {
+  width: 100%;
+}
+
