@@ -11,15 +11,16 @@ class MediaResultsPaginatedAction
     /**
      * Get the media results paginated.
      *
+     * @param  int  $paginate
      * @return bool
      */
-    public function execute()
+    public function execute(int $paginate = 30)
     {
         return (new Finder)->type(Request::input('type'))
             ->visibility(Request::input('visibility'))
             ->ownership(Request::input('ownership'))
             ->section(Request::input('section'))
             ->search(Request::input('search'))
-            ->paginate(30);
+            ->paginate($paginate);
     }
 }

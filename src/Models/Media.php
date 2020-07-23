@@ -389,8 +389,6 @@ class Media extends Model
         return $this->moveFileToOtherVisibilityDisk();
     }
 
-
-
     /**
      * Move the images to the other visibility disk.
      *
