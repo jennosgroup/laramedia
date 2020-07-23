@@ -19246,10 +19246,10 @@ module.exports = function MediaLoader() {
 
   this.registerFilterActiveEvents = function () {
     var self = this;
-    var element = document.getElementById(this.filterOptions.active_filter_container_id);
+    var activeElement = document.getElementById(this.filterOptions.active_filter_container_id);
     var trashElement = document.getElementById(this.filterOptions.trash_filter_container_id);
 
-    if (element == null) {
+    if (activeElement == null) {
       return;
     } // Set the default section
 
@@ -19261,17 +19261,17 @@ module.exports = function MediaLoader() {
       } // Show the action section as active
 
 
-      element.classList.add('active');
+      activeElement.classList.add('active');
     }
 
-    element.addEventListener('click', function (event) {
+    document.getElementById(this.filterOptions.active_filter_container_id).addEventListener('click', function (event) {
       // Show the trash section as inactive
       if (trashElement != null) {
         trashElement.classList.remove('active');
       } // Show the active section as active
 
 
-      event.srcElement.classList.add('active'); // Show the relevant bulk options
+      activeElement.classList.add('active'); // Show the relevant bulk options
 
       var activeBulkContainer = document.getElementById(self.bulkActionOptions.active_bulk_options_container_id);
       var trashBulkContainer = document.getElementById(self.bulkActionOptions.trash_bulk_options_container_id);
@@ -19288,30 +19288,6 @@ module.exports = function MediaLoader() {
         section: 'active'
       });
     });
-    trashElement.addEventListener('click', function (event) {
-      // Show the active section as inactive
-      if (element != null) {
-        element.classList.remove('active');
-      } // Show the trash section as active
-
-
-      event.srcElement.classList.add('active'); // Show the relevant bulk options
-
-      var activeBulkContainer = document.getElementById(self.bulkActionOptions.active_bulk_options_container_id);
-      var trashBulkContainer = document.getElementById(self.bulkActionOptions.trash_bulk_options_container_id);
-
-      if (trashBulkContainer != null) {
-        trashBulkContainer.style.display = 'flex';
-      }
-
-      if (activeBulkContainer != null) {
-        activeBulkContainer.style.display = 'none';
-      }
-
-      self.loadContentFromFilter({
-        section: 'trash'
-      });
-    });
   };
   /**
    * Register the trash filter events.
@@ -19322,10 +19298,10 @@ module.exports = function MediaLoader() {
 
   this.registerFilterTrashEvents = function () {
     var self = this;
-    var element = document.getElementById(this.filterOptions.trash_filter_container_id);
+    var trashElement = document.getElementById(this.filterOptions.trash_filter_container_id);
     var activeElement = document.getElementById(this.filterOptions.active_filter_container_id);
 
-    if (element == null) {
+    if (trashElement == null) {
       return;
     } // Set the default section
 
@@ -19337,17 +19313,17 @@ module.exports = function MediaLoader() {
       } // Show the trash section as active
 
 
-      element.classList.add('active');
+      trashElement.classList.add('active');
     }
 
-    element.addEventListener('click', function (event) {
+    document.getElementById(this.filterOptions.trash_filter_container_id).addEventListener('click', function (event) {
       // Show the active section as inactive
       if (activeElement != null) {
         activeElement.classList.remove('active');
       } // Show the trash section as active
 
 
-      event.srcElement.classList.add('active'); // Show the relevant bulk options
+      trashElement.classList.add('active'); // Show the relevant bulk options
 
       var activeBulkContainer = document.getElementById(self.bulkActionOptions.active_bulk_options_container_id);
       var trashBulkContainer = document.getElementById(self.bulkActionOptions.trash_bulk_options_container_id);
