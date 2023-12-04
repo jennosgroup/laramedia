@@ -1,0 +1,27 @@
+{
+    "name": "jennosgroup/laravel-files-library",
+    "autoload": {
+        "psr-4": {
+            "LaravelFilesLibrary\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Jenry Ollivierre",
+            "email": "jenry@jenryollivierre.com"
+        }
+    ],
+    "require": {
+        "ramsey/uuid": "^4.7"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "LaravelFilesLibrary\\Providers\\AppServiceProvider"
+            ],
+            "aliases": {
+                "LaravelFilesLibraryConfig": "LaravelFilesLibrary\\Facades\\Config"
+            }
+        }
+    }
+}
