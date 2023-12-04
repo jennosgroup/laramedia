@@ -1,10 +1,9 @@
 {
     "name": "jennosgroup/laravel-files-library",
-    "autoload": {
-        "psr-4": {
-            "LaravelFilesLibrary\\": "src/"
-        }
-    },
+    "type": "package",
+    "description": "",
+    "keywords": [],
+    "license": "MIT",
     "authors": [
         {
             "name": "Jenry Ollivierre",
@@ -13,6 +12,11 @@
     ],
     "require": {
         "ramsey/uuid": "^4.7"
+    },
+    "autoload": {
+        "psr-4": {
+            "LaravelFilesLibrary\\": "src/"
+        }
     },
     "extra": {
         "laravel": {
@@ -23,5 +27,7 @@
                 "LaravelFilesLibraryConfig": "LaravelFilesLibrary\\Facades\\Config"
             }
         }
-    }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
 }
