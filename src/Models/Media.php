@@ -184,7 +184,7 @@ class Media extends Model
      */
     public function getImageSizes(): array
     {
-        if ($this->getCategory() != 'image') {
+        if ($this->getType() != 'image') {
             return [];
         }
 
@@ -198,7 +198,7 @@ class Media extends Model
      */
     public function getImageHeight(): ?int
     {
-        return ($this->getCategory() == 'image') ? $this->file_height : null;
+        return ($this->getType() == 'image') ? $this->file_height : null;
     }
 
     /**
@@ -208,7 +208,7 @@ class Media extends Model
      */
     public function getImageWidth(): ?int
     {
-        return ($this->getCategory() == 'image') ? $this->file_width : null;
+        return ($this->getType() == 'image') ? $this->file_width : null;
     }
 
     /**
@@ -248,7 +248,7 @@ class Media extends Model
      *
      * @return bool
      */
-    public function exists(string $cut = null): bool
+    public function fileExists(string $cut = null): bool
     {
         return Storage::disk($this->getDisk())->exists($this->getRelativePath($cut));
     }
@@ -330,7 +330,9 @@ class Media extends Model
             $path = $directory.'/';
         }
 
-        if (! is_null($cut)) {
+        if (is_null($cut)) {
+            $path = Config::originalFilesDirectory().'/';
+        } else {
             $path = $path.$cut.'/';
         }
 
