@@ -22,6 +22,8 @@ class MediaResource extends JsonResource
 
         // Additional data
         $attributes['is_image'] = $this->resource->isImage();
+        $attributes['is_not_image'] = $this->resource->isNotImage();
+        $attributes['local_path'] = $this->resource->getFullPath();
         $attributes['public_url'] = $this->resource->getPublicUrl();
         $attributes['base64_url'] = null;
         $attributes['human_created_at'] = Carbon::parse($this->created_at)->toFormattedDateString();
@@ -31,8 +33,6 @@ class MediaResource extends JsonResource
         if ($this->resource->getType() != 'image') {
             return $attributes;
         }
-
-        $diskPath = $this->resource->getDiskPath();
 
         foreach (Config::imageCutDirectories() as $cut => $data) {
             $attributes[$cut.'_public_url'] = $this->resource->getPublicUrl($cut);

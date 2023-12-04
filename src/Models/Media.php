@@ -299,10 +299,10 @@ class Media extends Model
             return null;
         }
 
-        $width = Number::format($this->getImageWidth();
-        $height = Number::format($this->getImageHeight();
+        $width = Number::format($this->getImageWidth());
+        $height = Number::format($this->getImageHeight());
 
-        return $width.' px by '.$height. 'px';
+        return $width.'x'.$height. ' px';
     }
 
     /**
@@ -312,7 +312,7 @@ class Media extends Model
      */
     public function humanFilesize(): string
     {
-        return Number::toFileSize($this->getSize(), precision: 2);
+        return Number::filesize($this->getSize(), precision: 2);
     }
 
     /**
@@ -327,16 +327,27 @@ class Media extends Model
         $path = '';
 
         if ($directory = Config::directory()) {
-            $path = $directory.'/';
+            $path .= $directory.'/';
         }
 
         if (is_null($cut)) {
-            $path = Config::originalFilesDirectory().'/';
+            $path .= Config::originalFilesDirectory().'/';
         } else {
-            $path = $path.$cut.'/';
+            $path .= $path.$cut.'/';
         }
 
         return $path.$this->getUploadPath().'/'.$this->name;
+    }
+
+    /**
+     * Get the full path.
+     * 
+     * @param  string|null  $cut
+     * @return string
+     */
+    public function getFullPath(string $cut = null): string
+    {
+        return storage_path().'/'.$this->getRelativePath($cut);
     }
 
     /**
@@ -501,7 +512,7 @@ class Media extends Model
      *
      * @return bool
      */
-    public function removeNoneImageFile(): void
+    public function removeNoneImageFile(): bool
     {
         Storage::disk($this->getDisk())->delete($this->getRelativePath());
         return true;
