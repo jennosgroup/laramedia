@@ -72,7 +72,7 @@ class Config
      */
     public static function defaultDisk(): string
     {
-        return LaravelFilesLibrary::$defaultDisk;
+        return LaravelFilesLibrary::$defaultDisk ?? config('filesystems.default');
     }
 
     /**
@@ -110,7 +110,7 @@ class Config
     /**
      * Get the disks default visibility.
      */
-    public function disksDefaultVisibility(): array
+    public static function disksDefaultVisibility(): array
     {
         return LaravelFilesLibrary::$disksDefaultVisibility;
     }
@@ -434,6 +434,26 @@ class Config
      */
     public static function browserOptions(): array
     {
-        return [];
+        return [
+            'options_route_name' => static::optionsRouteName(),
+            'disks' => static::disks(),
+            'default_disk' => static::defaultDisk(),
+            'disks_visibilities' => static::disksVisibilities(),
+            'disks_default_visibility' => static::disksDefaultVisibility(),
+            'auto_upload' => static::autoUpload(),
+            'allow_multiple_uploads' => static::allowMultipleUploads(),
+            'allowed_file_types' => static::allowedFileTypes(),
+            'allowed_mimetypes' => static::allowedMimeTypes(),
+            'allowed_mimetypes_wildward' => static::allowedMimeTypesWildcards(),
+            'allowed_extensions' => static::allowedExtensions(),
+            'min_file_size' => static::minFileSize(),
+            'max_file_size' => static::maxFileSize(),
+            'min_number_of_files' => static::minNumberOfFiles(),
+            'max_number_of_files' => static::maxNumberOfFiles(),
+            'meta' => static::meta(),
+            'meta_fields' => static::metaFields(),
+            'file_input_name' => static::fileInputName(),
+            'note' => static::note(),
+        ];
     }
 }
