@@ -90,7 +90,7 @@
                     <div class="lfl-file-editor-edit-content-form-group">
                         <label for="lfl-file-editor-disk" class="lfl-file-editor-edit-content-label lfl-file-editor-edit-content-title">Disk</label>
                         <select id="lfl-file-editor-disk" class="lfl-file-editor-form-control lfl-file-editor-edit-content-data">
-                            @foreach (LaramediaConfig::disks() as $key => $value)
+                            @foreach (Laramedia::disks() as $key => $value)
                                 <option value="{{ $key }}">{{ $value }}</option>
                             @endforeach
                         </select>

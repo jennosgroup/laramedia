@@ -2,172 +2,11 @@
 
 namespace JennosGroup\Laramedia\Support;
 
-class Laramedia
+use illuminate\Database\Eloquent\Model;
+use illuminate\Support\Facades\Auth;
+
+class Laramedia extends Config
 {
-    /**
-     * The directory to store the files in.
-     */
-    public static string $directory = 'laravel-files-library';
-
-    /**
-     * The name of the original directory.
-     */
-    public static string $originalFilesDirectory = 'original';
-
-    /**
-     * The image cut directories.
-     * Do not use the originalFilesDirectory name as any of the cut.
-     * It will be added automatically
-     */
-    public static array $imageCutDirectories = [
-        'thumbnail' => ['width' => 100, 'height' => 100],
-    ];
-
-    /**
-     * The original image max width.
-     */
-    public static ?int $originalImageMaxWidth = 2000;
-
-    /**
-     * The original image max height.
-     */
-    public static ?int $originalImageMaxHeight = 2000;
-
-    /**
-     * The type filters.
-     */
-    public static array $typeFilters = [];
-
-    /**
-     * The storage disks for the package to use.
-     */
-    public static array $disks = [];
-
-    /**
-     * The default disk.
-     */
-    public static ?string $defaultDisk = null;
-
-    /**
-     * The storage disk visibilities for the package to use.
-     */
-    public static array $disksVisibilities = [];
-
-    /**
-     * Get the disk default visibilities.
-     */
-    public static array $disksDefaultVisibility = [];
-
-    /**
-     * The ownerships.
-     */
-    public static array $ownerships = [
-        'mine' => 'Mine',
-        'others' => 'Others',
-    ];
-
-    /**
-     * The pagination total for the files listings page.
-     */
-    public static int $paginationTotal = 90;
-
-    /**
-     * If files should be auto uploaded.
-     */
-    public static bool $autoUpload = true;
-
-    /**
-     * If multiple file uploads should be allowed.
-     */
-    public static bool $allowMultipleUploads = true;
-
-    /**
-     * The minimum size in kilobytes that a file should be.
-     */
-    public static ?int $minFileSize = null;
-
-    /**
-     * The maximum size in kilobytes that a file should be.
-     */
-    public static ?int $maxFileSize = null;
-
-    /**
-     * The minimum number of files allowed.
-     */
-    public static ?int $minNumberOfFiles = null;
-
-    /**
-     * The maximum number of files allowed.
-     */
-    public static ?int $maxNumberOfFiles = null;
-
-    /**
-     * The allowed file types.
-     */
-    public static array $allowedFileTypes = [];
-
-    /**
-     * The file meta for each upload.
-     */
-    public static array $meta = [];
-
-    /**
-     * The meta fields for each upload.
-     */
-    public static array $metaFields = [];
-
-    /**
-     * The file input name.
-     */
-    public static string $fileInputName = 'file';
-
-    /**
-     * The note to display on the uploader.
-     */
-    public static ?string $note = null;
-
-    /**
-     * Whether trash is enabled.
-     */
-    public static bool $enableTrash = true;
-
-    /**
-     * The route middlewares.
-     */
-    public static array $routeMiddlewares = ['web'];
-
-    /**
-     * The route prefix.
-     */
-    public static string $routePrefix = 'files';
-
-    /**
-     * The route base name.
-     */
-    public static string $routeAs = 'lfl.';
-
-    /**
-     * The prefix for the tables.
-     */
-    public static string $tablePrefix = 'lfl_';
-
-    /**
-     * The table names.
-     */
-    public static array $tableNames = [
-        'media' => 'media',
-    ];
-
-    /**
-     * The policies mapping.
-     */
-    public static array $policies = [];
-
-    /**
-     * The app dot notation view path for the listings page.
-     */
-    public static ?string $listingsViewPath = null;
-
     /**
      * The filter for the listings view options callback.
      */
@@ -185,5 +24,345 @@ class Laramedia
     public static function filterListingsViewOptionsUsing(callable $callback): void
     {
         static::$filterListingsViewOptionsCallback = $callback;
+    }
+
+    /**
+     * Get a specific disk visibilities.
+     */
+    public static function diskVisibilities(string $disk): array
+    {
+        return static::$disksVisibilities()[$disk] ?? [];
+    }
+
+    /**
+     * Get the disk visibilities list.
+     */
+    public static function diskVisibilitiesList(): array
+    {
+        $list = [];
+
+        foreach (static::disksVisibilities() as $disk => $visibilities) {
+            foreach ($visibilities as $visibility) {
+                $list[] = $visibility;
+            }
+        }
+
+        return array_unique($list);
+    }
+
+    /**
+     * Get the allowed mimetypes.
+     */
+    public static function allowedMimeTypes(): array
+    {
+        $results = [];
+
+        foreach (static::allowedFileTypes() as $type) {
+            if (! preg_match('/\//', $type)) {
+                continue;
+            }
+            $results[] = $type;
+        }
+
+        return $results;
+    }
+
+    /**
+     * Get the allowed mimetypes wildcards.
+     */
+    public static function allowedMimeTypesWildcards(): array
+    {
+        $results = [];
+
+        foreach (static::allowedFileTypes() as $type) {
+            if (! preg_match('/\//', $type)) {
+                continue;
+            }
+            $parts = explode('/', $type);
+            $results[] = $parts[0].'/*';
+        }
+
+        return $results;
+    }
+
+    /**
+     * Get the allowed extensions.
+     */
+    public static function allowedExtensions(): array
+    {
+        $results = [];
+
+        foreach (static::allowedFileTypes() as $type) {
+            if (preg_match('/\//', $type)) {
+                continue;
+            }
+            $results[] = $type;
+        }
+
+        return $results;
+    }
+
+    /**
+     * Get the options route name.
+     */
+    public static function optionsRouteName(): string
+    {
+        return static::routeAs().'options';
+    }
+
+    /**
+     * Get the files route name.
+     */
+    public static function filesRouteName(): string
+    {
+        return static::routeAs().'files';
+    }
+
+    /**
+     * Get the listings route name.
+     */
+    public static function listingsRouteName(): string
+    {
+        return static::routeAs().'listings';
+    }
+
+    /**
+     * Get the store route name.
+     */
+    public static function storeRouteName(): string
+    {
+        return static::routeAs().'store';
+    }
+
+    /**
+     * Get the upload route name - alias for store route.
+     */
+    public static function uploadRouteName(): string
+    {
+        return static::storeRouteName();
+    }
+
+    /**
+     * Get the view route name.
+     */
+    public static function viewRouteName(): string
+    {
+        return static::routeAs().'view';
+    }
+
+    /**
+     * Get the preview route name.
+     */
+    public static function previewRouteName(): string
+    {
+        return static::viewRouteName();
+    }
+
+    /**
+     * Get the download route name.
+     */
+    public static function downloadRouteName(): string
+    {
+        return static::routeAs().'download';
+    }
+
+    /**
+     * Get the base64 route name.
+     */
+    public static function base64UrlRouteName(): string
+    {
+        return static::routeAs().'base64';
+    }
+
+    /**
+     * Get the update route name.
+     */
+    public static function updateRouteName(): string
+    {
+        return static::routeAs().'update';
+    }
+
+    /**
+     * Get the trash route name.
+     */
+    public static function trashRouteName(): string
+    {
+        return static::routeAs().'trash';
+    }
+
+    /**
+     * Get the restore route name.
+     */
+    public static function restoreRouteName(): string
+    {
+        return static::routeAs().'restore';
+    }
+
+    /**
+     * Get the destroy route name.
+     */
+    public static function destroyRouteName(): string
+    {
+        return static::routeAs().'destroy';
+    }
+
+    /**
+     * Get the options route.
+     */
+    public static function optionsRoute(): string
+    {
+        return route(static::optionsRouteName());
+    }
+
+    /**
+     * Get the files route.
+     */
+    public static function filesRoute(): string
+    {
+        return route(static::filesRouteName());
+    }
+
+    /**
+     * Get the listings route.
+     */
+    public static function listingsRoute(): string
+    {
+        return route(static::listingsRouteName());
+    }
+
+    /**
+     * Get the store route.
+     */
+    public static function storeRoute(): string
+    {
+        return route(static::storeRouteName());
+    }
+
+    /**
+     * Get the views route.
+     */
+    public static function viewRoute(Model $media): string
+    {
+        return route(static::viewRouteName(), $media);
+    }
+
+    /**
+     * Get the previews route.
+     */
+    public static function previewRoute(Model $media): string
+    {
+        return static::viewRoute($media);
+    }
+
+    /**
+     * Get the download route.
+     */
+    public static function downloadRoute(Model $media): string
+    {
+        return route(static::downloadRouteName(), $media);
+    }
+
+    /**
+     * Get the base64url route.
+     */
+    public static function base64UrlRoute(Model $media): string
+    {
+        return route(static::base64UrlRouteName(), $media);
+    }
+
+    /**
+     * Get the update route.
+     */
+    public static function updateRoute(Model $media): string
+    {
+        return route(static::updateRouteName(), $media);
+    }
+
+    /**
+     * Get the trash route.
+     */
+    public static function trashRoute(Model $media): string
+    {
+        return route(static::trashRouteName(), $media);
+    }
+
+    /**
+     * Get the restore route.
+     */
+    public static function restoreRoute(Model $media): string
+    {
+        return route(static::restoreRouteName(), $media);
+    }
+
+    /**
+     * Get the destroy route.
+     */
+    public static function destroyRoute(Model $media): string
+    {
+        return route(static::destroyRouteName(), $media);
+    }
+
+    /**
+     * Check if the user can execute a policy.
+     */
+    public static function can(string $key, Model $model = null): bool
+    {
+        $policies = static::policies();
+
+        if (is_null($model)) {
+            $model = $policies['model'] ?? null;
+        }
+
+        if (! array_key_exists($key, $policies)) {
+            return false;
+        }
+
+        $policy = $policies[$key];
+
+        if (is_null($policy)) {
+            return true;
+        }
+
+        return Auth::user()->can($policy, $model);
+    }
+
+    /**
+     * Get the table name.
+     */
+    public static function tableName(string $alias): ?string
+    {
+        $prefix = static::tablePrefix();
+        $tables = static::tableNames();
+
+        return $tables[$alias] ? $prefix.$tables[$alias] : null;
+    }
+
+    /**
+     * Get the options for the browser.
+     */
+    public static function browserOptions(): array
+    {
+        return [
+            'disks' => static::disks(),
+            'default_disk' => static::defaultDisk(),
+            'disks_visibilities' => static::disksVisibilities(),
+            'disks_default_visibility' => static::disksDefaultVisibility(),
+            'auto_upload' => static::autoUpload(),
+            'allow_multiple_uploads' => static::allowMultipleUploads(),
+            'min_file_size' => static::minFileSize(),
+            'max_file_size' => static::maxFileSize(),
+            'min_number_of_files' => static::minNumberOfFiles(),
+            'max_number_of_files' => static::maxNumberOfFiles(),
+            'allowed_file_types' => static::allowedFileTypes(),
+            'allowed_mimetypes' => static::allowedMimeTypes(),
+            'allowed_mimetypes_wildward' => static::allowedMimeTypesWildcards(),
+            'allowed_extensions' => static::allowedExtensions(),
+            'meta' => static::meta(),
+            'meta_fields' => static::metaFields(),
+            'file_input_name' => static::fileInputName(),
+            'note' => static::note(),
+            'pagination_total' => static::paginationTotal(),
+            'options_route_name' => static::optionsRouteName(),
+        ];
     }
 }

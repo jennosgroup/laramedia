@@ -7,11 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 class Config
 {
     /**
+     * The config file name.
+     */
+    protected static string $configFileName = 'laramedia';
+
+    /**
      * The directory to store the files in.
      */
     public static function directory(): string
     {
-        return Laramedia::$directory;
+        return config(static::$configFileName.'.directory', 'laramedia');
     }
 
     /**
@@ -19,7 +24,7 @@ class Config
      */
     public static function originalFilesDirectory(): string
     {
-        return Laramedia::$originalFilesDirectory;
+        return config(static::$configFileName.'.original_files_directory', 'original');
     }
 
     /**
@@ -27,7 +32,7 @@ class Config
      */
     public static function imageCutDirectories(): array
     {
-        $directories = Laramedia::$imageCutDirectories;
+        $directories = config(static::$configFileName.'.image_cut_directories', []);;
 
         $directories[static::originalFilesDirectory()] = [
             'max_width' => Config::originalImageMaxWidth(),
@@ -42,7 +47,7 @@ class Config
      */
     public static function originalImageMaxWidth(): ?int
     {
-        return Laramedia::$originalImageMaxWidth;
+        return config(static::$configFileName.'.original_image_max_width', 2000);
     }
 
     /**
@@ -50,7 +55,7 @@ class Config
      */
     public static function originalImageMaxHeight(): ?int
     {
-        return Laramedia::$originalImageMaxHeight;
+        return config(static::$configFileName.'.original_image_max_height', 2000);
     }
 
     /**
@@ -58,15 +63,11 @@ class Config
      */
     public static function disks(): array
     {
-        return Laramedia::$disks;
-    }
-
-    /**
-     * Get the name of the disks that are valid.
-     */
-    public static function validDisks(): array
-    {
-        return array_keys(static::getDisks());
+        return config(static::$configFileName.'.disks', [
+            'local' => 'Local',
+            'public' => 'Public',
+            's3' => 'Cloud',
+        ]);
     }
 
     /**
@@ -74,7 +75,7 @@ class Config
      */
     public static function defaultDisk(): string
     {
-        return Laramedia::$defaultDisk ?? config('filesystems.default');
+        return config(static::$configFileName.'.default_disk', 'local');
     }
 
     /**
@@ -82,31 +83,11 @@ class Config
      */
     public static function disksVisibilities(): array
     {
-        return Laramedia::$disksVisibilities;
-    }
-
-    /**
-     * Get a specific disk visibilities.
-     */
-    public static function diskVisibilities(string $disk): array
-    {
-        return static::$disksVisibilities()[$disk] ?? [];
-    }
-
-    /**
-     * Get the disk visibilities list.
-     */
-    public static function diskVisibilitiesList(): array
-    {
-        $list = [];
-
-        foreach (static::disksVisibilities() as $disk => $visibilities) {
-            foreach ($visibilities as $visibility) {
-                $list[] = $visibility;
-            }
-        }
-
-        return array_unique($list);
+        return config(static::$configFileName.'.disks_visibilities', [
+            'local' => ['private' => 'Private'],
+            'public' => ['public' => 'Public'],
+            's3' => ['private' => 'Private', 'public' => 'Public'],
+        ]);
     }
 
     /**
@@ -114,7 +95,11 @@ class Config
      */
     public static function disksDefaultVisibility(): array
     {
-        return Laramedia::$disksDefaultVisibility;
+        return config(static::$configFileName.'.disks_default_visibility', [
+            'local' => 'private',
+            'public' => 'public',
+            's3' => 'public',
+        ]);
     }
 
     /**
@@ -122,7 +107,10 @@ class Config
      */
     public static function ownerships(): array
     {
-        return Laramedia::$ownerships;
+        return config(static::$configFileName.'.ownerships', [
+            'mine' => 'Mine',
+            'others' => 'Others',
+        ]);
     }
 
     /**
@@ -130,10 +118,10 @@ class Config
      */
     public static function sections(): array
     {
-        return [
+        return config(static::$configFileName.'.sections', [
             'active' => 'Active',
             'trash' => 'Trash',
-        ];
+        ]);
     }
 
     /**
@@ -141,15 +129,11 @@ class Config
      */
     public static function typeFilters(): array
     {
-        return Laramedia::$typeFilters;
-    }
-
-    /**
-     * Get the pagination total.
-     */
-    public static function paginationTotal(): int
-    {
-        return Laramedia::$paginationTotal;
+        return config(static::$configFileName.'.type_filters', [
+            'image' => ['image/*'],
+            'document' => ['pdf'],
+            'none_image' => ['^image/*'],
+        ]);
     }
 
     /**
@@ -157,7 +141,7 @@ class Config
      */
     public static function autoUpload(): bool
     {
-        return Laramedia::$autoUpload;
+        return config(static::$configFileName.'.auto_upload', true);
     }
 
     /**
@@ -165,7 +149,7 @@ class Config
      */
     public static function allowMultipleUploads(): bool
     {
-        return Laramedia::$allowMultipleUploads;
+        return config(static::$configFileName.'.allow_multiple_uploads', true);
     }
 
     /**
@@ -173,7 +157,7 @@ class Config
      */
     public static function minFileSize(): ?int
     {
-        return Laramedia::$minFileSize;
+        return config(static::$configFileName.'.min_file_size', null);
     }
 
     /**
@@ -181,7 +165,7 @@ class Config
      */
     public static function maxFileSize(): ?int
     {
-        return Laramedia::$maxFileSize;
+        return config(static::$configFileName.'.max_file_size', null);
     }
 
     /**
@@ -189,7 +173,7 @@ class Config
      */
     public static function minNumberOfFiles(): ?int
     {
-        return Laramedia::$minNumberOfFiles;
+        return config(static::$configFileName.'.min_number_of_files', null);
     }
 
     /**
@@ -197,7 +181,7 @@ class Config
      */
     public static function maxNumberOfFiles(): ?int
     {
-        return Laramedia::$maxNumberOfFiles;
+        return config(static::$configFileName.'.max_number_of_files', null);
     }
 
     /**
@@ -205,59 +189,9 @@ class Config
      */
     public static function allowedFileTypes(): array
     {
-        return Laramedia::$allowedFileTypes;
-    }
-
-    /**
-     * Get the allowed mimetypes.
-     */
-    public static function allowedMimeTypes(): array
-    {
-        $results = [];
-
-        foreach (static::allowedFileTypes() as $type) {
-            if (! preg_match('/\//', $type)) {
-                continue;
-            }
-            $results[] = $type;
-        }
-
-        return $results;
-    }
-
-    /**
-     * Get the allowed mimetypes wildcards.
-     */
-    public static function allowedMimeTypesWildcards(): array
-    {
-        $results = [];
-
-        foreach (static::allowedFileTypes() as $type) {
-            if (! preg_match('/\//', $type)) {
-                continue;
-            }
-            $parts = explode('/', $type);
-            $results[] = $parts[0].'/*';
-        }
-
-        return $results;
-    }
-
-    /**
-     * Get the allowed extensions.
-     */
-    public static function allowedExtensions(): array
-    {
-        $results = [];
-
-        foreach (static::allowedFileTypes() as $type) {
-            if (preg_match('/\//', $type)) {
-                continue;
-            }
-            $results[] = $type;
-        }
-
-        return $results;
+        return config(static::$configFileName.'.allowed_file_types', [
+            'image/*', 'pdf',
+        ]);
     }
 
     /**
@@ -265,7 +199,7 @@ class Config
      */
     public static function meta(): array
     {
-        return Laramedia::$meta;
+        return config(static::$configFileName.'.meta', []);
     }
 
     /**
@@ -273,7 +207,7 @@ class Config
      */
     public static function metaFields(): array
     {
-        return Laramedia::$metaFields;
+        return config(static::$configFileName.'.meta_fields', []);
     }
 
     /**
@@ -281,7 +215,7 @@ class Config
      */
     public static function fileInputName(): string
     {
-        return Laramedia::$fileInputName;
+        return config(static::$configFileName.'.file_input_name', 'file');
     }
 
     /**
@@ -289,7 +223,7 @@ class Config
      */
     public static function note(): ?string
     {
-        return Laramedia::$note;
+        return config(static::$configFileName.'.note', null);
     }
 
     /**
@@ -297,7 +231,7 @@ class Config
      */
     public static function trashIsEnabled(): bool
     {
-        return Laramedia::$enableTrash;
+        return config(static::$configFileName.'.enable_trash', true);
     }
 
     /**
@@ -306,6 +240,14 @@ class Config
     public static function trashIsDisabled(): bool
     {
         return ! static::trashIsEnabled();
+    }  
+
+    /**
+     * Get the pagination total.
+     */
+    public static function paginationTotal(): int
+    {
+        return config(static::$configFileName.'.pagination_total', 45);
     }
 
     /**
@@ -313,7 +255,7 @@ class Config
      */
     public static function routeMiddlewares(): array
     {
-        return Laramedia::$routeMiddlewares;
+        return config(static::$configFileName.'.route_middlewares', ['web']);
     }
 
     /**
@@ -321,7 +263,7 @@ class Config
      */
     public static function routePrefix(): string
     {
-        return Laramedia::$routePrefix;
+        return config(static::$configFileName.'.route_prefix', 'laramedia');
     }
 
     /**
@@ -329,207 +271,7 @@ class Config
      */
     public static function routeAs(): string
     {
-        return Laramedia::$routeAs;
-    }
-
-    /**
-     * Get the options route name.
-     */
-    public static function optionsRouteName(): string
-    {
-        return static::routeAs().'options';
-    }
-
-    /**
-     * Get the files route name.
-     */
-    public static function filesRouteName(): string
-    {
-        return static::routeAs().'files';
-    }
-
-    /**
-     * Get the listings route name.
-     */
-    public static function listingsRouteName(): string
-    {
-        return static::routeAs().'listings';
-    }
-
-    /**
-     * Get the store route name.
-     */
-    public static function storeRouteName(): string
-    {
-        return static::routeAs().'store';
-    }
-
-    /**
-     * Get the upload route name - alias for store route.
-     */
-    public static function uploadRouteName(): string
-    {
-        return static::storeRouteName();
-    }
-
-    /**
-     * Get the view route name.
-     */
-    public static function viewRouteName(): string
-    {
-        return static::routeAs().'view';
-    }
-
-    /**
-     * Get the preview route name.
-     */
-    public static function previewRouteName(): string
-    {
-        return static::viewRouteName();
-    }
-
-    /**
-     * Get the download route name.
-     */
-    public static function downloadRouteName(): string
-    {
-        return static::routeAs().'download';
-    }
-
-    /**
-     * Get the base64 route name.
-     */
-    public static function base64UrlRouteName(): string
-    {
-        return static::routeAs().'base64';
-    }
-
-    /**
-     * Get the update route name.
-     */
-    public static function updateRouteName(): string
-    {
-        return static::routeAs().'update';
-    }
-
-    /**
-     * Get the trash route name.
-     */
-    public static function trashRouteName(): string
-    {
-        return static::routeAs().'trash';
-    }
-
-    /**
-     * Get the restore route name.
-     */
-    public static function restoreRouteName(): string
-    {
-        return static::routeAs().'restore';
-    }
-
-    /**
-     * Get the destroy route name.
-     */
-    public static function destroyRouteName(): string
-    {
-        return static::routeAs().'destroy';
-    }
-
-    /**
-     * Get the options route.
-     */
-    public static function optionsRoute(): string
-    {
-        return route(static::optionsRouteName());
-    }
-
-    /**
-     * Get the files route.
-     */
-    public static function filesRoute(): string
-    {
-        return route(static::filesRouteName());
-    }
-
-    /**
-     * Get the listings route.
-     */
-    public static function listingsRoute(): string
-    {
-        return route(static::listingsRouteName());
-    }
-
-    /**
-     * Get the store route.
-     */
-    public static function storeRoute(): string
-    {
-        return route(static::storeRouteName());
-    }
-
-    /**
-     * Get the views route.
-     */
-    public static function viewRoute(Model $media): string
-    {
-        return route(static::viewRouteName(), $media);
-    }
-
-    /**
-     * Get the previews route.
-     */
-    public static function previewRoute(Model $media): string
-    {
-        return static::viewRoute($media);
-    }
-
-    /**
-     * Get the download route.
-     */
-    public static function downloadRoute(Model $media): string
-    {
-        return route(static::downloadRouteName(), $media);
-    }
-
-    /**
-     * Get the base64url route.
-     */
-    public static function base64UrlRoute(Model $media): string
-    {
-        return route(static::base64UrlRouteName(), $media);
-    }
-
-    /**
-     * Get the update route.
-     */
-    public static function updateRoute(Model $media): string
-    {
-        return route(static::updateRouteName(), $media);
-    }
-
-    /**
-     * Get the trash route.
-     */
-    public static function trashRoute(Model $media): string
-    {
-        return route(static::trashRouteName(), $media);
-    }
-
-    /**
-     * Get the restore route.
-     */
-    public static function restoreRoute(Model $media): string
-    {
-        return route(static::restoreRouteName(), $media);
-    }
-
-    /**
-     * Get the destroy route.
-     */
-    public static function destroyRoute(Model $media): string
-    {
-        return route(static::destroyRouteName(), $media);
+        return config(static::$configFileName.'.route_as', 'lfl');
     }
 
     /**
@@ -555,31 +297,9 @@ class Config
             'delete_bulk' => null,
         ];
 
-        return array_merge($defaults, Laramedia::$policies);
-    }
+        $config = config(static::$configFileName.'.policies', []);
 
-    /**
-     * Check if the user can execute a policy.
-     */
-    public static function can(string $key, Model $model = null): bool
-    {
-        $policies = static::policies();
-
-        if (is_null($model)) {
-            $model = $policies['model'] ?? null;
-        }
-
-        if (! array_key_exists($key, $policies)) {
-            return false;
-        }
-
-        $policy = $policies[$key];
-
-        if (is_null($policy)) {
-            return true;
-        }
-
-        return Auth::user()->can($policy, $model);
+        return array_merge($defaults, $config);
     }
 
     /**
@@ -587,7 +307,7 @@ class Config
      */
     public static function tablePrefix(): string
     {
-        return Laramedia::$tablePrefix;
+        return config(static::$configFileName.'.table_prefix', 'lfl_');
     }
 
     /**
@@ -595,46 +315,16 @@ class Config
      */
     public static function tableNames(): array
     {
-        return Laramedia::$tableNames;
+        return config(static::$configFileName.'.table_names', [
+            'media' => 'Media',
+        ]);
     }
 
     /**
-     * Get the login verification token table name.
+     * Get the listings view path.
      */
-    public static function tableName(string $alias): ?string
+    public static function listingsViewPath(): ?string
     {
-        $prefix = static::tablePrefix();
-        $tables = static::tableNames();
-
-        return $tables[$alias] ? $prefix.$tables[$alias] : null;
-    }
-
-    /**
-     * Get the options for the browser.
-     */
-    public static function browserOptions(): array
-    {
-        return [
-            'options_route_name' => static::optionsRouteName(),
-            'disks' => static::disks(),
-            'default_disk' => static::defaultDisk(),
-            'disks_visibilities' => static::disksVisibilities(),
-            'disks_default_visibility' => static::disksDefaultVisibility(),
-            'auto_upload' => static::autoUpload(),
-            'allow_multiple_uploads' => static::allowMultipleUploads(),
-            'allowed_file_types' => static::allowedFileTypes(),
-            'allowed_mimetypes' => static::allowedMimeTypes(),
-            'allowed_mimetypes_wildward' => static::allowedMimeTypesWildcards(),
-            'allowed_extensions' => static::allowedExtensions(),
-            'min_file_size' => static::minFileSize(),
-            'max_file_size' => static::maxFileSize(),
-            'min_number_of_files' => static::minNumberOfFiles(),
-            'max_number_of_files' => static::maxNumberOfFiles(),
-            'meta' => static::meta(),
-            'meta_fields' => static::metaFields(),
-            'file_input_name' => static::fileInputName(),
-            'note' => static::note(),
-            'pagination_total' => static::paginationTotal(),
-        ];
+        return config(static::$configFileName.'.listings_view_path', null);
     }
 }

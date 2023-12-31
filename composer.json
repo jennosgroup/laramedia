@@ -26,7 +26,7 @@
                 "JennosGroup\\Laramedia\\Providers\\AppServiceProvider"
             ],
             "aliases": {
-                "LaramediaConfig": "JennosGroup\\Laramedia\\Facades\\Config"
+                "Laramedia": "JennosGroup\\Laramedia\\Support\\Laramedia"
             }
         }
     },

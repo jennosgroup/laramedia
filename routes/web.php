@@ -12,53 +12,52 @@ use JennosGroup\Laramedia\Controllers\StoreMediaController;
 use JennosGroup\Laramedia\Controllers\TrashMediaController;
 use JennosGroup\Laramedia\Controllers\UpdateMediaController;
 use JennosGroup\Laramedia\Controllers\ViewMediaController;
-use JennosGroup\Laramedia\Support\Config;
 use JennosGroup\Laramedia\Support\Laramedia;
 
-Route::middleware(Config::routeMiddlewares())
-    ->prefix(Config::routePrefix())
+Route::middleware(Laramedia::routeMiddlewares())
+    ->prefix(Laramedia::routePrefix())
     ->group(function () {
         Route::get('options', OptionsMediaController::class)->name(
-            Config::optionsRouteName()
+            Laramedia::optionsRouteName()
         );
 
         Route::get('files', FilesMediaController::class)->name(
-            Config::filesRouteName()
+            Laramedia::filesRouteName()
         );
 
         Route::get('listings', ListingMediaController::class)->name(
-            Config::listingsRouteName()
+            Laramedia::listingsRouteName()
         );
 
         Route::post('store', StoreMediaController::class)->name(
-            Config::storeRouteName()
+            Laramedia::storeRouteName()
         );
 
       	Route::get('{media}', ViewMediaController::class)->name(
-            Config::viewRouteName()
+            Laramedia::viewRouteName()
         );
 
         Route::get('{media}/download', DownloadMediaController::class)->name(
-            Config::downloadRouteName()
+            Laramedia::downloadRouteName()
         );
 
         Route::get('{media}/base64url', Base64UrlController::class)->name(
-            Config::base64UrlRouteName()
+            Laramedia::base64UrlRouteName()
         );
 
         Route::patch('{media}', UpdateMediaController::class)->name(
-            Config::updateRouteName()
+            Laramedia::updateRouteName()
         );
 
         Route::delete('{media}/trash', TrashMediaController::class)->name(
-            Config::trashRouteName()
+            Laramedia::trashRouteName()
         );
 
         Route::patch('{media}/restore', RestoreMediaController::class)->name(
-            Config::restoreRouteName()
+            Laramedia::restoreRouteName()
         );
 
         Route::delete('{media}/destroy', DestroyMediaController::class)->name(
-            Config::destroyRouteName()
+            Laramedia::destroyRouteName()
         );
     });
