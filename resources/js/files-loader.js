@@ -92,12 +92,10 @@ export default function FilesLoader() {
     /**
      * Start the loader.
      *
-     * @param  object  parameters
-     *
      * @return void
      */
-    this.start = function (parameters) {
-        this.setRequestParameters(parameters).loadFreshContent();
+    this.start = function () {
+        this.loadFreshContent();
     }
 
     /**
@@ -170,6 +168,7 @@ export default function FilesLoader() {
      * @return void
      */
     this.loadContent = function () {
+
         var self = this;
 
         // Indicate that content is loading
@@ -199,8 +198,8 @@ export default function FilesLoader() {
             response.data.data.forEach(function (file) {
                 self.setFileInRecentQueue(file);
                 self.setFileInQueue(file);
-                self.filesCount = self.filesCount + 1;
-                self.recentFilesCount = self.recentFilesCount + 1;
+                self.filesCount += 1;
+                self.recentFilesCount += 1;
                 self.events.fire('file_loaded', [file]);
             });
 
