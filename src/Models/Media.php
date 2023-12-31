@@ -139,7 +139,7 @@ class Media extends Model
     public function getExtension(): string
     {
         return $this->file_extension;
-    }    
+    }
 
     /**
      * Get the file size in bytes.
@@ -343,7 +343,8 @@ class Media extends Model
     public function changeNoneImageFileVisibility(string $newVisibility): bool
     {
         Storage::disk($this->getDisk())->setVisibility(
-            $this->getRelativePath(), $newVisibility
+            $this->getRelativePath(),
+            $newVisibility
         );
 
         return true;
@@ -362,7 +363,8 @@ class Media extends Model
             }
 
             Storage::disk($this->getDisk())->setVisibility(
-                $this->getRelativePath($cut), $newVisibility
+                $this->getRelativePath($cut),
+                $newVisibility
             );
         }
 
@@ -392,7 +394,9 @@ class Media extends Model
         $file = Storage::disk($oldDisk)->get($this->getRelativePath());
 
         Storage::disk($newDisk)->put(
-            $this->getRelativePath(), $file, $this->getVisibility()
+            $this->getRelativePath(),
+            $file,
+            $this->getVisibility()
         );
 
         Storage::disk($oldDisk)->delete($this->getRelativePath());
@@ -419,7 +423,9 @@ class Media extends Model
             $file = Storage::disk($oldDisk)->get($this->getRelativePath($cut));
 
             Storage::disk($newDisk)->put(
-                $this->getRelativePath($cut), $file, $this->getVisibility()
+                $this->getRelativePath($cut),
+                $file,
+                $this->getVisibility()
             );
 
             Storage::disk($oldDisk)->delete($this->getRelativePath($cut));
@@ -459,7 +465,7 @@ class Media extends Model
             if (! $this->fileExists($cut)) {
                 continue;
             }
-            
+
             Storage::disk($this->getDisk())->delete($this->getRelativePath($cut));
         }
 

@@ -65,7 +65,7 @@ class Uploader
         }
 
         $filename = $this->makeFilenameUnique(
-        	$this->getFileFromRequest()->getClientOriginalName(),
+            $this->getFileFromRequest()->getClientOriginalName(),
             $this->getFileFromRequest()
         );
 
@@ -73,7 +73,7 @@ class Uploader
             return $this->getFileNotStoredPayload();
         }
 
-		$media = Media::create(
+        $media = Media::create(
             $this->getUploadDetails($this->getFileFromRequest(), $filename)
         );
 
@@ -82,10 +82,10 @@ class Uploader
 
     /**
      * Get the request instance.
-   	 */
+     */
     public function getRequest(): Request
     {
-    	return $this->request;
+        return $this->request;
     }
 
     /**
@@ -93,7 +93,7 @@ class Uploader
      */
     public function getTimeInstance(): Carbon
     {
-    	return $this->date;
+        return $this->date;
     }
 
     /**
@@ -109,7 +109,7 @@ class Uploader
      */
     public function getDisk(): string
     {
-    	return $this->getRequest()->input('disk', Config::defaultDisk());
+        return $this->getRequest()->input('disk', Config::defaultDisk());
     }
 
     /**
@@ -120,7 +120,7 @@ class Uploader
         $defaults = Config::disksDefaultVisibility();
         $defaultVisibility = $defaults[$this->getDisk()] ?? 'private';
 
-    	return $this->getRequest()->input('visibility', $defaultVisibility);
+        return $this->getRequest()->input('visibility', $defaultVisibility);
     }
 
     /**
@@ -130,9 +130,9 @@ class Uploader
     {
         if (! CheckIfFileIsNotTooSmall::execute($this->getFileFromRequest())) {
             $this->setMinFileSizeError();
-        } else if (! CheckIfFileIsNotTooBig::execute($this->getFileFromRequest())) {
+        } elseif (! CheckIfFileIsNotTooBig::execute($this->getFileFromRequest())) {
             $this->setMaxFileSizeError();
-        } else if (! CheckIfFileTypeValid::execute($this->getFileFromRequest())) {
+        } elseif (! CheckIfFileTypeValid::execute($this->getFileFromRequest())) {
             $this->setFileNotAllowedError();
         }
 
@@ -185,7 +185,10 @@ class Uploader
         }
 
         return Storage::disk($this->getDisk())->putFileAs(
-            $path, $file, $filename, $this->getVisibility()
+            $path,
+            $file,
+            $filename,
+            $this->getVisibility()
         );
     }
 
@@ -194,10 +197,10 @@ class Uploader
      */
     public function storeUploadedImage(UploadedFile $file, string $filename): bool
     {
-       	$cuts = Config::imageCutDirectories();
+        $cuts = Config::imageCutDirectories();
 
         foreach ($cuts as $cut => $data) {
-            $image = (new ResizeFile)->execute($file, $data);
+            $image = (new ResizeFile())->execute($file, $data);
             $path = $this->getPathRelativeToDisk($cut);
 
             if (! Storage::disk($this->getDisk())->exists($path)) {
@@ -236,7 +239,7 @@ class Uploader
      */
     public function getRelativeUploadPath(): string
     {
-    	return $this->getTimeInstance()->year.'/'.$this->getTimeInstance()->month;
+        return $this->getTimeInstance()->year.'/'.$this->getTimeInstance()->month;
     }
 
     /**
@@ -244,7 +247,7 @@ class Uploader
      */
     public function getUploadDetails(UploadedFile $file, string $filename): array
     {
-    	$width = null;
+        $width = null;
         $height = null;
 
         $mimeTypeDetails = explode('/', $file->getMimeType());
@@ -318,7 +321,7 @@ class Uploader
      */
     public function getSuccessPayload(Media $file)
     {
-    	return [
+        return [
             'file' => $file,
             'success' => true,
             'error' => false,

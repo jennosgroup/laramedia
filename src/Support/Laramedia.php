@@ -4,28 +4,28 @@ namespace JennosGroup\Laramedia\Support;
 
 class Laramedia
 {
-	/**
-	 * The directory to store the files in.
-	 */
-	public static string $directory = 'laravel-files-library';
+    /**
+     * The directory to store the files in.
+     */
+    public static string $directory = 'laravel-files-library';
 
-	/**
-	 * The name of the original directory.
-	 */
-	public static string $originalFilesDirectory = 'original';
+    /**
+     * The name of the original directory.
+     */
+    public static string $originalFilesDirectory = 'original';
 
-	/**
-	 * The image cut directories.
-	 * Do not use the originalFilesDirectory name as any of the cut.
-	 * It will be added automatically
-	 */
-	public static array $imageCutDirectories = [
-		'thumbnail' => ['width' => 100, 'height' => 100],
-	];
+    /**
+     * The image cut directories.
+     * Do not use the originalFilesDirectory name as any of the cut.
+     * It will be added automatically
+     */
+    public static array $imageCutDirectories = [
+        'thumbnail' => ['width' => 100, 'height' => 100],
+    ];
 
-	/**
-	 * The original image max width.
-	 */
+    /**
+     * The original image max width.
+     */
     public static ?int $originalImageMaxWidth = 2000;
 
     /**
@@ -38,32 +38,32 @@ class Laramedia
      */
     public static array $typeFilters = [];
 
-	/**
-	 * The storage disks for the package to use.
-	 */
-	public static array $disks = [];
+    /**
+     * The storage disks for the package to use.
+     */
+    public static array $disks = [];
 
-	/**
-	 * The default disk.
-	 */
+    /**
+     * The default disk.
+     */
     public static ?string $defaultDisk = null;
 
-	/**
-	 * The storage disk visibilities for the package to use.
-	 */
-	public static array $disksVisibilities = [];
+    /**
+     * The storage disk visibilities for the package to use.
+     */
+    public static array $disksVisibilities = [];
 
-	/**
-	 * Get the disk default visibilities.
-	 */
+    /**
+     * Get the disk default visibilities.
+     */
     public static array $disksDefaultVisibility = [];
 
     /**
      * The ownerships.
      */
     public static array $ownerships = [
-    	'mine' => 'Mine',
-    	'others' => 'Others',
+        'mine' => 'Mine',
+        'others' => 'Others',
     ];
 
     /**
@@ -146,44 +146,44 @@ class Laramedia
      */
     public static string $routeAs = 'lfl.';
 
-	/**
-	 * The prefix for the tables.
-	 */
-	public static string $tablePrefix = 'lfl_';
+    /**
+     * The prefix for the tables.
+     */
+    public static string $tablePrefix = 'lfl_';
 
-	/**
-	 * The table names.
-	 */
-	public static array $tableNames = [
-		'media' => 'media',
-	];
+    /**
+     * The table names.
+     */
+    public static array $tableNames = [
+        'media' => 'media',
+    ];
 
-	/**
-	 * The policies mapping.
-	 */
-	public static array $policies = [];
+    /**
+     * The policies mapping.
+     */
+    public static array $policies = [];
 
-	/**
-	 * The app dot notation view path for the listings page.
-	 */
-	public static ?string $listingsViewPath = null;
+    /**
+     * The app dot notation view path for the listings page.
+     */
+    public static ?string $listingsViewPath = null;
 
-	/**
-	 * The filter for the listings view options callback.
-	 */
-	public static $filterListingsViewOptionsCallback = null;
+    /**
+     * The filter for the listings view options callback.
+     */
+    public static $filterListingsViewOptionsCallback = null;
 
-	/**
-	 * The callback filter for the listings view options. Params passed to the callback
-	 * are:
-	 * 1) view options
-	 * 2) files resource list
-	 * 3) request instance
-	 * 
-	 * This callback should return the view options.
-	 */
-	public static function filterListingsViewOptionsUsing(callable $callback): void
-	{
-		static::$filterListingsViewOptionsCallback = $callback;
-	}
+    /**
+     * The callback filter for the listings view options. Params passed to the callback
+     * are:
+     * 1) view options
+     * 2) files resource list
+     * 3) request instance
+     *
+     * This callback should return the view options.
+     */
+    public static function filterListingsViewOptionsUsing(callable $callback): void
+    {
+        static::$filterListingsViewOptionsCallback = $callback;
+    }
 }

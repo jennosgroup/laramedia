@@ -6,13 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class Config
 {
-	/**
-	 * The directory to store the files in.
-	 */
-	public static function directory(): string
-	{
-		return Laramedia::$directory;
-	}
+    /**
+     * The directory to store the files in.
+     */
+    public static function directory(): string
+    {
+        return Laramedia::$directory;
+    }
 
     /**
      * The original files directory.
@@ -28,7 +28,7 @@ class Config
     public static function imageCutDirectories(): array
     {
         $directories = Laramedia::$imageCutDirectories;
-        
+
         $directories[static::originalFilesDirectory()] = [
             'max_width' => Config::originalImageMaxWidth(),
             'max_height' => Config::originalImageMaxHeight(),
@@ -581,7 +581,7 @@ class Config
 
         return Auth::user()->can($policy, $model);
     }
-    
+
     /**
      * The prefix for all our tables.
      */

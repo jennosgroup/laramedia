@@ -13,12 +13,16 @@ use JennosGroup\Laramedia\Models\Media;
 
 class FileUpdated
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use Dispatchable;
+    use InteractsWithSockets;
+    use SerializesModels;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(public Media $media, public array $changes) {}
+    public function __construct(public Media $media, public array $changes)
+    {
+    }
 
     /**
      * Get the channels the event should broadcast on.

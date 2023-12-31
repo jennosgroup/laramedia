@@ -13,7 +13,7 @@ class ResizeFile
      */
     public function execute(UploadedFile $file, array $data): Image
     {
-        $image = (new ImageManager)->make($file);
+        $image = (new ImageManager())->make($file);
         $width = $data['width'] ?? null;
         $height = $data['height'] ?? null;
         $maxWidth = $data['max_width'] ?? null;

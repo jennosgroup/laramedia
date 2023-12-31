@@ -26,7 +26,7 @@ class StoreMediaController extends Controller
         }
 
         event(new FileCreated($media));
-        
+
         $response['file'] = new MediaResource($media);
 
         return response()->json($response);

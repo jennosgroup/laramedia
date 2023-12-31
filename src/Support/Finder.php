@@ -14,7 +14,9 @@ class Finder
     /**
      * Create an instance of the class.
      */
-    public function __construct(protected Request $request) {}
+    public function __construct(protected Request $request)
+    {
+    }
 
     /**
      * Get the results.

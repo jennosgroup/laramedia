@@ -13,12 +13,16 @@ use JennosGroup\Laramedia\Models\Media;
 
 class FileDestroyed
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use Dispatchable;
+    use InteractsWithSockets;
+    use SerializesModels;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(public Media $media) {}
+    public function __construct(public Media $media)
+    {
+    }
 
     /**
      * Get the channels the event should broadcast on.

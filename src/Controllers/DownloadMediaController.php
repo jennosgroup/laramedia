@@ -16,7 +16,8 @@ class DownloadMediaController extends Controller
     {
         return Storage::disk($media->getDisk())
             ->download(
-                $media->getRelativePath($request->input('cut')), $media->getName()
+                $media->getRelativePath($request->input('cut')),
+                $media->getName()
             );
     }
 }
