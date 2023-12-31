@@ -25,15 +25,17 @@ class UpdateMediaController extends Controller
         $oldVisibility = $media->visibility;
         $newVisibility = $attributes['visibility'] ?? null;
 
-        $media->fill($attributes)->save();
-
+        // Move file to new disk incase there are fatal errors, the database is untouched.
         if (! empty($newDisk) && $newDisk != $oldDisk) {
             $media->moveFileToNewDisk($newDisk, $oldDisk);
         }
 
+        // Change visibility incase there are fatal errors, the database is untouched.
         if (! empty($newVisibility) && $newVisibility != $oldVisibility) {
             $media->changeFileVisibility($newVisibility);
         }
+
+        $media->fill($attributes)->save();
 
         event(new FileUpdated($media, $media->getChanges()));
 

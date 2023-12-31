@@ -176,7 +176,7 @@ return [
      * The policies mapping.
      */
     'policies' => [
-        'model' => Laramedia\Models\Media::class,
+        'model' => JennosGroup\\Laramedia\Models\Media::class,
         'active_listings' => null,
         'trash_listings' => null,
         'files' => null,
