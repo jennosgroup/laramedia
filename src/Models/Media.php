@@ -1,12 +1,12 @@
 <?php
 
-namespace LaravelFilesLibrary\Models;
+namespace JennosGroup\Laramedia\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Number;
 use Illuminate\Support\Facades\Storage;
+use JennosGroup\Laramedia\Support\Config;
 use Ramsey\Uuid\Uuid;
-use LaravelFilesLibrary\Support\Config;
 
 class Media extends Model
 {
@@ -35,10 +35,8 @@ class Media extends Model
 
     /**
      * The model's boot method.
-     *
-     * @return void
      */
-    protected static function boot()
+    protected static function boot(): void
     {
         parent::boot();
 
@@ -49,28 +47,22 @@ class Media extends Model
 
     /**
      * Get the route key for the model.
-     *
-     * @return string
      */
-    public function getRouteKeyName()
+    public function getRouteKeyName(): string
     {
         return 'uuid';
     }
 
     /**
      * Get the model table name.
-     *
-     * @return string
      */
-    public function getTable()
+    public function getTable(): string
     {
         return Config::tableName('media');
     }
 
     /**
      * Get the name.
-     * 
-     * @return string|null
      */
     public function getName(): string
     {
@@ -79,8 +71,6 @@ class Media extends Model
 
     /**
      * Get the original name.
-     * 
-     * @return string|null
      */
     public function getOriginalName(): string
     {
@@ -89,48 +79,38 @@ class Media extends Model
 
     /**
      * Get the title.
-     * 
-     * @return string|null
      */
-    public function getTitle(): ?string
+    public function getTitle(): string
     {
         return $this->title;
     }
 
     /**
      * Get the alt text.
-     * 
-     * @return string|null
      */
-    public function getAltText(): ?string
+    public function getAltText(): string
     {
         return $this->alt_text;
     }
 
     /**
      * Get the caption.
-     * 
-     * @return string|null
      */
-    public function getCaption(): ?string
+    public function getCaption(): string
     {
         return $this->caption;
     }
 
     /**
      * Get the description.
-     * 
-     * @return string|null
      */
-    public function getDescription(): ?string
+    public function getDescription(): string
     {
         return $this->description;
     }
 
     /**
      * Get the mimetype.
-     * 
-     * @return string
      */
     public function getMimeType(): string
     {
@@ -139,8 +119,6 @@ class Media extends Model
 
     /**
      * Get the file main type.
-     * 
-     * @return string
      */
     public function getType(): string
     {
@@ -149,8 +127,6 @@ class Media extends Model
 
     /**
      * An alias for getType()
-     *
-     * @return string
      */
     public function getCategory(): string
     {
@@ -159,8 +135,6 @@ class Media extends Model
 
     /**
      * Get the file extension.
-     *
-     * @return string
      */
     public function getExtension(): string
     {
@@ -169,8 +143,6 @@ class Media extends Model
 
     /**
      * Get the file size in bytes.
-     *
-     * @return int
      */
     public function getSize(): int
     {
@@ -179,8 +151,6 @@ class Media extends Model
 
     /**
      * Get the image sizes.
-     *
-     * @return array
      */
     public function getImageSizes(): array
     {
@@ -193,8 +163,6 @@ class Media extends Model
 
     /**
      * Get the image height.
-     *
-     * @return int|null
      */
     public function getImageHeight(): ?int
     {
@@ -203,8 +171,6 @@ class Media extends Model
 
     /**
      * Get the image width.
-     *
-     * @return int|null
      */
     public function getImageWidth(): ?int
     {
@@ -213,8 +179,6 @@ class Media extends Model
 
     /**
      * Get the file disk.
-     *
-     * @return string
      */
     public function getDisk(): string
     {
@@ -223,8 +187,6 @@ class Media extends Model
 
     /**
      * Get the file visibility.
-     *
-     * @return string
      */
     public function getVisibility(): string
     {
@@ -233,8 +195,6 @@ class Media extends Model
 
     /**
      * Get the upload path.
-     * 
-     * @return string
      */
     public function getUploadPath(): string
     {
@@ -243,10 +203,6 @@ class Media extends Model
 
     /**
      * Check if the file exists.
-     *
-     * @param  string  $cut
-     *
-     * @return bool
      */
     public function fileExists(string $cut = null): bool
     {
@@ -255,8 +211,6 @@ class Media extends Model
 
     /**
      * Check if the file is an image.
-     *
-     * @return bool
      */
     public function isImage(): bool
     {
@@ -265,8 +219,6 @@ class Media extends Model
 
     /**
      * Check if the file type is not an image.
-     *
-     * @return bool
      */
     public function isNotImage(): bool
     {
@@ -277,8 +229,6 @@ class Media extends Model
      * Get the disk path.
      *
      * NOTE:: Unreliable for cloud storages.
-     *
-     * @return string
      */
     public function getDiskPath(): ?string
     {
@@ -290,8 +240,6 @@ class Media extends Model
 
     /**
      * Get the readable dimensions.
-     *
-     * @return string|null
      */
     public function humanDimensions(): ?string
     {
@@ -307,8 +255,6 @@ class Media extends Model
 
     /**
      * Format the file size to human readable version.
-     *
-     * @return string
      */
     public function humanFilesize(): string
     {
@@ -317,10 +263,6 @@ class Media extends Model
 
     /**
      * Get the path that's relative to the disk.
-     *
-     * @param  string  $cut
-     *
-     * @return string
      */
     public function getRelativePath(string $cut = null): string
     {
@@ -341,9 +283,6 @@ class Media extends Model
 
     /**
      * Get the full path.
-     * 
-     * @param  string|null  $cut
-     * @return string
      */
     public function getFullPath(string $cut = null): string
     {
@@ -352,10 +291,6 @@ class Media extends Model
 
     /**
      * Get the file public url.
-     *
-     * @param  string  $cut
-     *
-     * @return string|null
      */
     public function getPublicUrl(string $cut = null): ?string
     {
@@ -368,10 +303,6 @@ class Media extends Model
 
     /**
      * Get the base 64 image url.
-     *
-     * @param  string  $cut
-     *
-     * @return string
      */
     public function getBase64Url(string $cut = null): string
     {
@@ -382,12 +313,8 @@ class Media extends Model
     }
 
     /**
-     * Get the image display url. This will be the base64url is the image
+     * Get the image display url. This will be the base64url if the image
      * visibility is set to private.
-     * 
-     * @param  string  $cut
-     * 
-     * @return string
      */
     public function getImageDisplayUrl(string $cut = null): string
     {
@@ -400,10 +327,6 @@ class Media extends Model
 
     /**
      * Change the file's visibility
-     *
-     * @param  string  $newVisibility
-     *
-     * @return void
      */
     public function changeFileVisibility(string $newVisibility): bool
     {
@@ -416,10 +339,6 @@ class Media extends Model
 
     /**
      * Change the file's visibility
-     *
-     * @param  string  $newVisibility
-     *
-     * @return bool
      */
     public function changeNoneImageFileVisibility(string $newVisibility): bool
     {
@@ -432,16 +351,16 @@ class Media extends Model
 
     /**
      * Change the image visibility
-     *
-     * @param  string  $newVisibility
-     *
-     * @return void
      */
     public function changeImageFileVisibility(string $newVisibility): bool
     {
         $cuts = array_keys(Config::imageCutDirectories());
 
         foreach ($cuts as $cut) {
+            if (! $this->fileExists($cut)) {
+                continue;
+            }
+
             Storage::disk($this->getDisk())->setVisibility(
                 $this->getRelativePath($cut), $newVisibility
             );
@@ -452,11 +371,6 @@ class Media extends Model
 
     /**
      * Move the file to a new disk.
-     *
-     * @param  string  $newDisk
-     * @param  string|null  $oldDisk
-     *
-     * @return bool
      */
     public function moveFileToNewDisk(string $newDisk, string $oldDisk = null): bool
     {
@@ -468,11 +382,6 @@ class Media extends Model
 
     /**
      * Move the none image file to a new disk.
-     *
-     * @param  string  $newDisk
-     * @param  string|null  $oldDisk
-     *
-     * @return bool
      */
     public function moveNoneImageFileToNewDisk(string $newDisk, string $oldDisk = null): bool
     {
@@ -493,11 +402,6 @@ class Media extends Model
 
     /**
      * Move the image file to a new disk.
-     *
-     * @param  string  $newDisk
-     * @param  string|null  $oldDisk
-     *
-     * @return bool
      */
     public function moveImageFileToNewDisk(string $newDisk, string $oldDisk = null): bool
     {
@@ -508,6 +412,10 @@ class Media extends Model
         $cuts = array_keys(Config::imageCutDirectories());
 
         foreach ($cuts as $cut) {
+            if (! $this->fileExists($cut)) {
+                continue;
+            }
+
             $file = Storage::disk($oldDisk)->get($this->getRelativePath($cut));
 
             Storage::disk($newDisk)->put(
@@ -522,8 +430,6 @@ class Media extends Model
 
     /**
      * Remove the files from storage.
-     *
-     * @return bool
      */
     public function removeFiles(): bool
     {
@@ -535,8 +441,6 @@ class Media extends Model
 
     /**
      * Delete the none image file associated with the model.
-     *
-     * @return bool
      */
     public function removeNoneImageFile(): bool
     {
@@ -546,14 +450,16 @@ class Media extends Model
 
     /**
      * Delete the image files associated with the model.
-     *
-     * @return bool
      */
     public function removeImageFiles(): bool
     {
         $cuts = array_keys(Config::imageCutDirectories());
 
         foreach ($cuts as $cut) {
+            if (! $this->fileExists($cut)) {
+                continue;
+            }
+            
             Storage::disk($this->getDisk())->delete($this->getRelativePath($cut));
         }
 

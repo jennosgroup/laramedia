@@ -1,4 +1,6 @@
-## About Laravel Files Library
+## About Laramedia
+
+A media library package for Laravel.
 
 ## Setup
 

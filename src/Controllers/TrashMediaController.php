@@ -1,12 +1,12 @@
 <?php
 
-namespace LaravelFilesLibrary\Controllers;
+namespace JennosGroup\Laramedia\Controllers;
 
 use Illuminate\Http\JsonResponse;
-use LaravelFilesLibrary\Events\FileTrashed;
-use LaravelFilesLibrary\Events\FileDestroyed;
-use LaravelFilesLibrary\Models\Media;
-use LaravelFilesLibrary\Support\Config;
+use JennosGroup\Laramedia\Events\FileDestroyed;
+use JennosGroup\Laramedia\Events\FileTrashed;
+use JennosGroup\Laramedia\Models\Media;
+use JennosGroup\Laramedia\Support\Config;
 
 class TrashMediaController extends Controller
 {

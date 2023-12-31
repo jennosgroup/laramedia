@@ -1,29 +1,20 @@
 <?php
 
-namespace LaravelFilesLibrary\Support;
+namespace JennosGroup\Laramedia\Support;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
-use LaravelFilesLibrary\Models\Media;
-use LaravelFilesLibrary\Support\Config;
-use LaravelFilesLibrary\Support\LaravelFilesLibrary;
+use JennosGroup\Laramedia\Models\Media;
 
 class Finder
 {
     /**
-     * The request instance.
-     */
-    protected Request $request;
-
-    /**
      * Create an instance of the class.
      */
-    public function __construct(Request $request)
-    {
-        $this->request = $request;
-    }
+    public function __construct(protected Request $request) {}
 
     /**
      * Get the results.
@@ -189,10 +180,8 @@ class Finder
 
     /**
      * Build the filter query.
-     *
-     * @return Illuminate\Database\Eloquent\Builder
      */
-    protected function buildQuery()
+    protected function buildQuery(): Builder
     {
         $query = Media::orderBy('created_at', 'DESC');
 
@@ -213,12 +202,8 @@ class Finder
 
     /**
      * Handle the type query.
-     *
-     * @param  Illuminate\Database\Eloquent\Builder  $query
-     *
-     * @return Illuminate\Database\Eloquent\Builder
      */
-    protected function handleTypeQuery($query)
+    protected function handleTypeQuery(Builder $query): Builder
     {
         $types = [];
 
@@ -261,12 +246,8 @@ class Finder
 
     /**
      * Handle the disk query.
-     *
-     * @param  Illuminate\Database\Eloquent\Builder  $query
-     *
-     * @return Illuminate\Database\Eloquent\Builder
      */
-    protected function handleDiskQuery($query)
+    protected function handleDiskQuery(Builder $query): Builder
     {
         if (is_null($this->getDisk())) {
             return $query;
@@ -277,12 +258,8 @@ class Finder
 
     /**
      * Handle the visibility query.
-     *
-     * @param  Illuminate\Database\Eloquent\Builder  $query
-     *
-     * @return Illuminate\Database\Eloquent\Builder
      */
-    protected function handleVisibilityQuery($query)
+    protected function handleVisibilityQuery(Builder $query): Builder
     {
         if (is_null($this->getVisibility())) {
             return $query;
@@ -293,12 +270,8 @@ class Finder
 
     /**
      * Handle the ownership query.
-     *
-     * @param  Illuminate\Database\Eloquent\Builder  $query
-     *
-     * @return Illuminate\Database\Eloquent\Builder
      */
-    protected function handleOwnershipQuery($query)
+    protected function handleOwnershipQuery(Builder $query): Builder
     {
         if (is_null($this->getOwnership())) {
             return $query;
@@ -324,12 +297,8 @@ class Finder
 
     /**
      * Handle the section query.
-     *
-     * @param  Illuminate\Database\Eloquent\Builder  $query
-     *
-     * @return Illuminate\Database\Eloquent\Builder
      */
-    protected function handleSectionQuery($query)
+    protected function handleSectionQuery(Builder $query): Builder
     {
         if ($this->getSection() == 'trash') {
             return $query->onlyTrashed();
@@ -340,12 +309,8 @@ class Finder
 
     /**
      * Handle the search query.
-     *
-     * @param  Illuminate\Database\Eloquent\Builder  $query
-     *
-     * @return Illuminate\Database\Eloquent\Builder
      */
-    protected function handleSearchQuery($query)
+    protected function handleSearchQuery(Builder $query): Builder
     {
         if (is_null($this->getSearch())) {
             return $query;

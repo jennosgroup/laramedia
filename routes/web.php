@@ -1,19 +1,19 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use LaravelFilesLibrary\Controllers\Base64UrlController;
-use LaravelFilesLibrary\Controllers\DestroyMediaController;
-use LaravelFilesLibrary\Controllers\DownloadMediaController;
-use LaravelFilesLibrary\Controllers\FilesMediaController;
-use LaravelFilesLibrary\Controllers\ListingMediaController;
-use LaravelFilesLibrary\Controllers\OptionsMediaController;
-use LaravelFilesLibrary\Controllers\RestoreMediaController;
-use LaravelFilesLibrary\Controllers\StoreMediaController;
-use LaravelFilesLibrary\Controllers\TrashMediaController;
-use LaravelFilesLibrary\Controllers\UpdateMediaController;
-use LaravelFilesLibrary\Controllers\ViewMediaController;
-use LaravelFilesLibrary\Support\Config;
-use LaravelFilesLibrary\Support\LaravelFilesLibrary;
+use JennosGroup\Laramedia\Controllers\Base64UrlController;
+use JennosGroup\Laramedia\Controllers\DestroyMediaController;
+use JennosGroup\Laramedia\Controllers\DownloadMediaController;
+use JennosGroup\Laramedia\Controllers\FilesMediaController;
+use JennosGroup\Laramedia\Controllers\ListingMediaController;
+use JennosGroup\Laramedia\Controllers\OptionsMediaController;
+use JennosGroup\Laramedia\Controllers\RestoreMediaController;
+use JennosGroup\Laramedia\Controllers\StoreMediaController;
+use JennosGroup\Laramedia\Controllers\TrashMediaController;
+use JennosGroup\Laramedia\Controllers\UpdateMediaController;
+use JennosGroup\Laramedia\Controllers\ViewMediaController;
+use JennosGroup\Laramedia\Support\Config;
+use JennosGroup\Laramedia\Support\Laramedia;
 
 Route::middleware(Config::routeMiddlewares())
     ->prefix(Config::routePrefix())

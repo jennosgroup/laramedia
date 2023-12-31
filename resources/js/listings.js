@@ -214,7 +214,7 @@ function Listings() {
 
         	// When file updated in editor
         	editor.events.on('file_updated', function (updatedFile) {
-        		self.files[file.uuid] = updatedFile;
+        		self.files[updatedFile.uuid] = updatedFile;
         	});
 
         	// When file trashed from editor

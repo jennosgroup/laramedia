@@ -32,7 +32,7 @@
 		    	Drop files or Click here to select files to upload.
 		    </div>
 		    <div class="lfl-uploader-dropzone-button">
-		    	<input type="file" name="{{ LaravelFilesLibraryConfig::fileInputName() }}" class="lfl-uploader-dropzone-input"/>
+		    	<input type="file" name="{{ LaramediaConfig::fileInputName() }}" class="lfl-uploader-dropzone-input"/>
 		    </div>
 		</div>
 

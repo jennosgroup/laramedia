@@ -1,10 +1,10 @@
 <?php
 
-namespace LaravelFilesLibrary\Controllers;
+namespace JennosGroup\Laramedia\Controllers;
 
 use Illuminate\Http\JsonResponse;
-use LaravelFilesLibrary\Events\FileDestroyed;
-use LaravelFilesLibrary\Models\Media;
+use JennosGroup\Laramedia\Events\FileDestroyed;
+use JennosGroup\Laramedia\Models\Media;
 
 class DestroyMediaController extends Controller
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace LaravelFilesLibrary\Events;
+namespace JennosGroup\Laramedia\Events;
 
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
@@ -9,30 +9,16 @@ use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use LaravelFilesLibrary\Models\Media;
+use JennosGroup\Laramedia\Models\Media;
 
 class FileUpdated
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
-     * The media instance.
-     */
-    public Media $media;
-
-    /**
-     * The changes made.
-     */
-    public array $changes = [];
-
-    /**
      * Create a new event instance.
      */
-    public function __construct(Media $media, array $changes)
-    {
-        $this->media = $media;
-        $this->changes = $changes;
-    }
+    public function __construct(public Media $media, public array $changes) {}
 
     /**
      * Get the channels the event should broadcast on.

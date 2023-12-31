@@ -1,6 +1,6 @@
 <?php
 
-namespace LaravelFilesLibrary\Events;
+namespace JennosGroup\Laramedia\Events;
 
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
@@ -9,24 +9,16 @@ use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use LaravelFilesLibrary\Models\Media;
+use JennosGroup\Laramedia\Models\Media;
 
 class FileCreated
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
-     * The media instance.
-     */
-    public Media $media;
-
-    /**
      * Create a new event instance.
      */
-    public function __construct(Media $media)
-    {
-        $this->media = $media;
-    }
+    public function __construct(public Media $media) {}
 
     /**
      * Get the channels the event should broadcast on.

@@ -1,10 +1,10 @@
 <?php
 
-namespace LaravelFilesLibrary\Controllers;
+namespace JennosGroup\Laramedia\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use LaravelFilesLibrary\Models\Media;
+use JennosGroup\Laramedia\Models\Media;
 
 class Base64UrlController extends Controller
 {

@@ -1,10 +1,10 @@
 <?php
 
-namespace LaravelFilesLibrary\Controllers;
+namespace JennosGroup\Laramedia\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use LaravelFilesLibrary\Models\Media;
+use JennosGroup\Laramedia\Models\Media;
 
 class ViewMediaController extends Controller
 {

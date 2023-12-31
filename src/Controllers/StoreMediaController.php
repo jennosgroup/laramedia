@@ -1,14 +1,14 @@
 <?php
 
-namespace LaravelFilesLibrary\Controllers;
+namespace JennosGroup\Laramedia\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use LaravelFilesLibrary\Events\FileCreated;
-use LaravelFilesLibrary\Models\Media;
-use LaravelFilesLibrary\Resources\MediaResource;
-use LaravelFilesLibrary\Support\Config;
-use LaravelFilesLibrary\Support\Uploader;
+use JennosGroup\Laramedia\Events\FileCreated;
+use JennosGroup\Laramedia\Models\Media;
+use JennosGroup\Laramedia\Resources\MediaResource;
+use JennosGroup\Laramedia\Support\Config;
+use JennosGroup\Laramedia\Support\Uploader;
 
 class StoreMediaController extends Controller
 {

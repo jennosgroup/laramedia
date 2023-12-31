@@ -1,9 +1,9 @@
 <?php
 
-namespace LaravelFilesLibrary\Support;
+namespace JennosGroup\Laramedia\Support;
 
-use Intervention\Image\Image;
 use Illuminate\Http\UploadedFile;
+use Intervention\Image\Image;
 use Intervention\Image\ImageManager;
 
 class ResizeFile

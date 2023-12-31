@@ -1,10 +1,10 @@
 <?php
 
-namespace LaravelFilesLibrary\Actions;
+namespace JennosGroup\Laramedia\Actions;
 
 use Illuminate\Http\UploadedFile;
-use LaravelFilesLibrary\Support\Config;
 use Illuminate\Support\Facades\Validator;
+use JennosGroup\Laramedia\Support\Config;
 
 class CheckIfFileIsNotTooBig
 {
@@ -17,8 +17,8 @@ class CheckIfFileIsNotTooBig
 			return true;
 		}
 
-        $rules = [Config::fileInputName() => 'max:'.Config::maxFileSize()];
         $input = [Config::fileInputName() => $file];
+        $rules = [Config::fileInputName() => 'max:'.Config::maxFileSize()];
 
         return Validator::make($input, $rules)->passes();
 	}

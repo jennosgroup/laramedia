@@ -1,16 +1,16 @@
 <?php
 
-namespace LaravelFilesLibrary\Support;
+namespace JennosGroup\Laramedia\Support;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use LaravelFilesLibrary\Actions\CheckIfFileIsNotTooBig;
-use LaravelFilesLibrary\Actions\CheckIfFileIsNotTooSmall;
-use LaravelFilesLibrary\Actions\CheckIfFileTypeValid;
-use LaravelFilesLibrary\Models\Media;
+use JennosGroup\Laramedia\Actions\CheckIfFileIsNotTooBig;
+use JennosGroup\Laramedia\Actions\CheckIfFileIsNotTooSmall;
+use JennosGroup\Laramedia\Actions\CheckIfFileTypeValid;
+use JennosGroup\Laramedia\Models\Media;
 use Ramsey\Uuid\Uuid;
 
 class Uploader
@@ -65,7 +65,8 @@ class Uploader
         }
 
         $filename = $this->makeFilenameUnique(
-        	$this->getFileFromRequest()->getClientOriginalName()
+        	$this->getFileFromRequest()->getClientOriginalName(),
+            $this->getFileFromRequest()
         );
 
         if (! $this->storeFile($this->getFileFromRequest(), $filename)) {
@@ -108,7 +109,7 @@ class Uploader
      */
     public function getDisk(): string
     {
-    	return $this->getRequest()->input('visibility', config('filesystems.default'));
+    	return $this->getRequest()->input('disk', Config::defaultDisk());
     }
 
     /**
@@ -116,7 +117,10 @@ class Uploader
      */
     public function getVisibility(): string
     {
-    	return $this->getRequest()->input('visibility', 'private');
+        $defaults = Config::disksDefaultVisibility();
+        $defaultVisibility = $defaults[$this->getDisk()] ?? 'private';
+
+    	return $this->getRequest()->input('visibility', $defaultVisibility);
     }
 
     /**
@@ -138,7 +142,7 @@ class Uploader
     /**
      * Make the filename unique.
      */
-    public function makeFilenameUnique(string $filename): string
+    public function makeFilenameUnique(string $filename, UploadedFile $file): string
     {
         $uuid = Uuid::uuid4()->toString();
 

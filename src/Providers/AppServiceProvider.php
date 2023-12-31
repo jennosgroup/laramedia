@@ -1,6 +1,6 @@
 <?php
 
-namespace LaravelFilesLibrary\Providers;
+namespace JennosGroup\Laramedia\Providers;
 
 use Illuminate\Support\ServiceProvider;
 

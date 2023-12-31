@@ -1,8 +1,8 @@
 <?php
 
-namespace LaravelFilesLibrary\Support;
+namespace JennosGroup\Laramedia\Support;
 
-class LaravelFilesLibrary
+class Laramedia
 {
 	/**
 	 * The directory to store the files in.

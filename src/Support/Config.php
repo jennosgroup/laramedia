@@ -1,6 +1,6 @@
 <?php
 
-namespace LaravelFilesLibrary\Support;
+namespace JennosGroup\Laramedia\Support;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -11,7 +11,7 @@ class Config
 	 */
 	public static function directory(): string
 	{
-		return LaravelFilesLibrary::$directory;
+		return Laramedia::$directory;
 	}
 
     /**
@@ -19,7 +19,7 @@ class Config
      */
     public static function originalFilesDirectory(): string
     {
-        return LaravelFilesLibrary::$originalFilesDirectory;
+        return Laramedia::$originalFilesDirectory;
     }
 
     /**
@@ -27,7 +27,7 @@ class Config
      */
     public static function imageCutDirectories(): array
     {
-        $directories = LaravelFilesLibrary::$imageCutDirectories;
+        $directories = Laramedia::$imageCutDirectories;
         
         $directories[static::originalFilesDirectory()] = [
             'max_width' => Config::originalImageMaxWidth(),
@@ -42,7 +42,7 @@ class Config
      */
     public static function originalImageMaxWidth(): ?int
     {
-        return LaravelFilesLibrary::$originalImageMaxWidth;
+        return Laramedia::$originalImageMaxWidth;
     }
 
     /**
@@ -50,7 +50,7 @@ class Config
      */
     public static function originalImageMaxHeight(): ?int
     {
-        return LaravelFilesLibrary::$originalImageMaxHeight;
+        return Laramedia::$originalImageMaxHeight;
     }
 
     /**
@@ -58,7 +58,7 @@ class Config
      */
     public static function disks(): array
     {
-        return LaravelFilesLibrary::$disks;
+        return Laramedia::$disks;
     }
 
     /**
@@ -74,7 +74,7 @@ class Config
      */
     public static function defaultDisk(): string
     {
-        return LaravelFilesLibrary::$defaultDisk ?? config('filesystems.default');
+        return Laramedia::$defaultDisk ?? config('filesystems.default');
     }
 
     /**
@@ -82,7 +82,7 @@ class Config
      */
     public static function disksVisibilities(): array
     {
-        return LaravelFilesLibrary::$disksVisibilities;
+        return Laramedia::$disksVisibilities;
     }
 
     /**
@@ -114,7 +114,7 @@ class Config
      */
     public static function disksDefaultVisibility(): array
     {
-        return LaravelFilesLibrary::$disksDefaultVisibility;
+        return Laramedia::$disksDefaultVisibility;
     }
 
     /**
@@ -122,7 +122,7 @@ class Config
      */
     public static function ownerships(): array
     {
-        return LaravelFilesLibrary::$ownerships;
+        return Laramedia::$ownerships;
     }
 
     /**
@@ -141,7 +141,7 @@ class Config
      */
     public static function typeFilters(): array
     {
-        return LaravelFilesLibrary::$typeFilters;
+        return Laramedia::$typeFilters;
     }
 
     /**
@@ -149,7 +149,7 @@ class Config
      */
     public static function paginationTotal(): int
     {
-        return LaravelFilesLibrary::$paginationTotal;
+        return Laramedia::$paginationTotal;
     }
 
     /**
@@ -157,7 +157,7 @@ class Config
      */
     public static function autoUpload(): bool
     {
-        return LaravelFilesLibrary::$autoUpload;
+        return Laramedia::$autoUpload;
     }
 
     /**
@@ -165,7 +165,7 @@ class Config
      */
     public static function allowMultipleUploads(): bool
     {
-        return LaravelFilesLibrary::$allowMultipleUploads;
+        return Laramedia::$allowMultipleUploads;
     }
 
     /**
@@ -173,7 +173,7 @@ class Config
      */
     public static function minFileSize(): ?int
     {
-        return LaravelFilesLibrary::$minFileSize;
+        return Laramedia::$minFileSize;
     }
 
     /**
@@ -181,7 +181,7 @@ class Config
      */
     public static function maxFileSize(): ?int
     {
-        return LaravelFilesLibrary::$maxFileSize;
+        return Laramedia::$maxFileSize;
     }
 
     /**
@@ -189,7 +189,7 @@ class Config
      */
     public static function minNumberOfFiles(): ?int
     {
-        return LaravelFilesLibrary::$minNumberOfFiles;
+        return Laramedia::$minNumberOfFiles;
     }
 
     /**
@@ -197,7 +197,7 @@ class Config
      */
     public static function maxNumberOfFiles(): ?int
     {
-        return LaravelFilesLibrary::$maxNumberOfFiles;
+        return Laramedia::$maxNumberOfFiles;
     }
 
     /**
@@ -205,7 +205,7 @@ class Config
      */
     public static function allowedFileTypes(): array
     {
-        return LaravelFilesLibrary::$allowedFileTypes;
+        return Laramedia::$allowedFileTypes;
     }
 
     /**
@@ -265,7 +265,7 @@ class Config
      */
     public static function meta(): array
     {
-        return LaravelFilesLibrary::$meta;
+        return Laramedia::$meta;
     }
 
     /**
@@ -273,7 +273,7 @@ class Config
      */
     public static function metaFields(): array
     {
-        return LaravelFilesLibrary::$metaFields;
+        return Laramedia::$metaFields;
     }
 
     /**
@@ -281,7 +281,7 @@ class Config
      */
     public static function fileInputName(): string
     {
-        return LaravelFilesLibrary::$fileInputName;
+        return Laramedia::$fileInputName;
     }
 
     /**
@@ -289,7 +289,7 @@ class Config
      */
     public static function note(): ?string
     {
-        return LaravelFilesLibrary::$note;
+        return Laramedia::$note;
     }
 
     /**
@@ -297,7 +297,7 @@ class Config
      */
     public static function trashIsEnabled(): bool
     {
-        return LaravelFilesLibrary::$enableTrash;
+        return Laramedia::$enableTrash;
     }
 
     /**
@@ -313,7 +313,7 @@ class Config
      */
     public static function routeMiddlewares(): array
     {
-        return LaravelFilesLibrary::$routeMiddlewares;
+        return Laramedia::$routeMiddlewares;
     }
 
     /**
@@ -321,7 +321,7 @@ class Config
      */
     public static function routePrefix(): string
     {
-        return LaravelFilesLibrary::$routePrefix;
+        return Laramedia::$routePrefix;
     }
 
     /**
@@ -329,7 +329,7 @@ class Config
      */
     public static function routeAs(): string
     {
-        return LaravelFilesLibrary::$routeAs;
+        return Laramedia::$routeAs;
     }
 
     /**
@@ -538,7 +538,7 @@ class Config
     public static function policies(): array
     {
         $defaults = [
-            'model' => LaravelFilesLibrary\Models\Media::class,
+            'model' => Laramedia\Models\Media::class,
             'active_listings' => null,
             'trash_listings' => null,
             'files' => null,
@@ -555,7 +555,7 @@ class Config
             'delete_bulk' => null,
         ];
 
-        return array_merge($defaults, LaravelFilesLibrary::$policies);
+        return array_merge($defaults, Laramedia::$policies);
     }
 
     /**
@@ -587,7 +587,7 @@ class Config
      */
     public static function tablePrefix(): string
     {
-        return LaravelFilesLibrary::$tablePrefix;
+        return Laramedia::$tablePrefix;
     }
 
     /**
@@ -595,7 +595,7 @@ class Config
      */
     public static function tableNames(): array
     {
-        return LaravelFilesLibrary::$tableNames;
+        return Laramedia::$tableNames;
     }
 
     /**

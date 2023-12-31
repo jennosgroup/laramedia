@@ -1,14 +1,14 @@
 <?php
 
-namespace LaravelFilesLibrary\Facades;
+namespace JennosGroup\Laramedia\Facades;
 
 use Illuminate\Support\Facades\Facade;
-use LaravelFilesLibrary\Support\Config as LaravelFilesLibraryConfig;
+use JennosGroup\Laramedia\Support\Config as LaramediaConfig;
 
 class Config extends Facade
 {
     protected static function getFacadeAccessor()
     {
-        return LaravelFilesLibraryConfig::class;
+        return LaramediaConfig::class;
     }
 }

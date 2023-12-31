@@ -1,12 +1,12 @@
 <?php
 
-namespace LaravelFilesLibrary\Controllers;
+namespace JennosGroup\Laramedia\Controllers;
 
 use Illuminate\Http\Request;
-use LaravelFilesLibrary\Events\FileUpdated;
-use LaravelFilesLibrary\Models\Media;
-use LaravelFilesLibrary\Resources\MediaResource;
-use LaravelFilesLibrary\Support\Config;
+use JennosGroup\Laramedia\Events\FileUpdated;
+use JennosGroup\Laramedia\Models\Media;
+use JennosGroup\Laramedia\Resources\MediaResource;
+use JennosGroup\Laramedia\Support\Config;
 
 class UpdateMediaController extends Controller
 {

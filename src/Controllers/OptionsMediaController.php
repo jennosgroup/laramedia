@@ -1,10 +1,10 @@
 <?php
 
-namespace LaravelFilesLibrary\Controllers;
+namespace JennosGroup\Laramedia\Controllers;
 
 use Illuminate\Http\JsonResponse;
-use LaravelFilesLibrary\Models\Media;
-use LaravelFilesLibrary\Support\Config;
+use JennosGroup\Laramedia\Models\Media;
+use JennosGroup\Laramedia\Support\Config;
 
 class OptionsMediaController extends Controller
 {

@@ -1,10 +1,10 @@
 <?php
 
-namespace LaravelFilesLibrary\Controllers;
+namespace JennosGroup\Laramedia\Controllers;
 
 use Illuminate\Http\JsonResponse;
-use LaravelFilesLibrary\Events\FileRestored;
-use LaravelFilesLibrary\Models\Media;
+use JennosGroup\Laramedia\Events\FileRestored;
+use JennosGroup\Laramedia\Models\Media;
 
 class RestoreMediaController extends Controller
 {

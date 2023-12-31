@@ -1,7 +1,7 @@
 {
-    "name": "jennosgroup/laravel-files-library",
+    "name": "jennosgroup/laramedia",
     "type": "package",
-    "description": "",
+    "description": "A media package for Laravel.",
     "keywords": [],
     "license": "MIT",
     "authors": [
@@ -11,21 +11,22 @@
         }
     ],
     "require": {
+        "php": "^8.0",
         "ramsey/uuid": "^4.7",
         "intervention/image": "^2.7"
     },
     "autoload": {
         "psr-4": {
-            "LaravelFilesLibrary\\": "src/"
+            "JennosGroup\\Laramedia\\": "src/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "LaravelFilesLibrary\\Providers\\AppServiceProvider"
+                "JennosGroup\\Laramedia\\Providers\\AppServiceProvider"
             ],
             "aliases": {
-                "LaravelFilesLibraryConfig": "LaravelFilesLibrary\\Facades\\Config"
+                "LaramediaConfig": "JennosGroup\\Laramedia\\Facades\\Config"
             }
         }
     },

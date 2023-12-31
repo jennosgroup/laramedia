@@ -1,10 +1,10 @@
 <?php
 
-namespace LaravelFilesLibrary\Resources;
+namespace JennosGroup\Laramedia\Resources;
 
-use Illuminate\Support\Carbon;
-use LaravelFilesLibrary\Support\Config;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Carbon;
+use JennosGroup\Laramedia\Support\Config;
 
 class MediaResource extends JsonResource
 {
@@ -40,6 +40,7 @@ class MediaResource extends JsonResource
         $attributes['user_can_destroy'] = Config::can('delete', $this->resource);
 
         // Routes
+        $attributes['view_route'] = Config::previewRoute($this->resource);
         $attributes['preview_route'] = Config::previewRoute($this->resource);
         $attributes['download_route'] = Config::downloadRoute($this->resource);
         $attributes['update_route'] = Config::updateRoute($this->resource);

@@ -1,12 +1,12 @@
 <?php
 
-namespace LaravelFilesLibrary\Controllers;
+namespace JennosGroup\Laramedia\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use LaravelFilesLibrary\Models\Media;
-use LaravelFilesLibrary\Resources\MediaResource;
-use LaravelFilesLibrary\Support\Finder;
+use JennosGroup\Laramedia\Models\Media;
+use JennosGroup\Laramedia\Resources\MediaResource;
+use JennosGroup\Laramedia\Support\Finder;
 
 class FilesMediaController extends Controller
 {

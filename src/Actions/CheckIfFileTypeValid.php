@@ -1,10 +1,10 @@
 <?php
 
-namespace LaravelFilesLibrary\Actions;
+namespace JennosGroup\Laramedia\Actions;
 
 use Illuminate\Http\UploadedFile;
-use LaravelFilesLibrary\Support\Config;
 use Illuminate\Support\Facades\Validator;
+use JennosGroup\Laramedia\Support\Config;
 
 class CheckIfFileTypeValid
 {
@@ -29,8 +29,8 @@ class CheckIfFileTypeValid
             return true;
         }
 
-        $rules = [Config::fileInputName() => 'mimetypes:'.implode(',', Config::allowedMimeTypes())];
         $input = [Config::fileInputName() => $file];
+        $rules = [Config::fileInputName() => 'mimetypes:'.implode(',', Config::allowedMimeTypes())];
 
         return Validator::make($input, $rules)->passes();
 	}
@@ -44,11 +44,8 @@ class CheckIfFileTypeValid
 			return true;
 		}
 
-        $rules = [
-        	Config::fileInputName() => 'mimes:'.implode(',', Config::allowedExtensions())
-        ];
-
         $input = [Config::fileInputName() => $file];
+        $rules = [Config::fileInputName() => 'mimes:'.implode(',', Config::allowedExtensions())];
 
         return Validator::make($input, $rules)->passes();
 	}

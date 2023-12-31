@@ -1,10 +1,10 @@
 <?php
 
-namespace LaravelFilesLibrary\Actions;
+namespace JennosGroup\Laramedia\Actions;
 
 use Illuminate\Http\UploadedFile;
-use LaravelFilesLibrary\Support\Config;
 use Illuminate\Support\Facades\Validator;
+use JennosGroup\Laramedia\Support\Config;
 
 class CheckIfFileIsNotTooSmall
 {
@@ -17,8 +17,8 @@ class CheckIfFileIsNotTooSmall
 			return true;
 		}
 
-        $rules = [Config::fileInputName() => 'min:'.Config::minFileSize()];
         $input = [Config::fileInputName() => $file];
+        $rules = [Config::fileInputName() => 'min:'.Config::minFileSize()];
 
         return Validator::make($input, $rules)->passes();
 	}
