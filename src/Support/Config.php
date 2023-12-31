@@ -325,6 +325,6 @@ class Config
      */
     public static function listingsViewPath(): ?string
     {
-        return config(static::$configFileName.'.listings_view_path', null);
+        return config(static::$configFileName.'.listings_view_path', 'listings');
     }
 }

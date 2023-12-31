@@ -208,6 +208,6 @@ return [
     /**
      * The app dot notation view path for the listings page.
      */
-    'listings_view_path' => null,
+    'listings_view_path' => 'listings',
 
 ];
