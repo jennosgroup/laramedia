@@ -14,6 +14,8 @@ class UpdateMediaController extends Controller
      */
     public function __invoke(Request $request, Media $media): MediaResource
     {
+        $this->optionallyAuthorize('update', $media);
+
         $attributes = $request->only([
             'title', 'alt_text', 'caption', 'description', 'disk', 'visibility',
         ]);

@@ -14,6 +14,8 @@ class ListingMediaController extends Controller
      */
     public function __invoke(Request $request): View
     {
+        $this->optionallyAuthorize('active_listings');
+
         $options = [];
 
         // We will allow filtering the view options.

@@ -14,6 +14,8 @@ class DownloadMediaController extends Controller
      */
     public function __invoke(Request $request, Media $media): StreamedResponse
     {
+        $this->optionallyAuthorize('download', $media);
+
         return Storage::disk($media->getDisk())
             ->download(
                 $media->getRelativePath($request->input('cut')),

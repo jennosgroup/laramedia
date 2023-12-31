@@ -271,7 +271,7 @@ class Config
      */
     public static function routeAs(): string
     {
-        return config(static::$configFileName.'.route_as', 'lfl');
+        return config(static::$configFileName.'.route_as', 'lfl.');
     }
 
     /**
@@ -286,7 +286,7 @@ class Config
             'files' => null,
             'options' => null,
             'store' => null,
-            'preview' => null,
+            'view' => null,
             'download' => null,
             'update' => null,
             'trash' => null,

@@ -13,6 +13,8 @@ class ViewMediaController extends Controller
      */
     public function __invoke(Request $request, Media $media)
     {
+        $this->optionallyAuthorize('view', $media);
+        
         return Storage::disk($media->getDisk())
             ->response($media->getRelativePath($request->input('cut')));
     }

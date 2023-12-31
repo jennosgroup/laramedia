@@ -485,13 +485,13 @@ export default function Uploader() {
      */
     this.getAllowedExtensions = function () {
         var results = [];
-        var types = this.getOption('allowed_extensions');
+        var extensions = this.getOption('allowed_extensions');
 
-        if (! Array.isArray(types)) {
+        if (! Array.isArray(extensions)) {
             return [];
         }
 
-        types.forEach(function (type) {
+        extensions.forEach(function (extension) {
             if (extension[0].charAt(0) == '.') {
                 results.push(extension);
             } else {

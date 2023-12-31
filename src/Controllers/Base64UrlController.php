@@ -13,6 +13,8 @@ class Base64UrlController extends Controller
      */
     public function __invoke(Request $request, Media $media): JsonResponse
     {
+        $this->optionallyAuthorize('view', $media);
+        
         return response()->json(
             ['url' => $media->getBase64Url($request->input('cut'))]
         );

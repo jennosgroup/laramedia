@@ -13,6 +13,8 @@ class DestroyMediaController extends Controller
      */
     public function __invoke(Media $media): JsonResponse
     {
+        $this->optionallyAuthorize('destroy', $media);
+
         $media->removeFiles();
 
         $deleted = $media->forceDelete();

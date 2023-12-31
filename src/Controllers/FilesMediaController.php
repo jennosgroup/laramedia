@@ -15,6 +15,8 @@ class FilesMediaController extends Controller
      */
     public function __invoke(Request $request): AnonymousResourceCollection
     {
+        $this->optionallyAuthorize('files');
+
         $finder = new Finder($request);
 
         return MediaResource::collection($finder->paginate()->all());

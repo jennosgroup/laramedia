@@ -14,6 +14,8 @@ class TrashMediaController extends Controller
      */
     public function __invoke(Media $media): JsonResponse
     {
+        $this->optionallyAuthorize('trash', $media);
+
         $delete = $media->delete();
 
         $media->refresh();

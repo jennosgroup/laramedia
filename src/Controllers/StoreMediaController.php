@@ -16,6 +16,8 @@ class StoreMediaController extends Controller
      */
     public function __invoke(Request $request): JsonResponse
     {
+        $this->optionallyAuthorize('store');
+
         $response = (new Uploader($request))->handle();
 
         $media = $response['file'] ?? null;

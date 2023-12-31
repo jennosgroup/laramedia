@@ -13,6 +13,8 @@ class RestoreMediaController extends Controller
      */
     public function __invoke(Media $media): JsonResponse
     {
+        $this->optionallyAuthorize('restore', $media);
+
         $restore = $media->restore();
 
         $media->refresh();

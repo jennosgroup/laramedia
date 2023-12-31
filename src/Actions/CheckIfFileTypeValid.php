@@ -4,6 +4,7 @@ namespace JennosGroup\Laramedia\Actions;
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use JennosGroup\Laramedia\Support\Laramedia;
 
 class CheckIfFileTypeValid
@@ -13,11 +14,15 @@ class CheckIfFileTypeValid
      */
     public static function execute(UploadedFile $file): bool
     {
-        if (! static::validateMimeType($file) || ! static::validateExtension($file)) {
-            return false;
+        if (static::validateMimeType($file)) {
+            return true;
         }
 
-        return true;
+        if (static::validateExtension($file)) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -25,12 +30,14 @@ class CheckIfFileTypeValid
      */
     private static function validateMimeType(UploadedFile $file): bool
     {
-        if (empty(Laramedia::allowedMimeTypes())) {
+        $mimetypes = Laramedia::allowedMimeTypes();
+ 
+        if (empty($mimetypes)) {
             return true;
         }
 
         $input = [Laramedia::fileInputName() => $file];
-        $rules = [Laramedia::fileInputName() => 'mimetypes:'.implode(',', Laramedia::allowedMimeTypes())];
+        $rules = [Laramedia::fileInputName() => 'mimetypes:'.implode(',', $mimetypes)];
 
         return Validator::make($input, $rules)->passes();
     }
@@ -40,12 +47,14 @@ class CheckIfFileTypeValid
      */
     private static function validateExtension(UploadedFile $file): bool
     {
-        if (empty(Laramedia::allowedExtensions())) {
+        $extensions = Laramedia::allowedExtensions();
+
+        if (empty($extensions)) {
             return true;
         }
 
         $input = [Laramedia::fileInputName() => $file];
-        $rules = [Laramedia::fileInputName() => 'mimes:'.implode(',', Laramedia::allowedExtensions())];
+        $rules = [Laramedia::fileInputName() => 'mimes:'.implode(',', $extensions)];
 
         return Validator::make($input, $rules)->passes();
     }

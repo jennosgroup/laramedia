@@ -61,6 +61,7 @@ class Laramedia extends Config
             if (! preg_match('/\//', $type)) {
                 continue;
             }
+
             $results[] = $type;
         }
 
