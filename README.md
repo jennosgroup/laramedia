@@ -2,14 +2,13 @@
 
 ## Setup
 
-- Add upload route to html head
-- Add uploader js file to html head
+- Add listings js file to html head
 - php artisan migrate
 - Install SWAL
-- Install lodash
 - define files route
 - define options route
-- define store route
+- define upload route
+- vendor publish assets
 
 Laravel files library is a laravel package that allows you to upload files and manage them through a graphical interface.
 

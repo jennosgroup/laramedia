@@ -302,7 +302,7 @@ class Media extends Model
         $width = Number::format($this->getImageWidth());
         $height = Number::format($this->getImageHeight());
 
-        return $width.'x'.$height. ' px';
+        return $width.' x '.$height. ' pixels';
     }
 
     /**
@@ -333,7 +333,7 @@ class Media extends Model
         if (is_null($cut)) {
             $path .= Config::originalFilesDirectory().'/';
         } else {
-            $path .= $path.$cut.'/';
+            $path .= $cut.'/';
         }
 
         return $path.$this->getUploadPath().'/'.$this->name;
@@ -378,7 +378,24 @@ class Media extends Model
         $contents = Storage::disk($this->getDisk())->get($this->getRelativePath($cut));
         $contents = base64_encode($contents);
 
-        return "data:".$this->mimetype.";base64,".$contents;
+        return "data:".$this->getMimeType().";base64,".$contents;
+    }
+
+    /**
+     * Get the image display url. This will be the base64url is the image
+     * visibility is set to private.
+     * 
+     * @param  string  $cut
+     * 
+     * @return string
+     */
+    public function getImageDisplayUrl(string $cut = null): string
+    {
+        if ($this->getVisibility() == 'public') {
+            return $this->getPublicUrl($cut);
+        }
+
+        return $this->getBase64Url($cut);
     }
 
     /**
@@ -437,27 +454,32 @@ class Media extends Model
      * Move the file to a new disk.
      *
      * @param  string  $newDisk
+     * @param  string|null  $oldDisk
      *
      * @return bool
      */
-    public function moveFileToNewDisk(string $newDisk): bool
+    public function moveFileToNewDisk(string $newDisk, string $oldDisk = null): bool
     {
         if ($this->getType() == 'image') {
-            return $this->moveImageFileToNewDisk($newDisk);
+            return $this->moveImageFileToNewDisk($newDisk, $oldDisk);
         }
-        return $this->moveNoneImageFileToNewDisk($newDisk);
+        return $this->moveNoneImageFileToNewDisk($newDisk, $oldDisk);
     }
 
     /**
      * Move the none image file to a new disk.
      *
      * @param  string  $newDisk
+     * @param  string|null  $oldDisk
      *
      * @return bool
      */
-    public function moveNoneImageFileToNewDisk(string $newDisk): bool
+    public function moveNoneImageFileToNewDisk(string $newDisk, string $oldDisk = null): bool
     {
-        $oldDisk = $this->getDisk();
+        if (is_null($oldDisk)) {
+            $oldDisk = $this->getDisk();
+        }
+
         $file = Storage::disk($oldDisk)->get($this->getRelativePath());
 
         Storage::disk($newDisk)->put(
@@ -473,12 +495,16 @@ class Media extends Model
      * Move the image file to a new disk.
      *
      * @param  string  $newDisk
+     * @param  string|null  $oldDisk
      *
      * @return bool
      */
-    public function moveImageFileToNewDisk(string $newDisk): bool
+    public function moveImageFileToNewDisk(string $newDisk, string $oldDisk = null): bool
     {
-        $oldDisk = $this->getDisk();
+        if (is_null($oldDisk)) {
+            $oldDisk = $this->getDisk();
+        }
+
         $cuts = array_keys(Config::imageCutDirectories());
 
         foreach ($cuts as $cut) {

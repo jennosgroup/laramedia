@@ -2,6 +2,8 @@
 
 namespace LaravelFilesLibrary\Support;
 
+use Illuminate\Database\Eloquent\Model;
+
 class Config
 {
 	/**
@@ -62,7 +64,7 @@ class Config
     /**
      * Get the name of the disks that are valid.
      */
-    public static function getValidDisks(): array
+    public static function validDisks(): array
     {
         return array_keys(static::getDisks());
     }
@@ -291,6 +293,22 @@ class Config
     }
 
     /**
+     * Check if the trash is enabled.
+     */
+    public static function trashIsEnabled(): bool
+    {
+        return LaravelFilesLibrary::$enableTrash;
+    }
+
+    /**
+     * Check if the trash is diabled.
+     */
+    public static function trashIsDisabled(): bool
+    {
+        return ! static::trashIsEnabled();
+    }
+
+    /**
      * The route middlewares.
      */
     public static function routeMiddlewares(): array
@@ -347,11 +365,27 @@ class Config
     }
 
     /**
+     * Get the upload route name - alias for store route.
+     */
+    public static function uploadRouteName(): string
+    {
+        return static::storeRouteName();
+    }
+
+    /**
      * Get the view route name.
      */
     public static function viewRouteName(): string
     {
         return static::routeAs().'view';
+    }
+
+    /**
+     * Get the preview route name.
+     */
+    public static function previewRouteName(): string
+    {
+        return static::viewRouteName();
     }
 
     /**
@@ -401,8 +435,154 @@ class Config
     {
         return static::routeAs().'destroy';
     }
-	
-	/**
+
+    /**
+     * Get the options route.
+     */
+    public static function optionsRoute(): string
+    {
+        return route(static::optionsRouteName());
+    }
+
+    /**
+     * Get the files route.
+     */
+    public static function filesRoute(): string
+    {
+        return route(static::filesRouteName());
+    }
+
+    /**
+     * Get the listings route.
+     */
+    public static function listingsRoute(): string
+    {
+        return route(static::listingsRouteName());
+    }
+
+    /**
+     * Get the store route.
+     */
+    public static function storeRoute(): string
+    {
+        return route(static::storeRouteName());
+    }
+
+    /**
+     * Get the views route.
+     */
+    public static function viewRoute(Model $media): string
+    {
+        return route(static::viewRouteName(), $media);
+    }
+
+    /**
+     * Get the previews route.
+     */
+    public static function previewRoute(Model $media): string
+    {
+        return static::viewRoute($media);
+    }
+
+    /**
+     * Get the download route.
+     */
+    public static function downloadRoute(Model $media): string
+    {
+        return route(static::downloadRouteName(), $media);
+    }
+
+    /**
+     * Get the base64url route.
+     */
+    public static function base64UrlRoute(Model $media): string
+    {
+        return route(static::base64UrlRouteName(), $media);
+    }
+
+    /**
+     * Get the update route.
+     */
+    public static function updateRoute(Model $media): string
+    {
+        return route(static::updateRouteName(), $media);
+    }
+
+    /**
+     * Get the trash route.
+     */
+    public static function trashRoute(Model $media): string
+    {
+        return route(static::trashRouteName(), $media);
+    }
+
+    /**
+     * Get the restore route.
+     */
+    public static function restoreRoute(Model $media): string
+    {
+        return route(static::restoreRouteName(), $media);
+    }
+
+    /**
+     * Get the destroy route.
+     */
+    public static function destroyRoute(Model $media): string
+    {
+        return route(static::destroyRouteName(), $media);
+    }
+
+    /**
+     * The policies.
+     */
+    public static function policies(): array
+    {
+        $defaults = [
+            'model' => LaravelFilesLibrary\Models\Media::class,
+            'active_listings' => null,
+            'trash_listings' => null,
+            'files' => null,
+            'options' => null,
+            'store' => null,
+            'preview' => null,
+            'download' => null,
+            'update' => null,
+            'trash' => null,
+            'restore' => null,
+            'delete' => null,
+            'trash_bulk' => null,
+            'restore_bulk' => null,
+            'delete_bulk' => null,
+        ];
+
+        return array_merge($defaults, LaravelFilesLibrary::$policies);
+    }
+
+    /**
+     * Check if the user can execute a policy.
+     */
+    public static function can(string $key, Model $model = null): bool
+    {
+        $policies = static::policies();
+
+        if (is_null($model)) {
+            $model = $policies['model'] ?? null;
+        }
+
+        if (! array_key_exists($key, $policies)) {
+            return false;
+        }
+
+        $policy = $policies[$key];
+
+        if (is_null($policy)) {
+            return true;
+        }
+
+        return Auth::user()->can($policy, $model);
+    }
+    
+    /**
      * The prefix for all our tables.
      */
     public static function tablePrefix(): string
@@ -454,6 +634,7 @@ class Config
             'meta_fields' => static::metaFields(),
             'file_input_name' => static::fileInputName(),
             'note' => static::note(),
+            'pagination_total' => static::paginationTotal(),
         ];
     }
 }

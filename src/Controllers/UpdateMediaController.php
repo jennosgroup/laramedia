@@ -15,16 +15,16 @@ class UpdateMediaController extends Controller
      */
     public function __invoke(Request $request, Media $media): MediaResource
     {
+        $attributes = $request->only([
+            'title', 'alt_text', 'caption', 'description', 'disk', 'visibility',
+        ]);
+
         $oldDisk = $media->disk;
         $newDisk = $attributes['disk'] ?? null;
         $oldVisibility = $media->visibility;
         $newVisibility = $attributes['visibility'] ?? null;
 
-        $media->fill($request->all());
-
-        $changes = $media->getChanges();
-
-        $media->save();
+        $media->fill($attributes)->save();
 
         if (! empty($newDisk) && $newDisk != $oldDisk) {
             $media->moveFileToNewDisk($newDisk, $oldDisk);
@@ -34,7 +34,7 @@ class UpdateMediaController extends Controller
             $media->changeFileVisibility($newVisibility);
         }
 
-        event(new FileUpdated($media, $changes));
+        event(new FileUpdated($media, $media->getChanges()));
 
         return new MediaResource($media);
     }

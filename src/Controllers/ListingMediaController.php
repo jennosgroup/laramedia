@@ -5,9 +5,6 @@ namespace LaravelFilesLibrary\Controllers;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\View\VIew;
-use LaravelFilesLibrary\Models\Media;
-use LaravelFilesLibrary\Resources\MediaResource;
-use LaravelFilesLibrary\Support\Finder;
 use LaravelFilesLibrary\Support\LaravelFilesLibrary;
 
 class ListingMediaController extends Controller
@@ -17,10 +14,7 @@ class ListingMediaController extends Controller
      */
     public function __invoke(Request $request): View
     {
-        $results = (new Finder($request))->paginate();
-        $files = MediaResource::collection($results->all());
-
-        $options = ['files' =>  $files];
+        $options = [];
 
         // We will allow filtering the view options.
         if (! is_null(LaravelFilesLibrary::$filterListingsViewOptionsCallback)) {

@@ -127,6 +127,11 @@ class LaravelFilesLibrary
     public static ?string $note = null;
 
     /**
+     * Whether trash is enabled.
+     */
+    public static bool $enableTrash = true;
+
+    /**
      * The route middlewares.
      */
     public static array $routeMiddlewares = ['web'];
@@ -152,6 +157,11 @@ class LaravelFilesLibrary
 	public static array $tableNames = [
 		'media' => 'media',
 	];
+
+	/**
+	 * The policies mapping.
+	 */
+	public static array $policies = [];
 
 	/**
 	 * The app dot notation view path for the listings page.
