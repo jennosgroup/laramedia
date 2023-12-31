@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use JennosGroup\Laramedia\Events\FileUpdated;
 use JennosGroup\Laramedia\Models\Media;
 use JennosGroup\Laramedia\Resources\MediaResource;
-use JennosGroup\Laramedia\Support\Config;
 
 class UpdateMediaController extends Controller
 {

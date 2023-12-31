@@ -4,7 +4,7 @@ namespace JennosGroup\Laramedia\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use JennosGroup\Laramedia\Models\Media;
-use JennosGroup\Laramedia\Support\Config;
+use JennosGroup\Laramedia\Support\Laramedia;
 
 class OptionsMediaController extends Controller
 {
@@ -13,6 +13,6 @@ class OptionsMediaController extends Controller
      */
     public function __invoke(): JsonResponse
     {
-        return response()->json(Config::browserOptions());
+        return response()->json(Laramedia::browserOptions());
     }
 }

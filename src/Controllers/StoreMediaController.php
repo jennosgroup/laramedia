@@ -7,7 +7,6 @@ use Illuminate\Http\JsonResponse;
 use JennosGroup\Laramedia\Events\FileCreated;
 use JennosGroup\Laramedia\Models\Media;
 use JennosGroup\Laramedia\Resources\MediaResource;
-use JennosGroup\Laramedia\Support\Config;
 use JennosGroup\Laramedia\Support\Uploader;
 
 class StoreMediaController extends Controller

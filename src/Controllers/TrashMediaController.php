@@ -6,7 +6,6 @@ use Illuminate\Http\JsonResponse;
 use JennosGroup\Laramedia\Events\FileDestroyed;
 use JennosGroup\Laramedia\Events\FileTrashed;
 use JennosGroup\Laramedia\Models\Media;
-use JennosGroup\Laramedia\Support\Config;
 
 class TrashMediaController extends Controller
 {

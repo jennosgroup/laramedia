@@ -5,7 +5,7 @@ namespace JennosGroup\Laramedia\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Number;
 use Illuminate\Support\Facades\Storage;
-use JennosGroup\Laramedia\Support\Config;
+use JennosGroup\Laramedia\Support\Laramedia;
 use Ramsey\Uuid\Uuid;
 
 class Media extends Model
@@ -58,7 +58,7 @@ class Media extends Model
      */
     public function getTable(): string
     {
-        return Config::tableName('media');
+        return Laramedia::tableName('media');
     }
 
     /**
@@ -268,12 +268,12 @@ class Media extends Model
     {
         $path = '';
 
-        if ($directory = Config::directory()) {
+        if ($directory = Laramedia::directory()) {
             $path .= $directory.'/';
         }
 
         if (is_null($cut)) {
-            $path .= Config::originalFilesDirectory().'/';
+            $path .= Laramedia::originalFilesDirectory().'/';
         } else {
             $path .= $cut.'/';
         }
@@ -355,7 +355,7 @@ class Media extends Model
      */
     public function changeImageFileVisibility(string $newVisibility): bool
     {
-        $cuts = array_keys(Config::imageCutDirectories());
+        $cuts = array_keys(Laramedia::imageCutDirectories());
 
         foreach ($cuts as $cut) {
             if (! $this->fileExists($cut)) {
@@ -413,7 +413,7 @@ class Media extends Model
             $oldDisk = $this->getDisk();
         }
 
-        $cuts = array_keys(Config::imageCutDirectories());
+        $cuts = array_keys(Laramedia::imageCutDirectories());
 
         foreach ($cuts as $cut) {
             if (! $this->fileExists($cut)) {
@@ -459,7 +459,7 @@ class Media extends Model
      */
     public function removeImageFiles(): bool
     {
-        $cuts = array_keys(Config::imageCutDirectories());
+        $cuts = array_keys(Laramedia::imageCutDirectories());
 
         foreach ($cuts as $cut) {
             if (! $this->fileExists($cut)) {

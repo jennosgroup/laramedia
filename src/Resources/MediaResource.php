@@ -4,7 +4,7 @@ namespace JennosGroup\Laramedia\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Carbon;
-use JennosGroup\Laramedia\Support\Config;
+use JennosGroup\Laramedia\Support\Laramedia;
 
 class MediaResource extends JsonResource
 {
@@ -31,29 +31,29 @@ class MediaResource extends JsonResource
         $attributes['human_dimensions'] = $this->resource->humanDimensions();
 
         // Permissions
-        $attributes['user_can_preview'] = Config::can('preview', $this->resource);
-        $attributes['user_can_view'] = Config::can('preview', $this->resource);
-        $attributes['user_can_download'] = Config::can('download', $this->resource);
-        $attributes['user_can_update'] = Config::can('update', $this->resource);
-        $attributes['user_can_trash'] = Config::can('trash', $this->resource);
-        $attributes['user_can_restore'] = Config::can('restore', $this->resource);
-        $attributes['user_can_destroy'] = Config::can('delete', $this->resource);
+        $attributes['user_can_preview'] = Laramedia::can('preview', $this->resource);
+        $attributes['user_can_view'] = Laramedia::can('preview', $this->resource);
+        $attributes['user_can_download'] = Laramedia::can('download', $this->resource);
+        $attributes['user_can_update'] = Laramedia::can('update', $this->resource);
+        $attributes['user_can_trash'] = Laramedia::can('trash', $this->resource);
+        $attributes['user_can_restore'] = Laramedia::can('restore', $this->resource);
+        $attributes['user_can_destroy'] = Laramedia::can('delete', $this->resource);
 
         // Routes
-        $attributes['view_route'] = Config::previewRoute($this->resource);
-        $attributes['preview_route'] = Config::previewRoute($this->resource);
-        $attributes['download_route'] = Config::downloadRoute($this->resource);
-        $attributes['update_route'] = Config::updateRoute($this->resource);
-        $attributes['trash_route'] = Config::trashRoute($this->resource);
-        $attributes['base64url_route'] = Config::base64UrlRoute($this->resource);
-        $attributes['restore_route'] = Config::trashIsEnabled() ? Config::restoreRoute($this->resource) : null;
-        $attributes['destroy_route'] = Config::trashIsEnabled() ? Config::destroyRoute($this->resource) : null;
+        $attributes['view_route'] = Laramedia::previewRoute($this->resource);
+        $attributes['preview_route'] = Laramedia::previewRoute($this->resource);
+        $attributes['download_route'] = Laramedia::downloadRoute($this->resource);
+        $attributes['update_route'] = Laramedia::updateRoute($this->resource);
+        $attributes['trash_route'] = Laramedia::trashRoute($this->resource);
+        $attributes['base64url_route'] = Laramedia::base64UrlRoute($this->resource);
+        $attributes['restore_route'] = Laramedia::restoreRoute($this->resource);
+        $attributes['destroy_route'] = Laramedia::destroyRoute($this->resource);
 
         if ($this->resource->getType() != 'image') {
             return $attributes;
         }
 
-        foreach (Config::imageCutDirectories() as $cut => $data) {
+        foreach (Laramedia::imageCutDirectories() as $cut => $data) {
             $attributes[$cut.'_public_url'] = $this->resource->getPublicUrl($cut);
         }
 
