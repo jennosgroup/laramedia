@@ -8,6 +8,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use JennosGroup\Laramedia\Models\Media;
+use JennosGroup\Laramedia\Support\Laramedia;
 
 class Finder
 {
@@ -32,7 +33,7 @@ class Finder
     public function paginate(int $total = null): LengthAwarePaginator
     {
         if (is_null($total)) {
-            $total = Config::paginationTotal();
+            $total = $this->getRequest()->input('pagination_total', Laramedia::paginationTotal());
         }
 
         return $this->buildQuery()->paginate($total);
@@ -101,7 +102,7 @@ class Finder
     {
         $type = $this->getTypeFromRequest();
 
-        if (! array_key_exists($type, Config::typeFilters())) {
+        if (! array_key_exists($type, Laramedia::typeFilters())) {
             return null;
         }
 
@@ -115,7 +116,7 @@ class Finder
     {
         $disk = $this->getDiskFromRequest();
 
-        if (! array_key_exists($disk, Config::disks())) {
+        if (! array_key_exists($disk, Laramedia::disks())) {
             return null;
         }
 
@@ -129,7 +130,7 @@ class Finder
     {
         $visibility = $this->getVisibilityFromRequest();
 
-        if (! array_key_exists($visibility, Config::disksVisibilities())) {
+        if (! array_key_exists($visibility, Laramedia::disksVisibilities())) {
             return null;
         }
 
@@ -143,7 +144,7 @@ class Finder
     {
         $ownership = $this->getOwnershipFromRequest();
 
-        if (! array_key_exists($ownership, Config::ownerships())) {
+        if (! array_key_exists($ownership, Laramedia::ownerships())) {
             return null;
         }
 
@@ -157,7 +158,7 @@ class Finder
     {
         $section = $this->getSectionFromRequest();
 
-        if (array_key_exists($section, Config::sections())) {
+        if (array_key_exists($section, Laramedia::sections())) {
             return $section;
         }
 
@@ -209,7 +210,7 @@ class Finder
     {
         $types = [];
 
-        $validTypes = Config::typeFilters()[$this->getType()] ?? [];
+        $validTypes = Laramedia::typeFilters()[$this->getType()] ?? [];
 
         // Put not like types to the front of the queue
         foreach ($validTypes as $value) {
