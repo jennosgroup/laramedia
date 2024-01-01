@@ -3,7 +3,7 @@ import Events from './events';
 import Filters from './filters';
 import Swal from 'sweetalert2';
 
-export default function Uploader() {
+export default function FilesUploader() {
     /**
      * The events instance.
      *
@@ -580,7 +580,7 @@ export default function Uploader() {
      * @return object
      */
     this.getDropzoneElement = function () {
-        return document.querySelector('.lfl-uploader-dropzone');
+        return document.querySelector('.laramedia-uploader-dropzone');
     }
 
     /**
@@ -589,7 +589,7 @@ export default function Uploader() {
      * @return object
      */
     this.getDropzoneInputElement = function () {
-        return document.querySelector('.lfl-uploader-dropzone-input');
+        return document.querySelector('.laramedia-uploader-dropzone-input');
     }
 
     /**
@@ -598,7 +598,7 @@ export default function Uploader() {
      * @return string
      */
     this.getOptionsRoute = function () {
-        return document.head.querySelector("meta[name='lfl_options_route']").content;
+        return document.head.querySelector("meta[name='laramedia_options_route']").content;
     }
 
     /**

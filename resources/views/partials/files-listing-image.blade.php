@@ -1,5 +1,5 @@
-<div class="lfl-listings-item-wrapper lfl-listings-image-wrapper" file_id="{{ $fileId ?? null }}">
-    <div class="lfl-listings-item-container lfl-listings-image-container">
-        <img src="{{ $imageUrl ?? null }}" class="lfl-listings-image">
+<div class="laramedia-listings-item-wrapper laramedia-listings-image-wrapper" file_id="{{ $fileId ?? null }}">
+    <div class="laramedia-listings-item-container laramedia-listings-image-container">
+        <img src="{{ $imageUrl ?? null }}" class="laramedia-listings-image">
     </div>
 </div>

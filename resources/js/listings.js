@@ -78,30 +78,30 @@ function Listings() {
 		var self = this;
 
 		// Show the uploader when the add files button is clicked
-		document.getElementById('lfl-listings-trigger-dropzone').addEventListener('click', function (event) {
-			document.querySelector('.lfl-uploader-dropzone').style.display = 'flex'; 
+		document.getElementById('laramedia-listings-trigger-dropzone').addEventListener('click', function (event) {
+			document.querySelector('.laramedia-uploader-dropzone').style.display = 'flex'; 
 		});
 
 		// Hide the uploader when it is clicked to close
-		document.querySelector('.lfl-uploader-dropzone-trigger-close').addEventListener('click', function (event) {
+		document.querySelector('.laramedia-uploader-dropzone-trigger-close').addEventListener('click', function (event) {
 			event.preventDefault();
 			event.stopPropagation();
 
-			event.target.closest('.lfl-uploader-dropzone').style.display = 'none';
+			event.target.closest('.laramedia-uploader-dropzone').style.display = 'none';
 		});
 
 		// Hide the error section when X is clicked. Also remove the errors
-		document.getElementById('lfl-listings-error-close').addEventListener('click', function (event) {
+		document.getElementById('laramedia-listings-error-close').addEventListener('click', function (event) {
 			this.parentElement.style.display = 'none';
 
 			// Remove the errors
-			document.querySelectorAll('.lfl-listings-error').forEach(function (element) {
+			document.querySelectorAll('.laramedia-listings-error').forEach(function (element) {
 				element.remove();
 			});
 		})
 
 		// Load more
-		document.getElementById('lfl-listings-load-more-btn').addEventListener('click', function (event) {
+		document.getElementById('laramedia-listings-load-more-btn').addEventListener('click', function (event) {
 			self.loader.loadContent();
 		});
 	}
@@ -122,12 +122,12 @@ function Listings() {
 
 		this.loader.events.on('load_complete', function (allFilesLoaded) {
 			if (! allFilesLoaded) {
-				document.getElementById('lfl-listings-load-more-btn').classList.remove('lfl-hidden');
+				document.getElementById('laramedia-listings-load-more-btn').classList.remove('laramedia-hidden');
 			}
 		});
 
 		this.loader.events.on('last_load_complete', function () {
-			document.getElementById('lfl-listings-load-more-btn').classList.add('lfl-hidden');
+			document.getElementById('laramedia-listings-load-more-btn').classList.add('laramedia-hidden');
 		});
 	}
 
@@ -186,11 +186,11 @@ function Listings() {
         var template = this.getFilePreviewTemplate(media);
 
 		// Add file id to template
-		template.querySelector('.lfl-listings-item-wrapper').setAttribute('file_id', media.uuid);
+		template.querySelector('.laramedia-listings-item-wrapper').setAttribute('file_id', media.uuid);
 
 		// Enable the file editor when file preview is clicked
-        template.querySelector('.lfl-listings-item-container').addEventListener('click', function (event) {
-        	var wrapper = event.target.closest('.lfl-listings-item-wrapper');
+        template.querySelector('.laramedia-listings-item-container').addEventListener('click', function (event) {
+        	var wrapper = event.target.closest('.laramedia-listings-item-wrapper');
         	var hasPreviousFile = (wrapper.previousElementSibling != null);
         	var hasNextFile = (wrapper.nextElementSibling != null);
 
@@ -200,7 +200,7 @@ function Listings() {
         	editor.events.on('previous_file', function (file) {
         		if (hasPreviousFile) {
         			editor.close(file);
-        			wrapper.previousElementSibling.querySelector('.lfl-listings-item-container').click();
+        			wrapper.previousElementSibling.querySelector('.laramedia-listings-item-container').click();
         		}
         	});
 
@@ -208,7 +208,7 @@ function Listings() {
         	editor.events.on('next_file', function (file) {
         		if (hasNextFile) {
         			editor.close(file);
-        			wrapper.nextElementSibling.querySelector('.lfl-listings-item-container').click();
+        			wrapper.nextElementSibling.querySelector('.laramedia-listings-item-container').click();
         		}
         	});
 
@@ -243,9 +243,9 @@ function Listings() {
 
         // Show image preview or file preview
         if (media.file_type == 'image') {
-            template.querySelector('.lfl-listings-image').src = media.base64_url;
+            template.querySelector('.laramedia-listings-image').src = media.base64_url;
         } else {
-        	template.querySelector('.lfl-listings-item-name').innerHTML = media.original_name;
+        	template.querySelector('.laramedia-listings-item-name').innerHTML = media.original_name;
         }
 
         if (prepend != 'undefined' && prepend == true) {
@@ -269,20 +269,20 @@ function Listings() {
 		var template = this.getFileErrorTemplate();
 
 		// Event listener to remove error
-		template.querySelector('.lfl-listings-error-remove').addEventListener('click', function (event) {
+		template.querySelector('.laramedia-listings-error-remove').addEventListener('click', function (event) {
 			this.parentElement.parentElement.remove();
 
-			if (self.getErrorsContainerElement().querySelectorAll('.lfl-listings-error').length == 0) {
+			if (self.getErrorsContainerElement().querySelectorAll('.laramedia-listings-error').length == 0) {
 				self.getErrorsContainerElement().style.display = 'none';
 			}
 		});
 
-		template.querySelector('.lfl-listings-error-name').innerHTML = file.name;
+		template.querySelector('.laramedia-listings-error-name').innerHTML = file.name;
 
 		if (response.hasOwnProperty('response')) {
-			template.querySelector('.lfl-listings-error-reason').innerHTML = response.response.data.message;
+			template.querySelector('.laramedia-listings-error-reason').innerHTML = response.response.data.message;
 		} else {
-			template.querySelector('.lfl-listings-error-reason').innerHTML = response.messages.join(' ');
+			template.querySelector('.laramedia-listings-error-reason').innerHTML = response.messages.join(' ');
 		}
 
 		container.style.display = 'flex';
@@ -303,10 +303,10 @@ function Listings() {
 		var template = this.getFileErrorTemplate();
 
 		// Event listener to remove error
-		template.querySelector('.lfl-listings-error-remove').addEventListener('click', function (event) {
+		template.querySelector('.laramedia-listings-error-remove').addEventListener('click', function (event) {
 			this.parentElement.parentElement.remove();
 
-			if (self.getErrorsContainerElement().querySelectorAll('.lfl-listings-error').length == 0) {
+			if (self.getErrorsContainerElement().querySelectorAll('.laramedia-listings-error').length == 0) {
 				self.getErrorsContainerElement().style.display = 'none';
 			}
 		});
@@ -323,8 +323,8 @@ function Listings() {
 			reason = 'File rejected';
 		}
 
-		template.querySelector('.lfl-listings-error-name').innerHTML = file.name;
-		template.querySelector('.lfl-listings-error-reason').innerHTML = reason;
+		template.querySelector('.laramedia-listings-error-name').innerHTML = file.name;
+		template.querySelector('.laramedia-listings-error-reason').innerHTML = reason;
 
 		container.style.display = 'flex';
 		container.prepend(template);
@@ -344,9 +344,9 @@ function Listings() {
 			container.style.display = 'flex';
 		}
 
-		document.getElementById('lfl-listings-upload-message').style.display = 'none';
+		document.getElementById('laramedia-listings-upload-message').style.display = 'none';
 
-		var unitsElement = document.getElementById('lfl-listings-upload-progress-units');
+		var unitsElement = document.getElementById('laramedia-listings-upload-progress-units');
 		unitsElement.style.display = 'flex';
 		unitsElement.style.width = percentage+'%';
 		unitsElement.innerHTML = percentage+'%';
@@ -364,9 +364,9 @@ function Listings() {
 			container.style.display = 'flex';
 		}
 
-		document.getElementById('lfl-listings-upload-progress-units').style.display = 'none';
+		document.getElementById('laramedia-listings-upload-progress-units').style.display = 'none';
 
-		document.getElementById('lfl-listings-upload-message').style.display = 'flex';
+		document.getElementById('laramedia-listings-upload-message').style.display = 'flex';
 	}
 
     /**
@@ -375,7 +375,7 @@ function Listings() {
      * @return string
      */
     this.getOptionsRoute = function () {
-        return document.head.querySelector("meta[name='lfl_options_route']").content;
+        return document.head.querySelector("meta[name='laramedia_options_route']").content;
     }
 
 	/**
@@ -384,7 +384,7 @@ function Listings() {
 	 * @return obj
 	 */
 	this.getFilesContainerElement = function () {
-		return document.getElementById('lfl-listings-files-container');
+		return document.getElementById('laramedia-listings-files-container');
 	}
 
 	/**
@@ -393,7 +393,7 @@ function Listings() {
 	 * @return obj
 	 */
 	this.getErrorsContainerElement = function () {
-		return document.getElementById('lfl-listings-errors-container');
+		return document.getElementById('laramedia-listings-errors-container');
 	}
 
 	/**
@@ -402,7 +402,7 @@ function Listings() {
 	 * @return obj
 	 */
 	this.getUploadProgressContainerElement = function () {
-		return document.getElementById('lfl-listings-upload-progress-container');
+		return document.getElementById('laramedia-listings-upload-progress-container');
 	}
 
 	/**
@@ -414,10 +414,10 @@ function Listings() {
 	 * @return obj
 	 */
 	this.getFilePreviewTemplate = function (media, file) {
-		if (media.file_type == 'image') {
-			var template = document.getElementById('lfl-listings-image-template');
+		if (media.is_image) {
+			var template = document.getElementById('laramedia-listings-image-template');
 		} else {
-			var template = document.getElementById('lfl-listings-none-image-template');
+			var template = document.getElementById('laramedia-listings-none-image-template');
 		}
 
         if (template == null) {
@@ -433,7 +433,7 @@ function Listings() {
 	 * @return obj
 	 */
 	this.getFileErrorTemplate = function () {
-		var template = document.getElementById('lfl-listings-error-template');
+		var template = document.getElementById('laramedia-listings-error-template');
 
         if (template == null) {
             return;

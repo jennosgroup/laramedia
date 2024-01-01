@@ -94,17 +94,17 @@ export default function fileEditor() {
 		var self = this;
 
 		// Close the editor
-		document.getElementById('lfl-file-editor-close').addEventListener('click', function (event) {
+		document.getElementById('laramedia-file-editor-close').addEventListener('click', function (event) {
 			self.close(self.file);
 		});
 
 		// Get previous file
-		document.getElementById('lfl-file-editor-previous').addEventListener('click', function (event) {
+		document.getElementById('laramedia-file-editor-previous').addEventListener('click', function (event) {
 			self.events.fire('previous_file', [self.file]);
 		});
 
 		// Get the next file
-		document.getElementById('lfl-file-editor-next').addEventListener('click', function (event) {
+		document.getElementById('laramedia-file-editor-next').addEventListener('click', function (event) {
 			self.events.fire('next_file', [self.file]);
 		});
 
@@ -174,11 +174,11 @@ export default function fileEditor() {
 	 */
 	this.configureNavigationButtons = function () {
 		if (! this.hasPreviousFile) {
-			document.getElementById('lfl-file-editor-previous').classList.add('lfl-disabled-button');
+			document.getElementById('laramedia-file-editor-previous').classList.add('laramedia-disabled-button');
 		}
 
 		if (! this.hasNextFile) {
-			document.getElementById('lfl-file-editor-next').classList.add('lfl-disabled-button');
+			document.getElementById('laramedia-file-editor-next').classList.add('laramedia-disabled-button');
 		}
 	}
 
@@ -195,25 +195,25 @@ export default function fileEditor() {
         var destroyBtnElement = this.getDestroyButtonElement();
 
         if (file.user_can_update && file.deleted_at == null) {
-            updateBtnElement.classList.remove('lfl-hidden');
+            updateBtnElement.classList.remove('laramedia-hidden');
         } else {
             updateBtnElement.remove();
         }
 
         if (file.user_can_trash && file.deleted_at == null) {
-            trashBtnElement.classList.remove('lfl-hidden');
+            trashBtnElement.classList.remove('laramedia-hidden');
         } else {
             trashBtnElement.remove();
         }
 
         if (file.user_can_restore && file.deleted_at != null) {
-            restoreBtnElement.classList.remove('lfl-hidden');
+            restoreBtnElement.classList.remove('laramedia-hidden');
         } else {
             restoreBtnElement.remove();
         }
 
         if (file.user_can_destroy && file.deleted_at != null) {
-            destroyBtnElement.classList.remove('lfl-hidden');
+            destroyBtnElement.classList.remove('laramedia-hidden');
         } else {
             destroyBtnElement.remove();
         }
@@ -235,10 +235,10 @@ export default function fileEditor() {
 
             if (updatedFile.visibility == 'public') {
                 self.showPublicFields();
-                document.getElementById('lfl-file-editor-file-url').value = updatedFile.public_url;
+                document.getElementById('laramedia-file-editor-file-url').value = updatedFile.public_url;
             } else {
                 self.hidePublicFields();
-                document.getElementById('lfl-file-editor-file-url').value = '';
+                document.getElementById('laramedia-file-editor-file-url').value = '';
             }
 
             return Swal.fire({
@@ -372,7 +372,7 @@ export default function fileEditor() {
             index++;
         }
 
-        visibilityElement.parentElement.classList.remove('lfl-hidden');
+        visibilityElement.parentElement.classList.remove('laramedia-hidden');
 	}
 
 	/**
@@ -400,7 +400,7 @@ export default function fileEditor() {
 	 * @return void
 	 */
 	this.showFilePreviewIcon = function () {
-		var element = document.getElementById('lfl-file-editor-preview-icon-container');
+		var element = document.getElementById('laramedia-file-editor-preview-icon-container');
         element.style.display = 'flex';
 	}
 
@@ -419,7 +419,7 @@ export default function fileEditor() {
             image.src = file.base64_url;
         }
 
-        var element = document.getElementById('lfl-file-editor-preview-image-container');
+        var element = document.getElementById('laramedia-file-editor-preview-image-container');
         element.style.display = 'flex';
         element.append(image);
 	}
@@ -432,11 +432,11 @@ export default function fileEditor() {
 	this.populateContentData = function () {
 		var file = this.file;
 
-		document.getElementById('lfl-file-editor-name').innerHTML = file.name;
-        document.getElementById('lfl-file-editor-file-type').innerHTML = file.mimetype;
-        document.getElementById('lfl-file-editor-uploaded-on').innerHTML = file.human_created_at;
-        document.getElementById('lfl-file-editor-filesize').innerHTML = file.human_filesize;
-        document.getElementById('lfl-file-editor-dimensions').innerHTML = file.human_dimensions;
+		document.getElementById('laramedia-file-editor-name').innerHTML = file.name;
+        document.getElementById('laramedia-file-editor-file-type').innerHTML = file.mimetype;
+        document.getElementById('laramedia-file-editor-uploaded-on').innerHTML = file.human_created_at;
+        document.getElementById('laramedia-file-editor-filesize').innerHTML = file.human_filesize;
+        document.getElementById('laramedia-file-editor-dimensions').innerHTML = file.human_dimensions;
 	}
 
 	/**
@@ -447,27 +447,27 @@ export default function fileEditor() {
 	this.populateContentFields = function () {
 		var file = this.file;
 
-		document.getElementById('lfl-file-editor-title').value = file.title;
-        document.getElementById('lfl-file-editor-alt-text').value = file.alt_text;
-        document.getElementById('lfl-file-editor-caption').value = file.caption;
-        document.getElementById('lfl-file-editor-description').value = file.description;
+		document.getElementById('laramedia-file-editor-title').value = file.title;
+        document.getElementById('laramedia-file-editor-alt-text').value = file.alt_text;
+        document.getElementById('laramedia-file-editor-caption').value = file.caption;
+        document.getElementById('laramedia-file-editor-description').value = file.description;
 
         // Disk and visibility
-        document.getElementById('lfl-file-editor-disk').value = file.disk;
-        document.getElementById('lfl-file-editor-visibility').value = file.visibility;
+        document.getElementById('laramedia-file-editor-disk').value = file.disk;
+        document.getElementById('laramedia-file-editor-visibility').value = file.visibility;
 
         // Show the file url only for public files
         if (file.visibility == 'public') {
-            document.getElementById('lfl-file-editor-file-url').value = file.public_url;
+            document.getElementById('laramedia-file-editor-file-url').value = file.public_url;
         }
 
         // Preview & Download button
         if (file.deleted_at == null) {
-            document.getElementById('lfl-file-editor-contents-preview-btn').classList.remove('lfl-hidden');
-            document.getElementById('lfl-file-editor-contents-preview-btn').setAttribute('href', file.preview_route);
+            document.getElementById('laramedia-file-editor-contents-preview-btn').classList.remove('laramedia-hidden');
+            document.getElementById('laramedia-file-editor-contents-preview-btn').setAttribute('href', file.preview_route);
 
-            document.getElementById('lfl-file-editor-contents-download-btn').classList.remove('lfl-hidden');
-            document.getElementById('lfl-file-editor-contents-download-btn').setAttribute('href', file.download_route);
+            document.getElementById('laramedia-file-editor-contents-download-btn').classList.remove('laramedia-hidden');
+            document.getElementById('laramedia-file-editor-contents-download-btn').setAttribute('href', file.download_route);
         }
 	}
 
@@ -486,8 +486,8 @@ export default function fileEditor() {
      * @return void
      */
     this.showImageFields = function () {
-        document.querySelectorAll('.lfl-file-editor-image-form-group').forEach(function (element) {
-            element.classList.remove('lfl-hidden');
+        document.querySelectorAll('.laramedia-file-editor-image-form-group').forEach(function (element) {
+            element.classList.remove('laramedia-hidden');
         });
     }
 
@@ -506,8 +506,8 @@ export default function fileEditor() {
      * @return void
      */
     this.showPublicFields = function () {
-        document.querySelectorAll('.lfl-file-editor-public-form-group').forEach(function (element) {
-            element.classList.remove('lfl-hidden');
+        document.querySelectorAll('.laramedia-file-editor-public-form-group').forEach(function (element) {
+            element.classList.remove('laramedia-hidden');
         });
     }
 
@@ -517,8 +517,8 @@ export default function fileEditor() {
      * @return void
      */
     this.hidePublicFields = function () {
-        document.querySelectorAll('.lfl-file-editor-public-form-group').forEach(function (element) {
-            element.classList.add('lfl-hidden');
+        document.querySelectorAll('.laramedia-file-editor-public-form-group').forEach(function (element) {
+            element.classList.add('laramedia-hidden');
         });
     }
 
@@ -532,12 +532,12 @@ export default function fileEditor() {
     		return;
     	}
 
-    	document.getElementById('lfl-file-editor-title').disabled = true;
-        document.getElementById('lfl-file-editor-alt-text').disabled = true;
-        document.getElementById('lfl-file-editor-caption').disabled = true;
-        document.getElementById('lfl-file-editor-description').disabled = true;
-        document.getElementById('lfl-file-editor-disk').disabled = true;
-        document.getElementById('lfl-file-editor-visibility').disabled = true;
+    	document.getElementById('laramedia-file-editor-title').disabled = true;
+        document.getElementById('laramedia-file-editor-alt-text').disabled = true;
+        document.getElementById('laramedia-file-editor-caption').disabled = true;
+        document.getElementById('laramedia-file-editor-description').disabled = true;
+        document.getElementById('laramedia-file-editor-disk').disabled = true;
+        document.getElementById('laramedia-file-editor-visibility').disabled = true;
     }
 
     /**
@@ -548,7 +548,7 @@ export default function fileEditor() {
     this.populateVisibilityOptions = function () {
     	var file = this.file;
     	var index = 0;
-        var visibilityElement = document.getElementById('lfl-file-editor-visibility');
+        var visibilityElement = document.getElementById('laramedia-file-editor-visibility');
         var diskVisibilities = this.options.disks_visibilities[file.disk];
 
         for (var visibility in diskVisibilities) {
@@ -681,7 +681,7 @@ export default function fileEditor() {
 	 * @return obj
 	 */
 	this.getWrapperElement = function () {
-		return document.getElementById('lfl-file-editor-wrapper');
+		return document.getElementById('laramedia-file-editor-wrapper');
 	}
 
 	/**
@@ -690,7 +690,7 @@ export default function fileEditor() {
      * @return object|null
      */
     this.getTitleElement = function () {
-        return document.getElementById('lfl-file-editor-title');
+        return document.getElementById('laramedia-file-editor-title');
     }
 
     /**
@@ -699,7 +699,7 @@ export default function fileEditor() {
      * @return object|null
      */
     this.getAltTextElement = function () {
-        return document.getElementById('lfl-file-editor-alt-text');
+        return document.getElementById('laramedia-file-editor-alt-text');
     }
 
     /**
@@ -708,7 +708,7 @@ export default function fileEditor() {
      * @return object|null
      */
     this.getCaptionElement = function () {
-        return document.getElementById('lfl-file-editor-caption');
+        return document.getElementById('laramedia-file-editor-caption');
     }
 
     /**
@@ -717,7 +717,7 @@ export default function fileEditor() {
      * @return object|null
      */
     this.getDescriptionElement = function () {
-        return document.getElementById('lfl-file-editor-description');
+        return document.getElementById('laramedia-file-editor-description');
     }
 
 	/**
@@ -726,7 +726,7 @@ export default function fileEditor() {
      * @return obj
      */
 	this.getDiskElement = function () {
-		return document.getElementById('lfl-file-editor-disk');
+		return document.getElementById('laramedia-file-editor-disk');
 	}
 
 	/**
@@ -735,7 +735,7 @@ export default function fileEditor() {
      * @return obj
      */
 	this.getVisibilityElement = function () {
-		return document.getElementById('lfl-file-editor-visibility');
+		return document.getElementById('laramedia-file-editor-visibility');
 	}
 
 	/**
@@ -744,7 +744,7 @@ export default function fileEditor() {
      * @return obj
      */
 	this.getUpdateButtonElement = function () {
-		return document.getElementById('lfl-file-editor-update-btn');
+		return document.getElementById('laramedia-file-editor-update-btn');
 	}
 
 	/**
@@ -753,7 +753,7 @@ export default function fileEditor() {
      * @return obj
      */
    	this.getTrashButtonElement = function () {
-   		return document.getElementById('lfl-file-editor-trash-btn');
+   		return document.getElementById('laramedia-file-editor-trash-btn');
    	}
 
    	/**
@@ -762,7 +762,7 @@ export default function fileEditor() {
      * @return obj
      */
     this.getRestoreButtonElement = function () {
-    	return document.getElementById('lfl-file-editor-restore-btn');
+    	return document.getElementById('laramedia-file-editor-restore-btn');
     }
 
     /**
@@ -771,7 +771,7 @@ export default function fileEditor() {
      * @return obj
      */
     this.getDestroyButtonElement = function () {
-    	return document.getElementById('lfl-file-editor-destroy-btn');
+    	return document.getElementById('laramedia-file-editor-destroy-btn');
     }
 
 	/**
@@ -780,7 +780,7 @@ export default function fileEditor() {
 	 * @return obj|null
 	 */
 	this.getTemplate = function () {
-		var template = document.getElementById('lfl-file-editor');
+		var template = document.getElementById('laramedia-file-editor');
 
         if (template == null) {
             return;

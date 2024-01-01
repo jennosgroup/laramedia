@@ -1,9 +1,9 @@
-<template id="lfl-listings-error-template">
-	<div class="lfl-listings-error">
-		<div class="lfl-listings-error-name-container">
-			<div class="lfl-listings-error-name"></div>
-			<div class="lfl-listings-error-remove">X</div>
+<template id="laramedia-listings-error-template">
+	<div class="laramedia-listings-error">
+		<div class="laramedia-listings-error-name-container">
+			<div class="laramedia-listings-error-name"></div>
+			<div class="laramedia-listings-error-remove">X</div>
 		</div>
-		<div class="lfl-listings-error-reason"></div>
+		<div class="laramedia-listings-error-reason"></div>
 	</div>
 </template>

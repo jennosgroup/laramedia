@@ -1,3 +1,3 @@
-<template id="lfl-listings-none-image-template">
-    @include('laravel-files-library::partials.files-listing-none-image')
+<template id="laramedia-listings-none-image-template">
+    @include('laramedia::partials.files-listing-none-image')
 </template>

@@ -15,17 +15,21 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->loadRoutesFrom(__DIR__. '/../../routes/web.php');
 
-        $this->loadViewsFrom(__DIR__.'/../../resources/views', 'laravel-files-library');
+        $this->loadViewsFrom(__DIR__.'/../../resources/views', 'laramedia');
 
         $this->loadMigrationsFrom(__DIR__.'/../../database/migrations');
 
         $this->publishes([
-            __DIR__.'/../../public' => public_path('vendor/laravel-files-library'),
-        ], 'laravel-files-library-assets');
+            __DIR__.'/../../config/laramedia.php' => config_path('laramedia.php'),
+        ], 'laramedia-config');
+
+        /* $this->publishes([
+            __DIR__.'/../../public' => public_path('vendor/laramedia'),
+        ], 'laramedia-assets'); */
 
         $this->publishes([
-            __DIR__.'/../../resources/views' => resource_path('views/vendor/laravel-files-library'),
-        ], 'laravel-files-library-views');
+            __DIR__.'/../../resources/views' => resource_path('views/vendor/laramedia'),
+        ], 'laramedia-views');
     }
 
     /**

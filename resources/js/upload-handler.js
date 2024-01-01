@@ -19,16 +19,21 @@ export default function UploadHandler() {
     this.start = function (file, formData) {
         var self = this;
 
-        // Send off the upload request to the server
-        var request = window.axios.post(this.getUploadRoute(), formData, {}).then(function (response) {
+        var request = window.axios.post(this.getUploadRoute(), formData);
+
+        request.then(function (response) {
             if (response.data.success) {
                 self.events.fire('upload_success', [response.data.file, file, response.data]);
             } else {
                 self.events.fire('upload_fail', [file, response.data]);
             }
-        }).catch(function (response) {
+        });
+
+        request.catch(function (response) {
             self.events.fire('upload_error', [file, response])
-        }).then(function (response) {
+        });
+
+        request.then(function (response) {
             self.events.fire('upload_complete', [file, response]);
         });
     }
@@ -39,6 +44,6 @@ export default function UploadHandler() {
      * @return string
      */
     this.getUploadRoute = function () {
-        return document.head.querySelector("meta[name='lfl_upload_route']").content;
+        return document.head.querySelector("meta[name='laramedia_upload_route']").content;
     }
 }

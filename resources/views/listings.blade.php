@@ -1,54 +1,57 @@
-<div id="lfl-listings-wrapper">
-	<div id="lfl-listings-header">
-		<div id="lfl-listings-header-title">Files Library</div>
-		<button type="button" id="lfl-listings-trigger-dropzone">Add Files</button>
+<div id="laramedia-listings-wrapper">
+	{{-- Listings Header --}}
+	<div id="laramedia-listings-header">
+		<button type="button" id="laramedia-listings-trigger-dropzone" class="laramedia-btn laramedia-btn-secondary">
+			Add Files
+		</button>
 	</div>
-	<div id="lfl-listings-body">
+
+	<div id="laramedia-listings-body">
 
 		{{-- Show file upload progress --}}
-		<div id="lfl-listings-upload-progress-container">
-			<div id="lfl-listings-upload-progress-bar">
-				<div id="lfl-listings-upload-progress-units"></div>
-				<div id="lfl-listings-upload-message">Processing...</div>
+		<div id="laramedia-listings-upload-progress-container">
+			<div id="laramedia-listings-upload-progress-bar">
+				<div id="laramedia-listings-upload-progress-units"></div>
+				<div id="laramedia-listings-upload-message">Processing...</div>
 			</div>
 		</div>
 
 		{{-- Show file upload errors --}}
-		<div id="lfl-listings-errors-container">
-			<div id="lfl-listings-error-close">
+		<div id="laramedia-listings-errors-container">
+			<div id="laramedia-listings-error-close">
 				<i class="fa-solid fa-xmark"></i>
 			</div>
 		</div>
 
 		{{-- Files Dropzone --}}
-		<div class="lfl-uploader-dropzone">
-			<div class="lfl-uploader-dropzone-trigger-close">
+		<div class="laramedia-uploader-dropzone">
+			<div class="laramedia-uploader-dropzone-trigger-close">
 				<i class="fa-solid fa-xmark"></i>
 			</div>
-			<div class="lfl-uploader-dropzone-icon">
+			<div class="laramedia-uploader-dropzone-icon">
 		    	<i class="fa-solid fa-cloud-arrow-up"></i>
 		    </div>
-		    <div class="lfl-uploader-dropzone-text">
+		    <div class="laramedia-uploader-dropzone-text">
 		    	Drop files or Click here to select files to upload.
 		    </div>
-		    <div class="lfl-uploader-dropzone-button">
-		    	<input type="file" name="{{ Laramedia::fileInputName() }}" class="lfl-uploader-dropzone-input"/>
+		    <div class="laramedia-uploader-dropzone-button">
+		    	<input type="file" name="{{ Laramedia::fileInputName() }}" class="laramedia-uploader-dropzone-input"/>
 		    </div>
 		</div>
 
 		{{-- Display uploaded files --}}
-		<div id="lfl-listings-files-wrapper">
-			<div id="lfl-listings-files-container">
+		<div id="laramedia-listings-files-wrapper">
+			<div id="laramedia-listings-files-container">
 				
 			</div>
-			<button id="lfl-listings-load-more-btn" class="lfl-hidden">
+			<button id="laramedia-listings-load-more-btn" class="laramedia-btn laramedia-btn-secondary laramedia-hidden">
 				Load More
 			</button>
 		</div>
 	</div>
 </div>
 
-@include('laravel-files-library::templates.file-editor')
-@include('laravel-files-library::templates.files-listing-error')
-@include('laravel-files-library::templates.files-listing-image')
-@include('laravel-files-library::templates.files-listing-none-image')
+@include('laramedia::templates.file-editor')
+@include('laramedia::templates.files-listing-error')
+@include('laramedia::templates.files-listing-image')
+@include('laramedia::templates.files-listing-none-image')

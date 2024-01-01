@@ -5,7 +5,7 @@ return [
     /**
      * The directory to store the files in.
      */
-    'directory' => 'laravel-files-library',
+    'directory' => 'laramedia',
 
     /**
      * The name of the original directory.
@@ -176,7 +176,7 @@ return [
      * The policies mapping.
      */
     'policies' => [
-        'model' => JennosGroup\\Laramedia\Models\Media::class,
+        'model' => JennosGroup\Laramedia\Models\Media::class,
         'active_listings' => null,
         'trash_listings' => null,
         'files' => null,
@@ -187,7 +187,7 @@ return [
         'update' => null,
         'trash' => null,
         'restore' => null,
-        'delete' => null,
+        'destroy' => null,
         'trash_bulk' => null,
         'restore_bulk' => null,
         'delete_bulk' => null,

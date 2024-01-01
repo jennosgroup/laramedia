@@ -279,6 +279,6 @@ export default function FilesLoader() {
      * @return string
      */
     this.getFilesRoute = function () {
-        return document.head.querySelector("meta[name='lfl_files_route']").content;
+        return document.head.querySelector("meta[name='laramedia_files_route']").content;
     }
 }
