@@ -1,0 +1,463 @@
+#laramedia-listings-wrapper {
+	display: flex;
+	flex-direction: column;
+}
+
+#laramedia-listings-header {
+	display: flex;
+	align-items: center;
+	margin-bottom: 12px;
+}
+
+#laramedia-listings-body {
+	display: flex;
+	flex-direction: column;
+}
+
+#laramedia-listings-upload-progress-container {
+	display: none;
+	margin-bottom: 6px;
+}
+
+#laramedia-listings-upload-progress-bar {
+	flex-direction: column;
+	width: 100%;
+	height: 24px;
+	border-radius: 24px;
+	background-color: #eee;
+}
+
+#laramedia-listings-upload-progress-units,
+#laramedia-listings-upload-message {
+	height: 100%;
+	border-radius: 24px;
+	justify-content: center;
+	align-items: center;
+	font-size: 12px;
+	font-weight: 700;
+	font-style: italic;
+}
+
+#laramedia-listings-upload-message {
+	width: 100%;
+	background-color: #F0B27A;
+}
+
+#laramedia-listings-upload-progress-units {
+	width: 0;
+	background-color: #82E0AA;
+}
+
+#laramedia-listings-errors-container {
+	position: relative;
+	display: none;
+	flex-direction: column;
+	background-color: #eee;
+	padding: 6px 12px;
+	margin-bottom: 6px;
+	border: 1px solid #ccc;
+	border-radius: 6px;
+	box-sizing: border-box;
+	overflow: hidden;
+}
+
+#laramedia-listings-error-close {
+	position: absolute;
+	right: 10px;
+	top: 10px;
+	cursor: pointer;
+}
+
+.laramedia-listings-error {
+	margin-bottom: 6px;
+	padding-right: 48px;
+	min-width: 250px;
+	overflow: hidden;
+}
+
+.laramedia-listings-error-name-container {
+	display: flex;
+	align-items: center;
+}
+
+.laramedia-listings-error-remove {
+	margin-left: 4px;
+	color: #CB4335;
+	font-weight: 700;
+	font-style: italic;
+	cursor: pointer;
+}
+
+.laramedia-listings-error-reason {
+	font-size: 12px;
+	font-style: italic;
+	padding-left: 12px;
+}
+
+#laramedia-listings-files-wrapper {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+#laramedia-listings-files-container {
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
+	margin-bottom: 12px;
+}
+
+.laramedia-listings-item-wrapper {
+	display: flex;
+	box-sizing: border-box;
+	padding: 6px;
+}
+
+.laramedia-listings-item-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: #eee;
+	border: 1px solid #d0d0d0;
+	width: 148px;
+	height: 148px;
+	box-sizing: border-box;
+	cursor: pointer;
+}
+
+.laramedia-listings-none-image-container {
+	display: flex;
+	flex-direction: column;
+}
+
+.laramedia-listings-item-icon {
+	width: 100%;
+	height: 50%;
+	padding: 12px;
+	box-sizing: border-box;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.laramedia-listings-item-icon img {
+	height: auto;
+	width: auto;
+	max-height: 100%;
+	max-width: 100%;
+}
+
+.laramedia-listings-item-icon i,
+.laramedia-listings-item-icon svg {
+	font-size: 48px;
+}
+
+.laramedia-listings-item-name {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-grow: 0;
+	width: 100%;
+	height: 50%;
+	background-color: #f9f9f9;
+	padding: 6px;
+	overflow-y: auto;
+	box-sizing: border-box;
+	font-size: 0.75rem;
+	text-align: center;
+	word-break: break-word;
+}
+
+.laramedia-listings-image {
+	width: auto;
+	height: auto;
+	max-width: 100%;
+	max-height: 100%;
+}
+
+#laramedia-listings-filters-container {
+	display: flex;
+	flex-wrap: wrap;
+	margin-bottom: 12px;
+}
+
+.laramedia-listings-filter-container {
+	display: flex;
+	align-items: center;
+	height: 48px;
+}
+
+.laramedia-listings-filter-section-container {
+	margin-left: 8px;
+	cursor: pointer;
+}
+
+.laramedia-listings-filter-select {
+	height: 100%;
+	width: 148px;
+	padding: 8px;
+	border-radius: 4px;
+	outline: none;
+	-webkit-appearance: none;
+	   -moz-appearance: none;
+	        appearance: none;
+	border: 1px solid #eee;
+	box-sizing: border-box;
+}
+
+.laramedia-listings-filter-select-container {
+	margin-right: 4px;
+}
+
+#laramedia-listings-filter-search-container {
+	display: flex;
+	justify-content: end;
+	flex-grow: 1;
+}
+
+#laramedia-listings-filter-search {
+	max-width: 240px;
+	border: 1px solid #eee;
+}
+
+#laramedia-listings-filter-active-section-container,
+#laramedia-listings-filter-trash-section-container {
+	color: #808B96;
+}
+
+#laramedia-listings-filter-active-section-container.laramedia-current-section {
+	color: #2E86C1;
+}
+
+#laramedia-listings-filter-trash-section-container.laramedia-current-section {
+	color: #E74C3C;
+}
+
+.laramedia-hidden {
+	display: none !important;
+}
+
+.laramedia-disabled-button {
+	background-color: #fff !important;
+}
+
+.laramedia-disabled-button:hover {
+	background-color: #fff !important;
+}
+
+.laramedia-btn {
+ 	padding: 6px 16px;
+ 	border-radius: 4px;
+ 	cursor: pointer;
+}
+
+.laramedia-btn-secondary {
+	color: #fff;
+	background-color: #85929E;
+}
+
+.laramedia-btn-secondary:hover {
+	background-color: #808B96;
+}
+
+#laramedia-listings-body .laramedia-uploader-dropzone {
+	display: none;
+	margin-bottom: 24px;
+}
+
+.laramedia-uploader-dropzone {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	flex-grow: 1;
+	width: 100%;
+	background-color: #f6f6f6;
+	padding: 24px;
+	box-sizing: border-box;
+	cursor: pointer;
+	border: 4px dashed #c9c9c9;
+	border-radius: 8px;
+	min-height: 248px;
+	cursor: pointer;
+	position: relative;
+}
+
+.laramedia-uploader-dropzone.dropzone-highlight {
+	border: 2px dashed #6583fe;
+	background-color: #ededed;
+}
+
+.laramedia-uploader-dropzone:hover {
+	background-color: #ededed;
+}
+
+.laramedia-uploader-dropzone-trigger-close {
+	position: absolute;
+	right: 18px;
+	top: 18px;
+}
+
+.laramedia-uploader-dropzone-trigger-close i,
+.laramedia-uploader-dropzone-trigger-close svg {
+	font-size: 24px;
+}
+
+.laramedia-uploader-dropzone-icon i,
+.laramedia-uploader-dropzone-icon svg {
+	font-size: 48px;
+	color: #6583fe;
+}
+
+.laramedia-uploader-dropzone-text {
+	margin: 24px 0;
+}
+
+.laramedia-uploader-dropzone-button {
+	display: none;
+}
+
+#laramedia-file-editor-wrapper {
+	z-index: 100;
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	background-color: rgba(0, 0, 0, 0.85);
+	padding: 24px;
+}
+
+#laramedia-file-editor-container {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	width: 100%;
+}
+
+#laramedia-file-editor-header {
+	display: flex;
+	justify-content: flex-end;
+	flex-grow: 0;
+	flex-shrink: 0;
+	background-color: #f9f9f9;
+	height: 48px;
+}
+
+#laramedia-file-editor-body {
+	display: flex;
+	flex-grow: 1;
+	background-color: #fff;
+	overflow-y: auto;
+}
+
+#laramedia-file-editor-footer {
+	display: flex;
+	justify-content: flex-end;
+	flex-grow: 0;
+	flex-shrink: 0;
+	background-color: #f9f9f9;
+	height: 48px;
+}
+
+#laramedia-file-editor-preview-container {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 50%;
+	background-color: #f9f9f9;
+	padding: 24px;
+	box-sizing: border-box;
+	overflow-y: auto;
+}
+
+#laramedia-file-editor-contents {
+	width: 50%;
+	padding: 24px;
+	box-sizing: border-box;
+	overflow-y: auto;
+}
+
+#laramedia-file-editor-preview-container img {
+	width: auto;
+	height: auto;
+	max-width: 100%;
+	max-height: 400px;
+}
+
+.laramedia-file-editor-buttons {
+	background-color: #eee;
+	width: 48px;
+	border: 1px solid #ccc;
+	cursor: pointer;
+	font-size: 18px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.laramedia-file-editor-buttons:hover {
+	background-color: #E9E9E9;
+}
+
+.laramedia-file-editor-item-preview-container {
+	display: none;
+}
+
+#laramedia-file-editor-contents-separator {
+	margin: 16px 0;
+}
+
+.laramedia-file-editor-display-content-form-group {
+	display: flex;
+	flex-direction: row;
+	margin-bottom: 4px;
+}
+
+.laramedia-file-editor-display-content-title {
+	font-weight: 700;
+}
+
+.laramedia-file-editor-display-content-data {
+	padding-left: 4px;
+}
+
+.laramedia-file-editor-edit-content-form-group {
+	display: flex;
+	flex-direction: column;
+	margin-bottom: 8px;
+}
+
+.laramedia-file-editor-edit-content-label {
+	font-weight: 700;
+}
+
+#laramedia-file-editor-contents-buttons {
+	display: flex;
+	flex-direction: row;
+}
+
+.laramedia-file-editor-contents-button {
+	padding: 8px 12px;
+	background-color: #2874A6;
+	margin-right: 6px;
+	border-radius: 4px;
+	border: 1px solid #1B4F72;
+	cursor: pointer;
+	color: #fff;
+	text-decoration: none !important;
+}
+
+.laramedia-file-editor-contents-button:hover {
+	color: #fff;
+	background-color: #21618C;
+}
+
+.laramedia-file-editor-form-control {
+	border: 1px solid #c9c9c9;
+	padding: 8px 4px;
+	border-radius: 4px;
+}
+
+
+

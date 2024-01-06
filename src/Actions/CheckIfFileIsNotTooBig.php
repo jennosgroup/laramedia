@@ -13,12 +13,14 @@ class CheckIfFileIsNotTooBig
      */
     public static function execute(UploadedFile $file): bool
     {
-        if (is_null(Laramedia::maxFileSize())) {
+        $maxSize = Laramedia::maxFileSize();
+        
+        if (is_null($maxSize)) {
             return true;
         }
 
         $input = [Laramedia::fileInputName() => $file];
-        $rules = [Laramedia::fileInputName() => 'max:'.Laramedia::maxFileSize()];
+        $rules = [Laramedia::fileInputName() => 'max:'.$maxSize];
 
         return Validator::make($input, $rules)->passes();
     }

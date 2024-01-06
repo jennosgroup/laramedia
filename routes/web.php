@@ -53,11 +53,11 @@ Route::middleware(Laramedia::routeMiddlewares())
             Laramedia::trashRouteName()
         );
 
-        Route::patch('{media}/restore', RestoreMediaController::class)->name(
+        Route::patch('{media}/restore', RestoreMediaController::class)->withTrashed()->name(
             Laramedia::restoreRouteName()
         );
 
-        Route::delete('{media}/destroy', DestroyMediaController::class)->name(
+        Route::delete('{media}/destroy', DestroyMediaController::class)->withTrashed()->name(
             Laramedia::destroyRouteName()
         );
     });

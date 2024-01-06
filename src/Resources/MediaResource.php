@@ -2,6 +2,7 @@
 
 namespace JennosGroup\Laramedia\Resources;
 
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Carbon;
 use JennosGroup\Laramedia\Support\Laramedia;
@@ -10,12 +11,8 @@ class MediaResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     *
-     * @return array
      */
-    public function toArray($request)
+    public function toArray(Request $request): array
     {
         // Get the attributes to build upon
         $attributes = parent::toArray($request);
@@ -31,17 +28,17 @@ class MediaResource extends JsonResource
         $attributes['human_dimensions'] = $this->resource->humanDimensions();
 
         // Permissions
-        $attributes['user_can_preview'] = Laramedia::can('preview', $this->resource);
-        $attributes['user_can_view'] = Laramedia::can('preview', $this->resource);
+        $attributes['user_can_preview'] = Laramedia::can('view', $this->resource);
+        $attributes['user_can_view'] = Laramedia::can('view', $this->resource);
         $attributes['user_can_download'] = Laramedia::can('download', $this->resource);
         $attributes['user_can_update'] = Laramedia::can('update', $this->resource);
         $attributes['user_can_trash'] = Laramedia::can('trash', $this->resource);
         $attributes['user_can_restore'] = Laramedia::can('restore', $this->resource);
-        $attributes['user_can_destroy'] = Laramedia::can('delete', $this->resource);
+        $attributes['user_can_destroy'] = Laramedia::can('destroy', $this->resource);
 
         // Routes
-        $attributes['view_route'] = Laramedia::previewRoute($this->resource);
-        $attributes['preview_route'] = Laramedia::previewRoute($this->resource);
+        $attributes['view_route'] = Laramedia::viewRoute($this->resource);
+        $attributes['preview_route'] = Laramedia::viewRoute($this->resource);
         $attributes['download_route'] = Laramedia::downloadRoute($this->resource);
         $attributes['update_route'] = Laramedia::updateRoute($this->resource);
         $attributes['trash_route'] = Laramedia::trashRoute($this->resource);

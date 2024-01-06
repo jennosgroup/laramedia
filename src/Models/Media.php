@@ -3,6 +3,7 @@
 namespace JennosGroup\Laramedia\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Number;
 use Illuminate\Support\Facades\Storage;
 use JennosGroup\Laramedia\Support\Laramedia;
@@ -10,13 +11,15 @@ use Ramsey\Uuid\Uuid;
 
 class Media extends Model
 {
+    use SoftDeletes;
+
     /**
      * The mass assignable attributes.
      */
     protected $fillable = [
         'name', 'original_name', 'title', 'alt_text', 'caption', 'description', 'mimetype',
         'file_type', 'file_extension', 'file_size', 'file_width', 'file_height', 'upload_path',
-        'disk', 'visibility', 'options',
+        'disk', 'visibility', 'author_id', 'options',
     ];
 
     /**

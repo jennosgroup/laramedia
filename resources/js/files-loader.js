@@ -141,16 +141,10 @@ export default function FilesLoader() {
      * @return void
      */
     this.loadFreshContent = function () {
-        // Gracefully cancel all other requests that the loader has initiated
         this.cancelRequests();
-
-        // Indicate that this is the first load
         this.isFirstLoad = true;
 
-        /**
-         * The only request parameter that we will reset is the page.
-         * This is so that we can build on the different parameters.
-         */
+        // Fresh content page should always be the first page
         this.requestParameters.page = 1;
 
         // Reset some other things
@@ -168,27 +162,22 @@ export default function FilesLoader() {
      * @return void
      */
     this.loadContent = function () {
-
         var self = this;
 
-        // Indicate that content is loading
         this.isLoadingContent = true;
 
-        // We fire off an event so that others can know that the first load has begun
         if (this.isFirstLoad) {
             this.events.fire('first_load_begin');
         }
 
-        // Fire event so that others can know that loading has begun
         this.events.fire('loading_begin');
 
-        // If this isn't the first load, automatically increment the page number to request
         if (! this.isFirstLoad) {
             this.requestParameters.page += 1;
         }
 
         // Fire off the request
-        var request = window.axios.get(this.getFilesRoute(), {
+        window.axios.get(this.getFilesRoute(), {
             cancelToken: new CancelToken((c) => {self.cancel = c}),
             params: self.requestParameters,
         }).then(function (response) {
@@ -196,8 +185,8 @@ export default function FilesLoader() {
             self.recentFilesCount = 0;
 
             response.data.data.forEach(function (file) {
-                self.setFileInRecentQueue(file);
-                self.setFileInQueue(file);
+                self.filesRecentQueue[file.uuid] = file;
+                self.filesQueue[file.uuid] = file;
                 self.filesCount += 1;
                 self.recentFilesCount += 1;
                 self.events.fire('file_loaded', [file]);
@@ -211,18 +200,14 @@ export default function FilesLoader() {
         }).catch(function (error) {
             new AxiosError().handleError(error);
         }).then(function () {
-            // Let others know that the loading has completed
             self.events.fire('load_complete', [self.allFilesLoaded]);
 
-            // Last load completed
             if (self.recentFilesCount < self.options.pagination_total) {
                 self.events.fire('last_load_complete');
             }
 
-            // We finally indicate that loading isn't in progress
             self.isLoadingContent = false;
 
-            // Reset the first load flag
             if (self.isFirstLoad) {
                 self.isFirstLoad = false;
             }
@@ -249,28 +234,6 @@ export default function FilesLoader() {
         if (this.cancel != null) {
             this.cancel();
         }
-    }
-
-    /**
-     * Set the file in the queue.
-     *
-     * @param  object  file
-     *
-     * @return void
-     */
-    this.setFileInQueue = function (file) {
-        this.filesQueue[file.uuid] = file;
-    }
-
-    /**
-     * Set the file in the recent queue.
-     *
-     * @param  object  file
-     *
-     * @return void
-     */
-    this.setFileInRecentQueue = function (file) {
-        this.filesRecentQueue[file.uuid] = file;
     }
 
     /**

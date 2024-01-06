@@ -1,0 +1,141 @@
+#laramedia-file-editor-wrapper {
+	z-index: 100;
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	background-color: rgba(0, 0, 0, 0.85);
+	padding: 24px;
+}
+
+#laramedia-file-editor-container {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	width: 100%;
+}
+
+#laramedia-file-editor-header {
+	display: flex;
+	justify-content: flex-end;
+	flex-grow: 0;
+	flex-shrink: 0;
+	background-color: #f9f9f9;
+	height: 48px;
+}
+
+#laramedia-file-editor-body {
+	display: flex;
+	flex-grow: 1;
+	background-color: #fff;
+	overflow-y: auto;
+}
+
+#laramedia-file-editor-footer {
+	display: flex;
+	justify-content: flex-end;
+	flex-grow: 0;
+	flex-shrink: 0;
+	background-color: #f9f9f9;
+	height: 48px;
+}
+
+#laramedia-file-editor-preview-container {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 50%;
+	background-color: #f9f9f9;
+	padding: 24px;
+	box-sizing: border-box;
+	overflow-y: auto;
+}
+
+#laramedia-file-editor-contents {
+	width: 50%;
+	padding: 24px;
+	box-sizing: border-box;
+	overflow-y: auto;
+}
+
+#laramedia-file-editor-preview-container img {
+	width: auto;
+	height: auto;
+	max-width: 100%;
+	max-height: 400px;
+}
+
+.laramedia-file-editor-buttons {
+	background-color: #eee;
+	width: 48px;
+	border: 1px solid #ccc;
+	cursor: pointer;
+	font-size: 18px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.laramedia-file-editor-buttons:hover {
+	background-color: #E9E9E9;
+}
+
+.laramedia-file-editor-item-preview-container {
+	display: none;
+}
+
+#laramedia-file-editor-contents-separator {
+	margin: 16px 0;
+}
+
+.laramedia-file-editor-display-content-form-group {
+	display: flex;
+	flex-direction: row;
+	margin-bottom: 4px;
+}
+
+.laramedia-file-editor-display-content-title {
+	font-weight: 700;
+}
+
+.laramedia-file-editor-display-content-data {
+	padding-left: 4px;
+}
+
+.laramedia-file-editor-edit-content-form-group {
+	display: flex;
+	flex-direction: column;
+	margin-bottom: 8px;
+}
+
+.laramedia-file-editor-edit-content-label {
+	font-weight: 700;
+}
+
+#laramedia-file-editor-contents-buttons {
+	display: flex;
+	flex-direction: row;
+}
+
+.laramedia-file-editor-contents-button {
+	padding: 8px 12px;
+	background-color: #2874A6;
+	margin-right: 6px;
+	border-radius: 4px;
+	border: 1px solid #1B4F72;
+	cursor: pointer;
+	color: #fff;
+	text-decoration: none !important;
+}
+
+.laramedia-file-editor-contents-button:hover {
+	color: #fff;
+	background-color: #21618C;
+}
+
+.laramedia-file-editor-form-control {
+	border: 1px solid #c9c9c9;
+	padding: 8px 4px;
+	border-radius: 4px;
+}

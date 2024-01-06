@@ -32,9 +32,9 @@ class Finder
      */
     public function paginate(int $total = null): LengthAwarePaginator
     {
-        if (is_null($total)) {
-            $total = $this->getRequest()->input('pagination_total', Laramedia::paginationTotal());
-        }
+        $total = $this->getRequest()->input(
+            'pagination_total', $total ?? Laramedia::paginationTotal()
+        );
 
         return $this->buildQuery()->paginate($total);
     }
@@ -130,7 +130,7 @@ class Finder
     {
         $visibility = $this->getVisibilityFromRequest();
 
-        if (! array_key_exists($visibility, Laramedia::disksVisibilities())) {
+        if (! array_key_exists($visibility, Laramedia::diskVisibilitiesList())) {
             return null;
         }
 
@@ -178,7 +178,7 @@ class Finder
      */
     public function getSearchFields(): array
     {
-        return ['title', 'name', 'alt_text', 'caption', 'description'];
+        return ['name', 'title', 'alt_text', 'caption', 'description'];
     }
 
     /**
@@ -287,15 +287,14 @@ class Finder
 
         $userId = Auth::user()->{Auth::user()->getKeyName()};
 
-        if ($this->getOwnership() == 'others') {
-            return $query->where('author_id', '!=', $userId);
-        }
-
         if ($this->getOwnership() == 'mine') {
             return $query->where('author_id', $userId);
         }
 
-        return $query;
+        return $query->where(function ($query) use ($userId) {
+            return $query->where('author_id', '!=', $userId)
+                ->orWhereNull('author_id');
+        });
     }
 
     /**

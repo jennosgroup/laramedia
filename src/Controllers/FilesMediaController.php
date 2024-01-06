@@ -11,7 +11,7 @@ use JennosGroup\Laramedia\Support\Finder;
 class FilesMediaController extends Controller
 {
     /**
-     * Get a listing of the resource.
+     * Get a collection of the resources.
      */
     public function __invoke(Request $request): AnonymousResourceCollection
     {

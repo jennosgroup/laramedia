@@ -9,7 +9,7 @@ use JennosGroup\Laramedia\Support\Laramedia;
 class OptionsMediaController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Get the options.
      */
     public function __invoke(): JsonResponse
     {

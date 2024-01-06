@@ -24,7 +24,7 @@ class ListingMediaController extends Controller
         }
 
         if (is_null(Laramedia::listingsViewPath())) {
-            throw new Exception("The 'laramedia.listings_view_path' config option must have a dot notated views path for the files listing page to work!");
+            throw new Exception("The 'laramedia.listings_view_path' config option must have a views path for the files listing page to work!");
         }
 
         return view(Laramedia::listingsViewPath(), $options);

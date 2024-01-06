@@ -432,7 +432,7 @@ export default function fileEditor() {
 	this.populateContentData = function () {
 		var file = this.file;
 
-		document.getElementById('laramedia-file-editor-name').innerHTML = file.name;
+		document.getElementById('laramedia-file-editor-name').innerHTML = file.original_name;
         document.getElementById('laramedia-file-editor-file-type').innerHTML = file.mimetype;
         document.getElementById('laramedia-file-editor-uploaded-on').innerHTML = file.human_created_at;
         document.getElementById('laramedia-file-editor-filesize').innerHTML = file.human_filesize;

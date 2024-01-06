@@ -104,6 +104,67 @@ function Listings() {
 		document.getElementById('laramedia-listings-load-more-btn').addEventListener('click', function (event) {
 			self.loader.loadContent();
 		});
+
+		// Disk filter
+		document.getElementById('laramedia-listings-filter-disk').addEventListener('change', function (event) {
+			self.loader.setRequestParameters({
+				disk: this.value,
+			}).loadFreshContent();
+		});
+
+		// Visibility filter
+		document.getElementById('laramedia-listings-filter-visibility').addEventListener('change', function (event) {
+			self.loader.setRequestParameters({
+				visibility: this.value,
+			}).loadFreshContent();
+		});
+
+		// Type filter
+		document.getElementById('laramedia-listings-filter-type').addEventListener('change', function (event) {
+			self.loader.setRequestParameters({
+				type: this.value,
+			}).loadFreshContent();
+		});
+
+		// Ownership filter
+		document.getElementById('laramedia-listings-filter-ownership').addEventListener('change', function (event) {
+			self.loader.setRequestParameters({
+				ownership: this.value,
+			}).loadFreshContent();
+		});
+
+		// Search filter
+		document.getElementById('laramedia-listings-filter-search').addEventListener('change', function (event) {
+			self.loader.setRequestParameters({
+				search: this.value,
+			}).loadFreshContent();
+		});
+
+		// Active Section filter
+		document.getElementById('laramedia-listings-filter-active-section-container').addEventListener('click', function (event) {
+			document.querySelectorAll('.laramedia-listings-filter-section-container').forEach(function (element) {
+				element.classList.remove('laramedia-current-section');
+			});
+
+			this.classList.add('laramedia-current-section');
+
+			self.loader.setRequestParameters({
+				section: 'active',
+			}).loadFreshContent();
+		});
+
+		// Trash Section filter
+		document.getElementById('laramedia-listings-filter-trash-section-container').addEventListener('click', function (event) {
+			document.querySelectorAll('.laramedia-listings-filter-section-container').forEach(function (element) {
+				element.classList.remove('laramedia-current-section');
+			});
+			
+			this.classList.add('laramedia-current-section');
+
+			self.loader.setRequestParameters({
+				section: 'trash',
+			}).loadFreshContent();
+		});
 	}
 
 	/**
@@ -114,18 +175,27 @@ function Listings() {
 	this.registerLoaderEventHandlers = function () {
 		var self = this;
 
+		// Clear files on first load
+		this.loader.events.on('first_load_begin', function () {
+			document.getElementById('laramedia-listings-files-container').innerHTML = null;
+			document.getElementById('laramedia-listings-load-more-btn').classList.add('laramedia-hidden');
+		});
+
+		// Things to do when file has been loaded
 		this.loader.events.on('file_loaded', function (file) {
 			self.loadedFiles[file.uuid] = file;
 			self.files[file.uuid] = file;
 			self.showFilePreview(file);
 		});
 
+		// Things to do when load is completed
 		this.loader.events.on('load_complete', function (allFilesLoaded) {
 			if (! allFilesLoaded) {
 				document.getElementById('laramedia-listings-load-more-btn').classList.remove('laramedia-hidden');
 			}
 		});
 
+		// Things to do when the last load is completed
 		this.loader.events.on('last_load_complete', function () {
 			document.getElementById('laramedia-listings-load-more-btn').classList.add('laramedia-hidden');
 		});

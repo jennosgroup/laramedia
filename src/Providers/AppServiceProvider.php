@@ -23,9 +23,9 @@ class AppServiceProvider extends ServiceProvider
             __DIR__.'/../../config/laramedia.php' => config_path('laramedia.php'),
         ], 'laramedia-config');
 
-        /* $this->publishes([
+        $this->publishes([
             __DIR__.'/../../public' => public_path('vendor/laramedia'),
-        ], 'laramedia-assets'); */
+        ], 'laramedia-assets');
 
         $this->publishes([
             __DIR__.'/../../resources/views' => resource_path('views/vendor/laramedia'),

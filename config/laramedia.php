@@ -182,7 +182,7 @@ return [
         'files' => null,
         'options' => null,
         'store' => null,
-        'preview' => null,
+        'view' => null,
         'download' => null,
         'update' => null,
         'trash' => null,
@@ -190,7 +190,7 @@ return [
         'destroy' => null,
         'trash_bulk' => null,
         'restore_bulk' => null,
-        'delete_bulk' => null,
+        'destroy_bulk' => null,
     ],
 
     /**

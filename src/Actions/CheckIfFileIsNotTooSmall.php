@@ -13,12 +13,14 @@ class CheckIfFileIsNotTooSmall
      */
     public static function execute(UploadedFile $file): bool
     {
-        if (is_null(Laramedia::minFileSize())) {
+        $minSize = Laramedia::minFileSize();
+
+        if (is_null($minSize)) {
             return true;
         }
 
         $input = [Laramedia::fileInputName() => $file];
-        $rules = [Laramedia::fileInputName() => 'min:'.Laramedia::minFileSize()];
+        $rules = [Laramedia::fileInputName() => 'min:'.$minSize];
 
         return Validator::make($input, $rules)->passes();
     }

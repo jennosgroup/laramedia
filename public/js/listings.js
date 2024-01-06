@@ -684,7 +684,7 @@ function fileEditor() {
    */
   this.populateContentData = function () {
     var file = this.file;
-    document.getElementById('laramedia-file-editor-name').innerHTML = file.name;
+    document.getElementById('laramedia-file-editor-name').innerHTML = file.original_name;
     document.getElementById('laramedia-file-editor-file-type').innerHTML = file.mimetype;
     document.getElementById('laramedia-file-editor-uploaded-on').innerHTML = file.human_created_at;
     document.getElementById('laramedia-file-editor-filesize').innerHTML = file.human_filesize;
@@ -1174,16 +1174,10 @@ function FilesLoader() {
    * @return void
    */
   this.loadFreshContent = function () {
-    // Gracefully cancel all other requests that the loader has initiated
     this.cancelRequests();
-
-    // Indicate that this is the first load
     this.isFirstLoad = true;
 
-    /**
-     * The only request parameter that we will reset is the page.
-     * This is so that we can build on the different parameters.
-     */
+    // Fresh content page should always be the first page
     this.requestParameters.page = 1;
 
     // Reset some other things
@@ -1201,25 +1195,17 @@ function FilesLoader() {
    */
   this.loadContent = function () {
     var self = this;
-
-    // Indicate that content is loading
     this.isLoadingContent = true;
-
-    // We fire off an event so that others can know that the first load has begun
     if (this.isFirstLoad) {
       this.events.fire('first_load_begin');
     }
-
-    // Fire event so that others can know that loading has begun
     this.events.fire('loading_begin');
-
-    // If this isn't the first load, automatically increment the page number to request
     if (!this.isFirstLoad) {
       this.requestParameters.page += 1;
     }
 
     // Fire off the request
-    var request = window.axios.get(this.getFilesRoute(), {
+    window.axios.get(this.getFilesRoute(), {
       cancelToken: new CancelToken(function (c) {
         self.cancel = c;
       }),
@@ -1228,8 +1214,8 @@ function FilesLoader() {
       self.filesRecentQueue = {};
       self.recentFilesCount = 0;
       response.data.data.forEach(function (file) {
-        self.setFileInRecentQueue(file);
-        self.setFileInQueue(file);
+        self.filesRecentQueue[file.uuid] = file;
+        self.filesQueue[file.uuid] = file;
         self.filesCount += 1;
         self.recentFilesCount += 1;
         self.events.fire('file_loaded', [file]);
@@ -1241,18 +1227,11 @@ function FilesLoader() {
     })["catch"](function (error) {
       new _axios_error__WEBPACK_IMPORTED_MODULE_0__["default"]().handleError(error);
     }).then(function () {
-      // Let others know that the loading has completed
       self.events.fire('load_complete', [self.allFilesLoaded]);
-
-      // Last load completed
       if (self.recentFilesCount < self.options.pagination_total) {
         self.events.fire('last_load_complete');
       }
-
-      // We finally indicate that loading isn't in progress
       self.isLoadingContent = false;
-
-      // Reset the first load flag
       if (self.isFirstLoad) {
         self.isFirstLoad = false;
       }
@@ -1279,28 +1258,6 @@ function FilesLoader() {
     if (this.cancel != null) {
       this.cancel();
     }
-  };
-
-  /**
-   * Set the file in the queue.
-   *
-   * @param  object  file
-   *
-   * @return void
-   */
-  this.setFileInQueue = function (file) {
-    this.filesQueue[file.uuid] = file;
-  };
-
-  /**
-   * Set the file in the recent queue.
-   *
-   * @param  object  file
-   *
-   * @return void
-   */
-  this.setFileInRecentQueue = function (file) {
-    this.filesRecentQueue[file.uuid] = file;
   };
 
   /**
@@ -2009,6 +1966,506 @@ function Filters() {
 
 /***/ }),
 
+/***/ "./resources/js/listings.js":
+/*!**********************************!*\
+  !*** ./resources/js/listings.js ***!
+  \**********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _files_loader__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./files-loader */ "./resources/js/files-loader.js");
+/* harmony import */ var _files_uploader__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./files-uploader */ "./resources/js/files-uploader.js");
+/* harmony import */ var _file_editor__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./file-editor */ "./resources/js/file-editor.js");
+
+
+
+function Listings() {
+  /**
+   * The loader instance.
+   * 
+   * @var obj
+   */
+  this.loader = {};
+
+  /**
+   * The uploader instance.
+   * 
+   * @var obj
+   */
+  this.uploader = {};
+
+  /**
+   * The queue for the loaded files.
+   *
+   * @var obj
+   */
+  this.loadedFiles = {};
+
+  /**
+   * The files successfully uploaded.
+   * 
+   * @var obj
+   */
+  this.uploadedFiles = {};
+
+  /**
+   * The files queue for both the loaded and uploaded files.
+   * 
+   * @var obj
+   */
+  this.files = {};
+
+  /**
+   * The options.
+   * 
+   * @var obj
+   */
+  this.options = {};
+
+  /**
+   * Initiate the listings page.
+   * 
+   * @return void
+   */
+  this.init = function () {
+    var self = this;
+
+    // Get options first then handle business after
+    window.axios.get(this.getOptionsRoute()).then(function (response) {
+      self.options = response.data;
+      self.uploader = new _files_uploader__WEBPACK_IMPORTED_MODULE_1__["default"]();
+      self.loader = new _files_loader__WEBPACK_IMPORTED_MODULE_0__["default"]();
+      self.registerEventHandlers();
+      self.registerLoaderEventHandlers();
+      self.registerUploaderEventHandlers();
+      self.loader.setOptions(self.options).start();
+      self.uploader.init();
+    });
+  };
+
+  /**
+   * Register the events handlers.
+   * 
+   * @return void
+   */
+  this.registerEventHandlers = function () {
+    var self = this;
+
+    // Show the uploader when the add files button is clicked
+    document.getElementById('laramedia-listings-trigger-dropzone').addEventListener('click', function (event) {
+      document.querySelector('.laramedia-uploader-dropzone').style.display = 'flex';
+    });
+
+    // Hide the uploader when it is clicked to close
+    document.querySelector('.laramedia-uploader-dropzone-trigger-close').addEventListener('click', function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      event.target.closest('.laramedia-uploader-dropzone').style.display = 'none';
+    });
+
+    // Hide the error section when X is clicked. Also remove the errors
+    document.getElementById('laramedia-listings-error-close').addEventListener('click', function (event) {
+      this.parentElement.style.display = 'none';
+
+      // Remove the errors
+      document.querySelectorAll('.laramedia-listings-error').forEach(function (element) {
+        element.remove();
+      });
+    });
+
+    // Load more
+    document.getElementById('laramedia-listings-load-more-btn').addEventListener('click', function (event) {
+      self.loader.loadContent();
+    });
+
+    // Disk filter
+    document.getElementById('laramedia-listings-filter-disk').addEventListener('change', function (event) {
+      self.loader.setRequestParameters({
+        disk: this.value
+      }).loadFreshContent();
+    });
+
+    // Visibility filter
+    document.getElementById('laramedia-listings-filter-visibility').addEventListener('change', function (event) {
+      self.loader.setRequestParameters({
+        visibility: this.value
+      }).loadFreshContent();
+    });
+
+    // Type filter
+    document.getElementById('laramedia-listings-filter-type').addEventListener('change', function (event) {
+      self.loader.setRequestParameters({
+        type: this.value
+      }).loadFreshContent();
+    });
+
+    // Ownership filter
+    document.getElementById('laramedia-listings-filter-ownership').addEventListener('change', function (event) {
+      self.loader.setRequestParameters({
+        ownership: this.value
+      }).loadFreshContent();
+    });
+
+    // Search filter
+    document.getElementById('laramedia-listings-filter-search').addEventListener('change', function (event) {
+      self.loader.setRequestParameters({
+        search: this.value
+      }).loadFreshContent();
+    });
+
+    // Active Section filter
+    document.getElementById('laramedia-listings-filter-active-section-container').addEventListener('click', function (event) {
+      document.querySelectorAll('.laramedia-listings-filter-section-container').forEach(function (element) {
+        element.classList.remove('laramedia-current-section');
+      });
+      this.classList.add('laramedia-current-section');
+      self.loader.setRequestParameters({
+        section: 'active'
+      }).loadFreshContent();
+    });
+
+    // Trash Section filter
+    document.getElementById('laramedia-listings-filter-trash-section-container').addEventListener('click', function (event) {
+      document.querySelectorAll('.laramedia-listings-filter-section-container').forEach(function (element) {
+        element.classList.remove('laramedia-current-section');
+      });
+      this.classList.add('laramedia-current-section');
+      self.loader.setRequestParameters({
+        section: 'trash'
+      }).loadFreshContent();
+    });
+  };
+
+  /**
+   * Register the loader event handlers.
+   * 
+   * @return void
+   */
+  this.registerLoaderEventHandlers = function () {
+    var self = this;
+
+    // Clear files on first load
+    this.loader.events.on('first_load_begin', function () {
+      document.getElementById('laramedia-listings-files-container').innerHTML = null;
+      document.getElementById('laramedia-listings-load-more-btn').classList.add('laramedia-hidden');
+    });
+
+    // Things to do when file has been loaded
+    this.loader.events.on('file_loaded', function (file) {
+      self.loadedFiles[file.uuid] = file;
+      self.files[file.uuid] = file;
+      self.showFilePreview(file);
+    });
+
+    // Things to do when load is completed
+    this.loader.events.on('load_complete', function (allFilesLoaded) {
+      if (!allFilesLoaded) {
+        document.getElementById('laramedia-listings-load-more-btn').classList.remove('laramedia-hidden');
+      }
+    });
+
+    // Things to do when the last load is completed
+    this.loader.events.on('last_load_complete', function () {
+      document.getElementById('laramedia-listings-load-more-btn').classList.add('laramedia-hidden');
+    });
+  };
+
+  /**
+   * Register the uploader event handlers.
+   * 
+   * @return void
+   */
+  this.registerUploaderEventHandlers = function () {
+    var self = this;
+
+    // Show the image preview when file uploaded successfully
+    this.uploader.events.on('upload_success', function (media, file, response) {
+      self.uploadedFiles[media.uuid] = media;
+      self.files[media.uuid] = media;
+      self.showFilePreview(media, true);
+    });
+
+    // Show the error when a file upload fails
+    this.uploader.events.on('upload_fail', function (file, response) {
+      self.showFileError(file, response);
+    });
+
+    // Show the error when a file upload fails
+    this.uploader.events.on('upload_error', function (file, response) {
+      self.showFileError(file, response);
+    });
+
+    // Show the error when a file upload fails
+    this.uploader.events.on('file_rejected', function (file, reason) {
+      self.showFileValidationError(file, reason);
+    });
+
+    // When the progress changes
+    this.uploader.events.on('progress_percentage_update', function (percentage) {
+      self.showUploadProgress(percentage);
+    });
+
+    // When the processing start
+    this.uploader.events.on('files_processing_start', function () {
+      self.showUploadProcessing();
+    });
+  };
+
+  /**
+   * Show the file preview.
+   * 
+   * @param  obj  media
+   * @param  bool  prepend
+   * 
+   * @return void
+   */
+  this.showFilePreview = function (media, prepend) {
+    var self = this;
+    var container = this.getFilesContainerElement();
+    var template = this.getFilePreviewTemplate(media);
+
+    // Add file id to template
+    template.querySelector('.laramedia-listings-item-wrapper').setAttribute('file_id', media.uuid);
+
+    // Enable the file editor when file preview is clicked
+    template.querySelector('.laramedia-listings-item-container').addEventListener('click', function (event) {
+      var wrapper = event.target.closest('.laramedia-listings-item-wrapper');
+      var hasPreviousFile = wrapper.previousElementSibling != null;
+      var hasNextFile = wrapper.nextElementSibling != null;
+      var editor = new _file_editor__WEBPACK_IMPORTED_MODULE_2__["default"]();
+
+      // When the editor previous file button is clicked
+      editor.events.on('previous_file', function (file) {
+        if (hasPreviousFile) {
+          editor.close(file);
+          wrapper.previousElementSibling.querySelector('.laramedia-listings-item-container').click();
+        }
+      });
+
+      // When the next file is requested from the editor
+      editor.events.on('next_file', function (file) {
+        if (hasNextFile) {
+          editor.close(file);
+          wrapper.nextElementSibling.querySelector('.laramedia-listings-item-container').click();
+        }
+      });
+
+      // When file updated in editor
+      editor.events.on('file_updated', function (updatedFile) {
+        self.files[updatedFile.uuid] = updatedFile;
+      });
+
+      // When file trashed from editor
+      editor.events.on('file_trashed', function (file) {
+        document.querySelector("[file_id='" + file.uuid + "']").remove();
+      });
+
+      // When file restored from editor
+      editor.events.on('file_restored', function (file) {
+        document.querySelector("[file_id='" + file.uuid + "']").remove();
+      });
+
+      // When file destroyed from editor
+      editor.events.on('file_destroyed', function (file) {
+        document.querySelector("[file_id='" + file.uuid + "']").remove();
+      });
+
+      // Start the editor
+      editor.init({
+        file: self.files[media.uuid],
+        has_previous_file: hasPreviousFile,
+        has_next_file: hasNextFile,
+        options: self.options
+      });
+    });
+
+    // Show image preview or file preview
+    if (media.file_type == 'image') {
+      template.querySelector('.laramedia-listings-image').src = media.base64_url;
+    } else {
+      template.querySelector('.laramedia-listings-item-name').innerHTML = media.original_name;
+    }
+    if (prepend != 'undefined' && prepend == true) {
+      container.prepend(template);
+    } else {
+      container.append(template);
+    }
+  };
+
+  /**
+   * Show the file error.
+   * 
+   * @param  obj  file
+   * @parma  obj  response
+   * 
+   * @return void
+   */
+  this.showFileError = function (file, response) {
+    var self = this;
+    var container = this.getErrorsContainerElement();
+    var template = this.getFileErrorTemplate();
+
+    // Event listener to remove error
+    template.querySelector('.laramedia-listings-error-remove').addEventListener('click', function (event) {
+      this.parentElement.parentElement.remove();
+      if (self.getErrorsContainerElement().querySelectorAll('.laramedia-listings-error').length == 0) {
+        self.getErrorsContainerElement().style.display = 'none';
+      }
+    });
+    template.querySelector('.laramedia-listings-error-name').innerHTML = file.name;
+    if (response.hasOwnProperty('response')) {
+      template.querySelector('.laramedia-listings-error-reason').innerHTML = response.response.data.message;
+    } else {
+      template.querySelector('.laramedia-listings-error-reason').innerHTML = response.messages.join(' ');
+    }
+    container.style.display = 'flex';
+    container.prepend(template);
+  };
+
+  /**
+   * Show the file validation error.
+   * 
+   * @param  obj  file
+   * @parma  obj  reason
+   * 
+   * @return void
+   */
+  this.showFileValidationError = function (file, reason) {
+    var self = this;
+    var container = this.getErrorsContainerElement();
+    var template = this.getFileErrorTemplate();
+
+    // Event listener to remove error
+    template.querySelector('.laramedia-listings-error-remove').addEventListener('click', function (event) {
+      this.parentElement.parentElement.remove();
+      if (self.getErrorsContainerElement().querySelectorAll('.laramedia-listings-error').length == 0) {
+        self.getErrorsContainerElement().style.display = 'none';
+      }
+    });
+    if (reason == 'file_large') {
+      reason = 'File exceeds the maximum size allowed.';
+    } else if (reason == 'file_small') {
+      reason = 'File does not meet the minimum size allowed.';
+    } else if (reason == 'file_not_allowed') {
+      reason = 'File type is not allowed.';
+    } else if (reason == 'file_already_selected') {
+      reason = 'File has already been selected.';
+    } else {
+      reason = 'File rejected';
+    }
+    template.querySelector('.laramedia-listings-error-name').innerHTML = file.name;
+    template.querySelector('.laramedia-listings-error-reason').innerHTML = reason;
+    container.style.display = 'flex';
+    container.prepend(template);
+  };
+
+  /**
+   * Show the upload progress.
+   * 
+   * @param  int  percentage
+   * 
+   * @return void
+   */
+  this.showUploadProgress = function (percentage) {
+    var container = this.getUploadProgressContainerElement();
+    if (container.style.display != 'flex') {
+      container.style.display = 'flex';
+    }
+    document.getElementById('laramedia-listings-upload-message').style.display = 'none';
+    var unitsElement = document.getElementById('laramedia-listings-upload-progress-units');
+    unitsElement.style.display = 'flex';
+    unitsElement.style.width = percentage + '%';
+    unitsElement.innerHTML = percentage + '%';
+  };
+
+  /**
+   * Show the upload processing.
+   * 
+   * @return void
+   */
+  this.showUploadProcessing = function () {
+    var container = this.getUploadProgressContainerElement();
+    if (container.style.display != 'flex') {
+      container.style.display = 'flex';
+    }
+    document.getElementById('laramedia-listings-upload-progress-units').style.display = 'none';
+    document.getElementById('laramedia-listings-upload-message').style.display = 'flex';
+  };
+
+  /**
+   * Get the options route.
+   * 
+   * @return string
+   */
+  this.getOptionsRoute = function () {
+    return document.head.querySelector("meta[name='laramedia_options_route']").content;
+  };
+
+  /**
+   * Get the files container element.
+   * 
+   * @return obj
+   */
+  this.getFilesContainerElement = function () {
+    return document.getElementById('laramedia-listings-files-container');
+  };
+
+  /**
+   * Get the errors container element.
+   * 
+   * @return obj
+   */
+  this.getErrorsContainerElement = function () {
+    return document.getElementById('laramedia-listings-errors-container');
+  };
+
+  /**
+   * Get the upload progress container element.
+   * 
+   * @return obj
+   */
+  this.getUploadProgressContainerElement = function () {
+    return document.getElementById('laramedia-listings-upload-progress-container');
+  };
+
+  /**
+   * Get the file preview template.
+   * 
+   * @param  obj  media
+   * @param  obj  file
+   * 
+   * @return obj
+   */
+  this.getFilePreviewTemplate = function (media, file) {
+    if (media.is_image) {
+      var template = document.getElementById('laramedia-listings-image-template');
+    } else {
+      var template = document.getElementById('laramedia-listings-none-image-template');
+    }
+    if (template == null) {
+      return;
+    }
+    return document.importNode(template.content, true);
+  };
+
+  /**
+   * Get the file error template.
+   * 
+   * @return obj
+   */
+  this.getFileErrorTemplate = function () {
+    var template = document.getElementById('laramedia-listings-error-template');
+    if (template == null) {
+      return;
+    }
+    return document.importNode(template.content, true);
+  };
+}
+new Listings().init();
+
+/***/ }),
+
 /***/ "./resources/js/upload-handler.js":
 /*!****************************************!*\
   !*** ./resources/js/upload-handler.js ***!
@@ -2040,18 +2497,15 @@ function UploadHandler() {
    */
   this.start = function (file, formData) {
     var self = this;
-    var request = window.axios.post(this.getUploadRoute(), formData);
-    request.then(function (response) {
+    window.axios.post(this.getUploadRoute(), formData).then(function (response) {
       if (response.data.success) {
         self.events.fire('upload_success', [response.data.file, file, response.data]);
       } else {
         self.events.fire('upload_fail', [file, response.data]);
       }
-    });
-    request["catch"](function (response) {
+    })["catch"](function (response) {
       self.events.fire('upload_error', [file, response]);
-    });
-    request.then(function (response) {
+    }).then(function (response) {
       self.events.fire('upload_complete', [file, response]);
     });
   };
@@ -2065,6 +2519,19 @@ function UploadHandler() {
     return document.head.querySelector("meta[name='laramedia_upload_route']").content;
   };
 }
+
+/***/ }),
+
+/***/ "./resources/css/laramedia.css":
+/*!*************************************!*\
+  !*** ./resources/css/laramedia.css ***!
+  \*************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+// extracted by mini-css-extract-plugin
+
 
 /***/ }),
 
@@ -6759,7 +7226,42 @@ if (typeof this !== 'undefined' && this.Sweetalert2){this.swal = this.sweetAlert
 /******/ 		return module.exports;
 /******/ 	}
 /******/ 	
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = __webpack_modules__;
+/******/ 	
 /************************************************************************/
+/******/ 	/* webpack/runtime/chunk loaded */
+/******/ 	(() => {
+/******/ 		var deferred = [];
+/******/ 		__webpack_require__.O = (result, chunkIds, fn, priority) => {
+/******/ 			if(chunkIds) {
+/******/ 				priority = priority || 0;
+/******/ 				for(var i = deferred.length; i > 0 && deferred[i - 1][2] > priority; i--) deferred[i] = deferred[i - 1];
+/******/ 				deferred[i] = [chunkIds, fn, priority];
+/******/ 				return;
+/******/ 			}
+/******/ 			var notFulfilled = Infinity;
+/******/ 			for (var i = 0; i < deferred.length; i++) {
+/******/ 				var [chunkIds, fn, priority] = deferred[i];
+/******/ 				var fulfilled = true;
+/******/ 				for (var j = 0; j < chunkIds.length; j++) {
+/******/ 					if ((priority & 1 === 0 || notFulfilled >= priority) && Object.keys(__webpack_require__.O).every((key) => (__webpack_require__.O[key](chunkIds[j])))) {
+/******/ 						chunkIds.splice(j--, 1);
+/******/ 					} else {
+/******/ 						fulfilled = false;
+/******/ 						if(priority < notFulfilled) notFulfilled = priority;
+/******/ 					}
+/******/ 				}
+/******/ 				if(fulfilled) {
+/******/ 					deferred.splice(i--, 1)
+/******/ 					var r = fn();
+/******/ 					if (r !== undefined) result = r;
+/******/ 				}
+/******/ 			}
+/******/ 			return result;
+/******/ 		};
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/compat get default export */
 /******/ 	(() => {
 /******/ 		// getDefaultExport function for compatibility with non-harmony modules
@@ -6800,436 +7302,68 @@ if (typeof this !== 'undefined' && this.Sweetalert2){this.swal = this.sweetAlert
 /******/ 		};
 /******/ 	})();
 /******/ 	
+/******/ 	/* webpack/runtime/jsonp chunk loading */
+/******/ 	(() => {
+/******/ 		// no baseURI
+/******/ 		
+/******/ 		// object to store loaded and loading chunks
+/******/ 		// undefined = chunk not loaded, null = chunk preloaded/prefetched
+/******/ 		// [resolve, reject, Promise] = chunk loading, 0 = chunk loaded
+/******/ 		var installedChunks = {
+/******/ 			"/js/listings": 0,
+/******/ 			"css/laramedia": 0
+/******/ 		};
+/******/ 		
+/******/ 		// no chunk on demand loading
+/******/ 		
+/******/ 		// no prefetching
+/******/ 		
+/******/ 		// no preloaded
+/******/ 		
+/******/ 		// no HMR
+/******/ 		
+/******/ 		// no HMR manifest
+/******/ 		
+/******/ 		__webpack_require__.O.j = (chunkId) => (installedChunks[chunkId] === 0);
+/******/ 		
+/******/ 		// install a JSONP callback for chunk loading
+/******/ 		var webpackJsonpCallback = (parentChunkLoadingFunction, data) => {
+/******/ 			var [chunkIds, moreModules, runtime] = data;
+/******/ 			// add "moreModules" to the modules object,
+/******/ 			// then flag all "chunkIds" as loaded and fire callback
+/******/ 			var moduleId, chunkId, i = 0;
+/******/ 			if(chunkIds.some((id) => (installedChunks[id] !== 0))) {
+/******/ 				for(moduleId in moreModules) {
+/******/ 					if(__webpack_require__.o(moreModules, moduleId)) {
+/******/ 						__webpack_require__.m[moduleId] = moreModules[moduleId];
+/******/ 					}
+/******/ 				}
+/******/ 				if(runtime) var result = runtime(__webpack_require__);
+/******/ 			}
+/******/ 			if(parentChunkLoadingFunction) parentChunkLoadingFunction(data);
+/******/ 			for(;i < chunkIds.length; i++) {
+/******/ 				chunkId = chunkIds[i];
+/******/ 				if(__webpack_require__.o(installedChunks, chunkId) && installedChunks[chunkId]) {
+/******/ 					installedChunks[chunkId][0]();
+/******/ 				}
+/******/ 				installedChunks[chunkId] = 0;
+/******/ 			}
+/******/ 			return __webpack_require__.O(result);
+/******/ 		}
+/******/ 		
+/******/ 		var chunkLoadingGlobal = self["webpackChunk"] = self["webpackChunk"] || [];
+/******/ 		chunkLoadingGlobal.forEach(webpackJsonpCallback.bind(null, 0));
+/******/ 		chunkLoadingGlobal.push = webpackJsonpCallback.bind(null, chunkLoadingGlobal.push.bind(chunkLoadingGlobal));
+/******/ 	})();
+/******/ 	
 /************************************************************************/
-var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be in strict mode.
-(() => {
-"use strict";
-/*!**********************************!*\
-  !*** ./resources/js/listings.js ***!
-  \**********************************/
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _files_loader__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./files-loader */ "./resources/js/files-loader.js");
-/* harmony import */ var _files_uploader__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./files-uploader */ "./resources/js/files-uploader.js");
-/* harmony import */ var _file_editor__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./file-editor */ "./resources/js/file-editor.js");
-
-
-
-function Listings() {
-  /**
-   * The loader instance.
-   * 
-   * @var obj
-   */
-  this.loader = {};
-
-  /**
-   * The uploader instance.
-   * 
-   * @var obj
-   */
-  this.uploader = {};
-
-  /**
-   * The queue for the loaded files.
-   *
-   * @var obj
-   */
-  this.loadedFiles = {};
-
-  /**
-   * The files successfully uploaded.
-   * 
-   * @var obj
-   */
-  this.uploadedFiles = {};
-
-  /**
-   * The files queue for both the loaded and uploaded files.
-   * 
-   * @var obj
-   */
-  this.files = {};
-
-  /**
-   * The options.
-   * 
-   * @var obj
-   */
-  this.options = {};
-
-  /**
-   * Initiate the listings page.
-   * 
-   * @return void
-   */
-  this.init = function () {
-    var self = this;
-
-    // Get options first then handle business after
-    window.axios.get(this.getOptionsRoute()).then(function (response) {
-      self.options = response.data;
-      self.uploader = new _files_uploader__WEBPACK_IMPORTED_MODULE_1__["default"]();
-      self.loader = new _files_loader__WEBPACK_IMPORTED_MODULE_0__["default"]();
-      self.registerEventHandlers();
-      self.registerLoaderEventHandlers();
-      self.registerUploaderEventHandlers();
-      self.loader.setOptions(self.options).start();
-      self.uploader.init();
-    });
-  };
-
-  /**
-   * Register the events handlers.
-   * 
-   * @return void
-   */
-  this.registerEventHandlers = function () {
-    var self = this;
-
-    // Show the uploader when the add files button is clicked
-    document.getElementById('laramedia-listings-trigger-dropzone').addEventListener('click', function (event) {
-      document.querySelector('.laramedia-uploader-dropzone').style.display = 'flex';
-    });
-
-    // Hide the uploader when it is clicked to close
-    document.querySelector('.laramedia-uploader-dropzone-trigger-close').addEventListener('click', function (event) {
-      event.preventDefault();
-      event.stopPropagation();
-      event.target.closest('.laramedia-uploader-dropzone').style.display = 'none';
-    });
-
-    // Hide the error section when X is clicked. Also remove the errors
-    document.getElementById('laramedia-listings-error-close').addEventListener('click', function (event) {
-      this.parentElement.style.display = 'none';
-
-      // Remove the errors
-      document.querySelectorAll('.laramedia-listings-error').forEach(function (element) {
-        element.remove();
-      });
-    });
-
-    // Load more
-    document.getElementById('laramedia-listings-load-more-btn').addEventListener('click', function (event) {
-      self.loader.loadContent();
-    });
-  };
-
-  /**
-   * Register the loader event handlers.
-   * 
-   * @return void
-   */
-  this.registerLoaderEventHandlers = function () {
-    var self = this;
-    this.loader.events.on('file_loaded', function (file) {
-      self.loadedFiles[file.uuid] = file;
-      self.files[file.uuid] = file;
-      self.showFilePreview(file);
-    });
-    this.loader.events.on('load_complete', function (allFilesLoaded) {
-      if (!allFilesLoaded) {
-        document.getElementById('laramedia-listings-load-more-btn').classList.remove('laramedia-hidden');
-      }
-    });
-    this.loader.events.on('last_load_complete', function () {
-      document.getElementById('laramedia-listings-load-more-btn').classList.add('laramedia-hidden');
-    });
-  };
-
-  /**
-   * Register the uploader event handlers.
-   * 
-   * @return void
-   */
-  this.registerUploaderEventHandlers = function () {
-    var self = this;
-
-    // Show the image preview when file uploaded successfully
-    this.uploader.events.on('upload_success', function (media, file, response) {
-      self.uploadedFiles[media.uuid] = media;
-      self.files[media.uuid] = media;
-      self.showFilePreview(media, true);
-    });
-
-    // Show the error when a file upload fails
-    this.uploader.events.on('upload_fail', function (file, response) {
-      self.showFileError(file, response);
-    });
-
-    // Show the error when a file upload fails
-    this.uploader.events.on('upload_error', function (file, response) {
-      self.showFileError(file, response);
-    });
-
-    // Show the error when a file upload fails
-    this.uploader.events.on('file_rejected', function (file, reason) {
-      self.showFileValidationError(file, reason);
-    });
-
-    // When the progress changes
-    this.uploader.events.on('progress_percentage_update', function (percentage) {
-      self.showUploadProgress(percentage);
-    });
-
-    // When the processing start
-    this.uploader.events.on('files_processing_start', function () {
-      self.showUploadProcessing();
-    });
-  };
-
-  /**
-   * Show the file preview.
-   * 
-   * @param  obj  media
-   * @param  bool  prepend
-   * 
-   * @return void
-   */
-  this.showFilePreview = function (media, prepend) {
-    var self = this;
-    var container = this.getFilesContainerElement();
-    var template = this.getFilePreviewTemplate(media);
-
-    // Add file id to template
-    template.querySelector('.laramedia-listings-item-wrapper').setAttribute('file_id', media.uuid);
-
-    // Enable the file editor when file preview is clicked
-    template.querySelector('.laramedia-listings-item-container').addEventListener('click', function (event) {
-      var wrapper = event.target.closest('.laramedia-listings-item-wrapper');
-      var hasPreviousFile = wrapper.previousElementSibling != null;
-      var hasNextFile = wrapper.nextElementSibling != null;
-      var editor = new _file_editor__WEBPACK_IMPORTED_MODULE_2__["default"]();
-
-      // When the editor previous file button is clicked
-      editor.events.on('previous_file', function (file) {
-        if (hasPreviousFile) {
-          editor.close(file);
-          wrapper.previousElementSibling.querySelector('.laramedia-listings-item-container').click();
-        }
-      });
-
-      // When the next file is requested from the editor
-      editor.events.on('next_file', function (file) {
-        if (hasNextFile) {
-          editor.close(file);
-          wrapper.nextElementSibling.querySelector('.laramedia-listings-item-container').click();
-        }
-      });
-
-      // When file updated in editor
-      editor.events.on('file_updated', function (updatedFile) {
-        self.files[updatedFile.uuid] = updatedFile;
-      });
-
-      // When file trashed from editor
-      editor.events.on('file_trashed', function (file) {
-        document.querySelector("[file_id='" + file.uuid + "']").remove();
-      });
-
-      // When file restored from editor
-      editor.events.on('file_restored', function (file) {
-        document.querySelector("[file_id='" + file.uuid + "']").remove();
-      });
-
-      // When file destroyed from editor
-      editor.events.on('file_destroyed', function (file) {
-        document.querySelector("[file_id='" + file.uuid + "']").remove();
-      });
-
-      // Start the editor
-      editor.init({
-        file: self.files[media.uuid],
-        has_previous_file: hasPreviousFile,
-        has_next_file: hasNextFile,
-        options: self.options
-      });
-    });
-
-    // Show image preview or file preview
-    if (media.file_type == 'image') {
-      template.querySelector('.laramedia-listings-image').src = media.base64_url;
-    } else {
-      template.querySelector('.laramedia-listings-item-name').innerHTML = media.original_name;
-    }
-    if (prepend != 'undefined' && prepend == true) {
-      container.prepend(template);
-    } else {
-      container.append(template);
-    }
-  };
-
-  /**
-   * Show the file error.
-   * 
-   * @param  obj  file
-   * @parma  obj  response
-   * 
-   * @return void
-   */
-  this.showFileError = function (file, response) {
-    var self = this;
-    var container = this.getErrorsContainerElement();
-    var template = this.getFileErrorTemplate();
-
-    // Event listener to remove error
-    template.querySelector('.laramedia-listings-error-remove').addEventListener('click', function (event) {
-      this.parentElement.parentElement.remove();
-      if (self.getErrorsContainerElement().querySelectorAll('.laramedia-listings-error').length == 0) {
-        self.getErrorsContainerElement().style.display = 'none';
-      }
-    });
-    template.querySelector('.laramedia-listings-error-name').innerHTML = file.name;
-    if (response.hasOwnProperty('response')) {
-      template.querySelector('.laramedia-listings-error-reason').innerHTML = response.response.data.message;
-    } else {
-      template.querySelector('.laramedia-listings-error-reason').innerHTML = response.messages.join(' ');
-    }
-    container.style.display = 'flex';
-    container.prepend(template);
-  };
-
-  /**
-   * Show the file validation error.
-   * 
-   * @param  obj  file
-   * @parma  obj  reason
-   * 
-   * @return void
-   */
-  this.showFileValidationError = function (file, reason) {
-    var self = this;
-    var container = this.getErrorsContainerElement();
-    var template = this.getFileErrorTemplate();
-
-    // Event listener to remove error
-    template.querySelector('.laramedia-listings-error-remove').addEventListener('click', function (event) {
-      this.parentElement.parentElement.remove();
-      if (self.getErrorsContainerElement().querySelectorAll('.laramedia-listings-error').length == 0) {
-        self.getErrorsContainerElement().style.display = 'none';
-      }
-    });
-    if (reason == 'file_large') {
-      reason = 'File exceeds the maximum size allowed.';
-    } else if (reason == 'file_small') {
-      reason = 'File does not meet the minimum size allowed.';
-    } else if (reason == 'file_not_allowed') {
-      reason = 'File type is not allowed.';
-    } else if (reason == 'file_already_selected') {
-      reason = 'File has already been selected.';
-    } else {
-      reason = 'File rejected';
-    }
-    template.querySelector('.laramedia-listings-error-name').innerHTML = file.name;
-    template.querySelector('.laramedia-listings-error-reason').innerHTML = reason;
-    container.style.display = 'flex';
-    container.prepend(template);
-  };
-
-  /**
-   * Show the upload progress.
-   * 
-   * @param  int  percentage
-   * 
-   * @return void
-   */
-  this.showUploadProgress = function (percentage) {
-    var container = this.getUploadProgressContainerElement();
-    if (container.style.display != 'flex') {
-      container.style.display = 'flex';
-    }
-    document.getElementById('laramedia-listings-upload-message').style.display = 'none';
-    var unitsElement = document.getElementById('laramedia-listings-upload-progress-units');
-    unitsElement.style.display = 'flex';
-    unitsElement.style.width = percentage + '%';
-    unitsElement.innerHTML = percentage + '%';
-  };
-
-  /**
-   * Show the upload processing.
-   * 
-   * @return void
-   */
-  this.showUploadProcessing = function () {
-    var container = this.getUploadProgressContainerElement();
-    if (container.style.display != 'flex') {
-      container.style.display = 'flex';
-    }
-    document.getElementById('laramedia-listings-upload-progress-units').style.display = 'none';
-    document.getElementById('laramedia-listings-upload-message').style.display = 'flex';
-  };
-
-  /**
-   * Get the options route.
-   * 
-   * @return string
-   */
-  this.getOptionsRoute = function () {
-    return document.head.querySelector("meta[name='laramedia_options_route']").content;
-  };
-
-  /**
-   * Get the files container element.
-   * 
-   * @return obj
-   */
-  this.getFilesContainerElement = function () {
-    return document.getElementById('laramedia-listings-files-container');
-  };
-
-  /**
-   * Get the errors container element.
-   * 
-   * @return obj
-   */
-  this.getErrorsContainerElement = function () {
-    return document.getElementById('laramedia-listings-errors-container');
-  };
-
-  /**
-   * Get the upload progress container element.
-   * 
-   * @return obj
-   */
-  this.getUploadProgressContainerElement = function () {
-    return document.getElementById('laramedia-listings-upload-progress-container');
-  };
-
-  /**
-   * Get the file preview template.
-   * 
-   * @param  obj  media
-   * @param  obj  file
-   * 
-   * @return obj
-   */
-  this.getFilePreviewTemplate = function (media, file) {
-    if (media.is_image) {
-      var template = document.getElementById('laramedia-listings-image-template');
-    } else {
-      var template = document.getElementById('laramedia-listings-none-image-template');
-    }
-    if (template == null) {
-      return;
-    }
-    return document.importNode(template.content, true);
-  };
-
-  /**
-   * Get the file error template.
-   * 
-   * @return obj
-   */
-  this.getFileErrorTemplate = function () {
-    var template = document.getElementById('laramedia-listings-error-template');
-    if (template == null) {
-      return;
-    }
-    return document.importNode(template.content, true);
-  };
-}
-new Listings().init();
-})();
-
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module depends on other loaded chunks and execution need to be delayed
+/******/ 	__webpack_require__.O(undefined, ["css/laramedia"], () => (__webpack_require__("./resources/js/listings.js")))
+/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["css/laramedia"], () => (__webpack_require__("./resources/css/laramedia.css")))
+/******/ 	__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
+/******/ 	
 /******/ })()
 ;

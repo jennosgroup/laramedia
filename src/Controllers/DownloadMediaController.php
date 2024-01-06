@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 class DownloadMediaController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Download a resource.
      */
     public function __invoke(Request $request, Media $media): StreamedResponse
     {
@@ -18,8 +18,7 @@ class DownloadMediaController extends Controller
 
         return Storage::disk($media->getDisk())
             ->download(
-                $media->getRelativePath($request->input('cut')),
-                $media->getName()
+                $media->getRelativePath($request->input('cut')), $media->getName()
             );
     }
 }

@@ -5,6 +5,7 @@ namespace JennosGroup\Laramedia\Support;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use JennosGroup\Laramedia\Actions\CheckIfFileIsNotTooBig;
@@ -60,22 +61,19 @@ class Uploader
      */
     public function handle(): array
     {
-        if (! $this->fileIsValid($this->getFileFromRequest())) {
+        $file = $this->getFileFromRequest();
+
+        if (! $this->fileIsValid($file)) {
             return $this->getValidationErrorPayload();
         }
 
-        $filename = $this->makeFilenameUnique(
-            $this->getFileFromRequest()->getClientOriginalName(),
-            $this->getFileFromRequest()
-        );
+        $filename = $this->makeFilenameUnique($file);
 
-        if (! $this->storeFile($this->getFileFromRequest(), $filename)) {
+        if (! $this->storeFile($file, $filename)) {
             return $this->getFileNotStoredPayload();
         }
 
-        $media = Media::create(
-            $this->getUploadDetails($this->getFileFromRequest(), $filename)
-        );
+        $media = Media::create($this->getUploadDetails($file, $filename));
 
         return $this->getSuccessPayload($media);
     }
@@ -126,13 +124,13 @@ class Uploader
     /**
      * Check if the file is valid.
      */
-    public function fileIsValid(): bool
+    public function fileIsValid(UploadedFile $file): bool
     {
-        if (! CheckIfFileIsNotTooSmall::execute($this->getFileFromRequest())) {
+        if (! CheckIfFileIsNotTooSmall::execute($file)) {
             $this->setMinFileSizeError();
-        } elseif (! CheckIfFileIsNotTooBig::execute($this->getFileFromRequest())) {
+        } elseif (! CheckIfFileIsNotTooBig::execute($file)) {
             $this->setMaxFileSizeError();
-        } elseif (! CheckIfFileTypeValid::execute($this->getFileFromRequest())) {
+        } elseif (! CheckIfFileTypeValid::execute($file)) {
             $this->setFileNotAllowedError();
         }
 
@@ -142,8 +140,10 @@ class Uploader
     /**
      * Make the filename unique.
      */
-    public function makeFilenameUnique(string $filename, UploadedFile $file): string
+    public function makeFilenameUnique(UploadedFile $file): string
     {
+        return $file->hashName();
+
         $uuid = Uuid::uuid4()->toString();
 
         $name = Str::slug(pathinfo($filename, PATHINFO_FILENAME));
@@ -185,10 +185,7 @@ class Uploader
         }
 
         return Storage::disk($this->getDisk())->putFileAs(
-            $path,
-            $file,
-            $filename,
-            $this->getVisibility()
+            $path, $file, $filename, $this->getVisibility()
         );
     }
 
@@ -263,6 +260,7 @@ class Uploader
         $originalName = $file->getClientOriginalName();
         $title = str_replace('.'.pathinfo($originalName, PATHINFO_EXTENSION), '', $originalName);
         $title = ucwords(str_replace(['_', '-'], ' ', $title));
+        $title = preg_replace('/\s+/', ' ', $title);
 
         return [
             'name' => $filename,
@@ -280,6 +278,7 @@ class Uploader
             'upload_path' => $this->getRelativeUploadPath(),
             'disk' => $this->getDisk(),
             'visibility' => $this->getVisibility(),
+            'author_id' => Auth::user()->{Auth::user()->getKeyName()} ?? null,
             'options' => [],
         ];
     }

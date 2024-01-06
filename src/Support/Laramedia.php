@@ -42,12 +42,26 @@ class Laramedia extends Config
         $list = [];
 
         foreach (static::disksVisibilities() as $disk => $visibilities) {
-            foreach ($visibilities as $visibility) {
-                $list[] = $visibility;
+            foreach ($visibilities as $key => $value) {
+                $list[$key] = $value;
             }
         }
 
-        return array_unique($list);
+        return $list;
+    }
+
+    /**
+     * Get the type filters list.
+     */
+    public static function typeFiltersList(): array
+    {
+        $list = [];
+
+        foreach (static::typeFilters() as $key => $types) {
+            $list[$key] = ucwords(Str_replace(['_', '-'], ' ', $key));
+        }
+
+        return $list;
     }
 
     /**

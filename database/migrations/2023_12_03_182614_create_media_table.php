@@ -29,6 +29,7 @@ return new class () extends Migration {
             $table->text('upload_path');
             $table->string('disk');
             $table->string('visibility');
+            $table->string('author_id')->nullable();
             $table->longText('options')->nullable();
             $table->timestamps();
             $table->softDeletes();

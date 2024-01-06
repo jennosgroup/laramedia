@@ -19,21 +19,15 @@ export default function UploadHandler() {
     this.start = function (file, formData) {
         var self = this;
 
-        var request = window.axios.post(this.getUploadRoute(), formData);
-
-        request.then(function (response) {
+        window.axios.post(this.getUploadRoute(), formData).then(function (response) {
             if (response.data.success) {
                 self.events.fire('upload_success', [response.data.file, file, response.data]);
             } else {
                 self.events.fire('upload_fail', [file, response.data]);
             }
-        });
-
-        request.catch(function (response) {
+        }).catch(function (response) {
             self.events.fire('upload_error', [file, response])
-        });
-
-        request.then(function (response) {
+        }).then(function (response) {
             self.events.fire('upload_complete', [file, response]);
         });
     }
