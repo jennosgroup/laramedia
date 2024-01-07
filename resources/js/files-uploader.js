@@ -495,6 +495,7 @@ export default function FilesUploader() {
      * @return void
      */
     this.resetVariousFileQueues = function () {
+        this.files = [];
         this.acceptedFilesQueue = {};
         this.rejectedFilesQueue = {};
         this.uploadedFilesQueue = {};
