@@ -1,6 +1,6 @@
-import UploadHandler from './upload-handler';
 import Events from './events';
 import Filters from './filters';
+import UploadHandler from './upload-handler';
 import Swal from 'sweetalert2';
 
 export default function FilesUploader() {
@@ -19,39 +19,48 @@ export default function FilesUploader() {
     this.filters = new Filters();
 
     /**
-     * The loaded options.
+     * The files queue.
+     * This is the files that were selected from the browser.
      * 
-     * @var object
+     * @var array
      */
-    this.options = {};
+    this.files = [];
 
     /**
-     * The queue for the accepted files.
+     * The queue for the files that passed validation.
      *
      * @var object
      */
     this.acceptedFilesQueue = {};
 
     /**
-     * The queue for the rejected files.
+     * The queue for the files that failed validation.
      *
      * @var object
      */
     this.rejectedFilesQueue = {};
 
     /**
-     * The queue for the completed files.
+     * The queue for the files that were uploaded to the server successfully.
+     * This will contain the laravel media resource version of the file.
+     *
+     * @var object
+     */
+    this.uploadedFilesQueue = {};
+
+    /**
+     * The queue for the files that failed to be uploaded to the server.
+     *
+     * @var object
+     */
+    this.failedUploadFilesQueue = {};
+
+    /**
+     * The queue for the files that have been completely handled.
      *
      * @var object
      */
     this.completedFilesQueue = {};
-
-    /**
-     * The queue for the failed files.
-     *
-     * @var object
-     */
-    this.failedFilesQueue = {};
 
     /**
      * The number of files selected for upload.
@@ -61,11 +70,40 @@ export default function FilesUploader() {
     this.totalSelectedFiles = 0;
 
     /**
+     * The number of files accepted.
+     * 
+     * @var int
+     */
+    this.totalFilesAccepted = 0;
+
+    /**
+     * The number of files accepted.
+     * 
+     * @var int
+     */
+    this.totalFilesRejected = 0;
+
+    /**
      * The number of files that have been uploaded so far.
      *
      * @var int
      */
     this.totalFilesUploaded = 0;
+
+    /**
+     * The number of files that have failed upload.
+     *
+     * @var int
+     */
+    this.totalFilesFailedUpload = 0;
+
+    /**
+     * The number of files that have been completed.
+     * This will include uploaded files, failed validated files and files with error.
+     *
+     * @var int
+     */
+    this.totalFilesCompleted = 0;
 
     /**
      * The percentage point of an upload.
@@ -82,11 +120,11 @@ export default function FilesUploader() {
     this.progressPercentage = 0;
 
     /**
-     * Indicate whether upload is in progress.
+     * The options.
      * 
-     * @var bool
+     * @var object
      */
-    this.inProgress = false;
+    this.options = {};
 
     /**
      * Initiate the uploader.
@@ -96,8 +134,6 @@ export default function FilesUploader() {
     this.init = function () {
         var self = this;
 
-        // Get the options and save them to the options queue.
-        // Register a few event handlers that will take care of all the magic.
         window.axios.get(this.getOptionsRoute()).then(function (response) {
             self.options = self.mergeOptions(self.options, response.data);
             self.registerDropzoneEventHandlers();
@@ -118,6 +154,7 @@ export default function FilesUploader() {
         }
 
         if (Object.keys(options).length < 1) {
+            this.options = {};
             return this;
         }
 
@@ -126,6 +163,26 @@ export default function FilesUploader() {
         }
 
         return this;
+    }
+
+    /**
+     * Merge options.
+     * 
+     * @param  obj  overridingOptions
+     * @param  obj  options
+     * 
+     * @return obj
+     */
+    this.mergeOptions = function (overridingOptions, options) {
+        if (Object.keys(overridingOptions).length < 1) {
+            return options;
+        }
+
+        for (var key in overridingOptions) {
+            options[key] = overridingOptions[key];
+        }
+
+        return options;
     }
 
     /**
@@ -153,17 +210,14 @@ export default function FilesUploader() {
         });
 
         // Some drag events we want to prevent default action and propagation.
-        ['dragstart', 'drag', 'dragend', 'dragenter'].forEach(eventName => {
+        ['dragstart', 'drag', 'dragend', 'dragenter'].forEach(function (eventName) {
             dropzoneElement.addEventListener(eventName, function (event) {
                 event.preventDefault();
-            event.stopPropagation();
+                event.stopPropagation();
             }, false);
         });
 
-        /**
-         * When the dragover event is fired, we want to let the user know that
-         * they are over the drag area.
-         */
+        // Let the user know that they are over the drag area.
         dropzoneElement.addEventListener('dragover', function(event) {
             event.preventDefault();
             event.stopPropagation();
@@ -171,10 +225,7 @@ export default function FilesUploader() {
             this.classList.add('dropzone-highlight');
         }, false);
 
-        /**
-         * When the dragleave event is fired, we want to let the user know that
-         * they have left the drag area.
-         */
+        // Let the user know that they have left the drag area.
         dropzoneElement.addEventListener('dragleave', function(event) {
             event.preventDefault();
             event.stopPropagation();
@@ -240,38 +291,38 @@ export default function FilesUploader() {
     this.processFiles = function (files) {
         var self = this;
 
-        var files = Array.from(files);
+        this.files = Array.from(files);
         var minNumberOfFiles = this.getOption('min_number_of_files');
         var maxNumberOfFiles = this.getOption('max_number_of_files');
 
-        this.events.fire('files_processing_start', []);
+        // Fire processing start event
+        this.events.fire('files_processing_start', [this.files]);
 
         // Notify that multipple uploads not allowed
-        if (! this.getOption('allow_multiple_uploads') && files.length > 1) {
+        if (! this.getOption('allow_multiple_uploads') && this.files.length > 1) {
             return this.notifyThatMultipleUploadsNotAllowed();
         }
 
         // Notify that not enough files selected
-        if (minNumberOfFiles != null && files.length < minNumberOfFiles) {
+        if (minNumberOfFiles != null && this.files.length < minNumberOfFiles) {
             return this.notifyThatNotEnoughFilesSelected();
         }
 
         // Notify that too many files selected
-        if (maxNumberOfFiles != null && files.length > maxNumberOfFiles) {
+        if (maxNumberOfFiles != null && this.files.length > maxNumberOfFiles) {
             return this.notifyThatTooManyFilesSelected();
         }
 
         // Process the files that were selected
-        files.forEach(function (file) {
+        this.files.forEach(function (file) {
             self.processFile(file);
         });
 
-        this.events.fire('files_processing_end', [files]);
+        // Fire processing end event
+        this.events.fire('files_processing_end', [this.acceptedFilesQueue, this.rejectedFilesQueue]);
 
-        // Fire off the individual uploads for the files
-        for (var fileId in this.acceptedFilesQueue) {
-            this.uploadFile(this.acceptedFilesQueue[fileId]);
-        }
+        // Now we upload the files that are accepted
+        this.uploadFiles(this.acceptedFilesQueue);
     }
 
     /**
@@ -302,32 +353,69 @@ export default function FilesUploader() {
 
         if (this.rejectedFilesQueue.hasOwnProperty(fileId)) {
             this.rejectedFilesQueue[fileId] = file;
-            this.totalFilesUploaded += 1;
+            this.completedFilesQueue[fileId] = file;
+
+            this.totalFilesRejected += 1;
+            this.totalFilesCompleted += 1;
+
             this.events.fire('file_rejected', [file, 'file_already_selected']);
         } else if (this.acceptedFilesQueue.hasOwnProperty(fileId)) {
             this.rejectedFilesQueue[fileId] = file;
-            this.totalFilesUploaded += 1;
+            this.completedFilesQueue[fileId] = file;
+
+            this.totalFilesRejected += 1;
+            this.totalFilesCompleted += 1;
+
             this.events.fire('file_rejected', [file, 'file_already_selected']);
         } else if (minFileSize != null && filesize < minFileSize) {
             this.rejectedFilesQueue[fileId] = file;
-            this.totalFilesUploaded += 1;
+            this.completedFilesQueue[fileId] = file;
+
+            this.totalFilesRejected += 1;
+            this.totalFilesCompleted += 1;
+
             this.events.fire('file_rejected', [file, 'file_small']);
         } else if (maxFileSize != null && filesize > maxFileSize) {
             this.rejectedFilesQueue[fileId] = file;
-            this.totalFilesUploaded += 1;
+            this.completedFilesQueue[fileId] = file;
+
+            this.totalFilesRejected += 1;
+            this.totalFilesCompleted += 1;
+
             this.events.fire('file_rejected', [file, 'file_large']);
         } else if (allowedMimeTypes.length == 0 && allowedExtensions.length == 0) {
             this.acceptedFilesQueue[fileId] = file;
+            this.totalFilesAccepted += 1;
         } else if (allowedMimeTypes.length >= 1 && allowedMimeTypes.indexOf(mimetype) != '-1') {
             this.acceptedFilesQueue[fileId] = file;
+            this.totalFilesAccepted += 1;
         } else if (allowedMimeTypes.length >= 1 && allowedMimeTypes.indexOf(mimetypeWildcard) != '-1') {
             this.acceptedFilesQueue[fileId] = file;
+            this.totalFilesAccepted += 1;
         } else if (allowedExtensions.length >= 1 && allowedExtensions.indexOf(extension) != '-1') {
             this.acceptedFilesQueue[fileId] = file;
+            this.totalFilesAccepted += 1;
         } else {
             this.rejectedFilesQueue[fileId] = file;
-            this.totalFilesUploaded += 1;
+            this.completedFilesQueue[fileId] = file;
+
+            this.totalFilesRejected += 1;
+            this.totalFilesCompleted += 1;
+
             this.events.fire('file_rejected', [file, 'file_not_allowed']);
+        }
+    }
+
+    /**
+     * Upload the given files.
+     * 
+     * @var  obj  files
+     * 
+     * @return void
+     */
+    this.uploadFiles = function (files) {
+        for (var fileId in files) {
+            this.uploadFile(files[fileId]);
         }
     }
 
@@ -346,45 +434,57 @@ export default function FilesUploader() {
 
         formData.append('file', file);
 
+        // Handle the upload success
         handler.events.on('upload_success', function (media, browserFile, response) {
             var fileId = self.generateFileId(browserFile);
-            self.completedFilesQueue[fileId] = media;
+
+            self.uploadedFilesQueue[fileId] = media;
+            self.totalFilesUploaded += 1;
+
             self.events.fire('upload_success', [media, browserFile, response]);
         });
 
+        // Handle the upload fail
         handler.events.on('upload_fail', function (browserFile, response) {
             var fileId = self.generateFileId(browserFile);
-            self.failedFilesQueue[fileId] = browserFile;
+
+            self.failedUploadFilesQueue[fileId] = browserFile;
+            self.totalFilesFailedUpload += 1;
+
             self.events.fire('upload_fail', [browserFile, response]);
         });
 
+        // Handle the upload error
         handler.events.on('upload_error', function (browserFile, response) {
             var fileId = self.generateFileId(browserFile);
-            self.failedFilesQueue[fileId] = browserFile;
+
+            self.failedUploadFilesQueue[fileId] = browserFile;
+            self.totalFilesFailedUpload += 1;
+
             self.events.fire('upload_error', [browserFile, response]);
         });
 
+        // Handle the upload complete
         handler.events.on('upload_complete', function (browserFile, response) {
-            self.totalFilesUploaded += 1;
-            self.progressPercentage = Math.round(self.totalFilesUploaded * self.percentagePoint);
+            self.completedFilesQueue[fileId] = browserFile;
+            self.totalFilesCompleted += 1;
 
-            self.events.fire('progress_percentage_update', [self.progressPercentage, self.totalFilesUploaded, self.percentagePoint]);
+            self.progressPercentage = Math.round(self.totalFilesCompleted * self.percentagePoint);
 
-            if (self.totalSelectedFiles == self.totalFilesUploaded) {
+            self.events.fire('progress_percentage_update', [self.progressPercentage, self.totalFilesCompleted, self.percentagePoint]);
+
+            if (self.totalSelectedFiles == self.totalFilesCompleted) {
+                self.events.fire('uploads_finish_uploaded_files', [self.uploadedFilesQueue]);
+                self.events.fire('uploads_finish_failed_files', [self.failedUploadFilesQueue]);
                 self.events.fire('uploads_finish_completed_files', [self.completedFilesQueue]);
-                self.events.fire('uploads_finish_failed_files', [self.failedFilesQueue]);
 
                 self.resetVariousFileQueues();
                 self.resetMetrics();
                 self.getDropzoneInputElement().value = null;
-                self.inProgress = false;
             }
         });
 
-        // Indicate that the upload is in progress
-        this.inProgress = true;
-
-        this.events.fire('upload_start')
+        this.events.fire('upload_start', [file]);
 
         handler.start(file, formData);
     }
@@ -397,8 +497,9 @@ export default function FilesUploader() {
     this.resetVariousFileQueues = function () {
         this.acceptedFilesQueue = {};
         this.rejectedFilesQueue = {};
+        this.uploadedFilesQueue = {};
+        this.failedUploadFilesQueue = {};
         this.completedFilesQueue = {};
-        this.failedFilesQueue = {};
     }
 
     /**
@@ -407,8 +508,12 @@ export default function FilesUploader() {
      * @return void
      */
     this.resetMetrics = function () {
-        this.totalFilesUploaded = 0;
         this.totalSelectedFiles = 0;
+        this.totalFilesAccepted = 0;
+        this.totalFilesRejected = 0;
+        this.totalFilesUploaded = 0;
+        this.totalFilesFailedUpload = 0;
+        this.totalFilesCompleted = 0;
         this.progressPercentage = 0;
         this.percentagePoint = 0;
     }
@@ -426,26 +531,6 @@ export default function FilesUploader() {
         }
 
         return this.options[option];
-    }
-
-    /**
-     * Merge options.
-     * 
-     * @param  obj  overridingOptions
-     * @param  obj  options
-     * 
-     * @return obj
-     */
-    this.mergeOptions = function (overridingOptions, options) {
-        if (Object.keys(overridingOptions).length < 1) {
-            return options;
-        }
-
-        for (var key in overridingOptions) {
-            options[key] = overridingOptions[key];
-        }
-
-        return options;
     }
 
     /**
