@@ -20,7 +20,8 @@ export default function FilesUploader() {
 
     /**
      * The files queue.
-     * This is the files that were selected from the browser.
+     * 
+     * These are the files that were selected from the browser.
      * 
      * @var array
      */
@@ -57,6 +58,8 @@ export default function FilesUploader() {
 
     /**
      * The queue for the files that have been completely handled.
+     * 
+     * This will include accepted, rejected, upload and failed upload files.
      *
      * @var object
      */
@@ -99,7 +102,8 @@ export default function FilesUploader() {
 
     /**
      * The number of files that have been completed.
-     * This will include uploaded files, failed validated files and files with error.
+     *
+     * This will include accepted, rejected, uploaded and failed uploaded files.
      *
      * @var int
      */
