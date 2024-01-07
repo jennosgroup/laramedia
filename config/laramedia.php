@@ -89,11 +89,6 @@ return [
     ],
 
     /**
-     * If files should be auto uploaded.
-     */
-    'auto_upload' => true,
-
-    /**
      * If multiple file uploads should be allowed.
      */
     'allow_multiple_uploads' => true,
@@ -128,29 +123,9 @@ return [
     ],
 
     /**
-     * The file meta for each upload.
-     */
-    'meta' => [],
-
-    /**
-     * The meta fields for each upload.
-     */
-    'meta_fields' => [],
-
-    /**
      * The file input name.
      */
     'file_input_name' => 'file',
-
-    /**
-     * The note to display on the uploader.
-     */
-    'note' => null,
-
-    /**
-     * Whether trash is enabled.
-     */
-    'enable_trash' => true,
 
     /**
      * The pagination total for the files listings page.

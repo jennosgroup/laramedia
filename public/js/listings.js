@@ -1486,6 +1486,7 @@ function FilesUploader() {
     var self = this;
     window.axios.get(this.getOptionsRoute()).then(function (response) {
       self.options = self.mergeOptions(self.options, response.data);
+      self.populateVisibilityOptions();
       self.registerDropzoneEventHandlers();
       self.configureDropzoneFilesInput();
     });
@@ -1540,14 +1541,39 @@ function FilesUploader() {
     var dropzoneElement = this.getDropzoneElement();
     var dropzoneInputElement = this.getDropzoneInputElement();
 
+    // Prevent dropzone file selectors popping up when changing disk and visibility for uploads.
+    document.querySelector('.laramedia-uploader-dropzone-filters').addEventListener('click', function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    });
+
+    // When the disk is change, populate the visiblity accordingly
+    document.getElementById('laramedia-dropzone-disk').addEventListener('change', function (event) {
+      self.handleDiskChange();
+    });
+
     // When the dropzone element is clicked, we trigger the browser files selector.
     dropzoneElement.addEventListener('click', function (e) {
-      dropzoneInputElement.click();
+      if (self.validateDiskAndVisiblity()) {
+        return dropzoneInputElement.click();
+      }
+      sweetalert2__WEBPACK_IMPORTED_MODULE_3___default().fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Invalid visibility selected for the chosen disk.'
+      });
     });
 
     // When the dropzone input element receives files, we process them
     dropzoneInputElement.addEventListener('change', function (event) {
-      self.processFiles(this.files);
+      if (self.validateDiskAndVisiblity()) {
+        return self.processFiles(this.files);
+      }
+      sweetalert2__WEBPACK_IMPORTED_MODULE_3___default().fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Invalid visibility selected for the chosen disk.'
+      });
     });
 
     // Some drag events we want to prevent default action and propagation.
@@ -1577,7 +1603,14 @@ function FilesUploader() {
       event.preventDefault();
       event.stopPropagation();
       this.classList.remove('laramedia-dropzone-highlight');
-      self.processFiles(event.dataTransfer.files);
+      if (self.validateDiskAndVisiblity()) {
+        return self.processFiles(event.dataTransfer.files);
+      }
+      sweetalert2__WEBPACK_IMPORTED_MODULE_3___default().fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Invalid visibility selected for the chosen disk.'
+      });
     }, false);
   };
 
@@ -1751,6 +1784,8 @@ function FilesUploader() {
     var handler = new _upload_handler__WEBPACK_IMPORTED_MODULE_2__["default"]();
     var formData = new FormData();
     formData.append('file', file);
+    formData.append('disk', this.getDiskValue());
+    formData.append('visibility', this.getVisibilityValue());
 
     // Handle the upload success
     handler.events.on('upload_success', function (media, browserFile, response) {
@@ -1794,6 +1829,104 @@ function FilesUploader() {
     });
     this.events.fire('upload_start', [file]);
     handler.start(file, formData);
+  };
+
+  /**
+   * Get the disk value.
+   * 
+   * @return mixed
+   */
+  this.getDiskValue = function () {
+    return document.getElementById('laramedia-dropzone-disk').value;
+  };
+
+  /**
+   * Get the visiblity value.
+   * 
+   * @return mixed
+   */
+  this.getVisibilityValue = function () {
+    return document.getElementById('laramedia-dropzone-visibility').value;
+  };
+
+  /**
+   * Validate the disk and visibility.
+   * 
+   * @return bool
+   */
+  this.validateDiskAndVisiblity = function () {
+    var disks = this.options.disks;
+    var visibilities = this.options.disks_visibilities;
+    var disk = this.getDiskValue();
+    var visibility = this.getVisibilityValue();
+    if (disk == '' || disk == null) {
+      return false;
+    }
+    if (visibility == '' || visibility == null) {
+      return false;
+    }
+    if (!disks.hasOwnProperty(disk)) {
+      return false;
+    }
+    if (!visibilities.hasOwnProperty(visibility)) {
+      return false;
+    }
+    var diskVisibilities = this.options.disks_visibilities[disk];
+    if (!diskVisibilities.hasOwnProperty(visibility)) {
+      return false;
+    }
+    return true;
+  };
+
+  /**
+   * Populate the visibility options.
+   * 
+   * @return void
+   */
+  this.populateVisibilityOptions = function () {
+    var index = 0;
+    var disk = this.getDiskValue();
+    var diskVisibilities = this.options.disks_visibilities[disk];
+    var visibilityElement = document.getElementById('laramedia-dropzone-visibility');
+    for (var visibility in diskVisibilities) {
+      var option = document.createElement('option');
+      option.value = visibility;
+      option.text = diskVisibilities[visibility];
+      visibilityElement.options[index] = option;
+      index++;
+    }
+  };
+
+  /**
+   * Handle the disk change.
+   *
+   * @param  string  disk
+   *
+   * @return void
+   */
+  this.handleDiskChange = function () {
+    var disk = this.getDiskValue();
+    var diskVisibilities = this.options.disks_visibilities[disk];
+    var diskDefaultVisibility = this.options.disks_default_visibility[disk];
+    var visibilityElement = document.getElementById('laramedia-dropzone-visibility');
+
+    // Reset the visibility options
+    for (var index = visibilityElement.options.length; index >= 0; index--) {
+      visibilityElement.remove(index);
+    }
+    var index = 0;
+
+    // Add the disk visibility options to the visibility select element
+    for (var visibility in diskVisibilities) {
+      var option = document.createElement('option');
+      option.value = visibility;
+      option.text = diskVisibilities[visibility];
+      if (visibility == diskDefaultVisibility) {
+        option.selected = true;
+      }
+      visibilityElement.options[index] = option;
+      index++;
+    }
   };
 
   /**
@@ -2464,7 +2597,7 @@ function Listings() {
     } else {
       template.querySelector('.laramedia-files-error-reason').innerHTML = response.messages.join(' ');
     }
-    container.style.display = 'flex';
+    container.classList.remove('laramedia-hidden');
     container.prepend(template);
   };
 

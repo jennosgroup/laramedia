@@ -372,7 +372,8 @@ function Listings() {
 			template.querySelector('.laramedia-files-error-reason').innerHTML = response.messages.join(' ');
 		}
 
-		container.style.display = 'flex';
+		container.classList.remove('laramedia-hidden');
+		
 		container.prepend(template);
 	}
 

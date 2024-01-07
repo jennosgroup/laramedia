@@ -26,6 +26,22 @@
 	background-color: #ededed;
 }
 
+.laramedia-uploader-dropzone-filters {
+	margin-bottom: 24px;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+}
+
+.laramedia-uploader-dropzone-filters span {
+	margin-right: 4px;
+	font-weight: 700;
+}
+
+.laramedia-uploader-dropzone-filters select {
+	margin-right: 24px;
+}
+
 .laramedia-uploader-dropzone-close {
 	position: absolute;
 	right: 18px;

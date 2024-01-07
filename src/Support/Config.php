@@ -137,14 +137,6 @@ class Config
     }
 
     /**
-     * Whether files should be automatically uploaded.
-     */
-    public static function autoUpload(): bool
-    {
-        return config(static::$configFileName.'.auto_upload', true);
-    }
-
-    /**
      * Whether to allow multiple uploads.
      */
     public static function allowMultipleUploads(): bool
@@ -195,52 +187,12 @@ class Config
     }
 
     /**
-     * Get the meta information for each upload.
-     */
-    public static function meta(): array
-    {
-        return config(static::$configFileName.'.meta', []);
-    }
-
-    /**
-     * Get the meta fields for each upload.
-     */
-    public static function metaFields(): array
-    {
-        return config(static::$configFileName.'.meta_fields', []);
-    }
-
-    /**
      * Get the file input name.
      */
     public static function fileInputName(): string
     {
         return config(static::$configFileName.'.file_input_name', 'file');
     }
-
-    /**
-     * Get the note for the uploader.
-     */
-    public static function note(): ?string
-    {
-        return config(static::$configFileName.'.note', null);
-    }
-
-    /**
-     * Check if the trash is enabled.
-     */
-    public static function trashIsEnabled(): bool
-    {
-        return config(static::$configFileName.'.enable_trash', true);
-    }
-
-    /**
-     * Check if the trash is diabled.
-     */
-    public static function trashIsDisabled(): bool
-    {
-        return ! static::trashIsEnabled();
-    }  
 
     /**
      * Get the pagination total.

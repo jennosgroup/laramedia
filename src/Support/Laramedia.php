@@ -362,7 +362,6 @@ class Laramedia extends Config
             'default_disk' => static::defaultDisk(),
             'disks_visibilities' => static::disksVisibilities(),
             'disks_default_visibility' => static::disksDefaultVisibility(),
-            'auto_upload' => static::autoUpload(),
             'allow_multiple_uploads' => static::allowMultipleUploads(),
             'min_file_size' => static::minFileSize(),
             'max_file_size' => static::maxFileSize(),
@@ -372,10 +371,7 @@ class Laramedia extends Config
             'allowed_mimetypes' => static::allowedMimeTypes(),
             'allowed_mimetypes_wildward' => static::allowedMimeTypesWildcards(),
             'allowed_extensions' => static::allowedExtensions(),
-            'meta' => static::meta(),
-            'meta_fields' => static::metaFields(),
             'file_input_name' => static::fileInputName(),
-            'note' => static::note(),
             'pagination_total' => static::paginationTotal(),
             'options_route_name' => static::optionsRouteName(),
         ];
