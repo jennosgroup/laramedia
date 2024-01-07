@@ -55,7 +55,7 @@
                     </div>
 
                     <!-- Dimensions -->
-                    <div class="laramedia-file-editor-display-content-form-group laramedia-file-editor-image-form-group">
+                    <div class="laramedia-file-editor-display-content-form-group laramedia-file-editor-image-form-group laramedia-hidden">
                         <span class="laramedia-file-editor-display-content-title">Dimensions:</span>
                         <span id="laramedia-file-editor-dimensions" class="laramedia-file-editor-display-content-data"></span>
                     </div>

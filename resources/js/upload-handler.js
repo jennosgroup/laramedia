@@ -21,14 +21,14 @@ export default function UploadHandler() {
 
         window.axios.post(this.getUploadRoute(), formData).then(function (response) {
             if (response.data.success) {
-                self.events.fire('upload_success', selt.getSuccessEventPayload(file, response));
+                self.events.fire('upload_success', self.getSuccessEventPayload(file, response));
             } else {
-                self.events.fire('upload_fail', selt.getFailEventPayload(file, response));
+                self.events.fire('upload_fail', self.getFailEventPayload(file, response));
             }
         }).catch(function (response) {
-            self.events.fire('upload_error', selt.getErrorEventPayload(file, response))
+            self.events.fire('upload_error', self.getErrorEventPayload(file, response))
         }).then(function (response) {
-            self.events.fire('upload_complete', selt.getCompleteEventPayload(file, response));
+            self.events.fire('upload_complete', self.getCompleteEventPayload(file, response));
         });
     }
 

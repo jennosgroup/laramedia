@@ -1,6 +1,7 @@
+import Editor from './file-editor';
 import Loader from './files-loader';
 import Uploader from './files-uploader';
-import Editor from './file-editor';
+import {Spinner} from 'spin.js';
 
 function Listings() {
 	/**
@@ -8,14 +9,28 @@ function Listings() {
 	 * 
 	 * @var obj
 	 */
-	this.loader = {};
+	this.loader = new Loader();
 
 	/**
 	 * The uploader instance.
 	 * 
 	 * @var obj
 	 */
-	this.uploader = {};
+	this.uploader = new Uploader();
+
+	/**
+	 * The spinner instance.
+	 * 
+	 * @var obj|null
+	 */
+	this.spinner = null;
+
+	/**
+	 * The files queue for both the loaded and uploaded files.
+	 * 
+	 * @var obj
+	 */
+	this.files = {};
 
 	/**
 	 * The queue for the loaded files.
@@ -32,13 +47,6 @@ function Listings() {
 	this.uploadedFiles = {};
 
 	/**
-	 * The files queue for both the loaded and uploaded files.
-	 * 
-	 * @var obj
-	 */
-	this.files = {};
-
-	/**
 	 * The options.
 	 * 
 	 * @var obj
@@ -53,18 +61,16 @@ function Listings() {
 	this.init = function () {
 		var self = this;
 
-		// Get options first then handle business after
+		this.startSpinner();
+
         window.axios.get(this.getOptionsRoute()).then(function (response) {
             self.options = response.data;
-
-			self.uploader = new Uploader();
-			self.loader = new Loader();
 
 			self.registerEventHandlers();
 			self.registerLoaderEventHandlers();
 			self.registerUploaderEventHandlers();
 
-			self.loader.setOptions(self.options).start();
+			self.loader.start();
 			self.uploader.init();
         });
 	}
@@ -92,7 +98,7 @@ function Listings() {
 
 		// Hide the error section when X is clicked. Also remove the errors
 		document.getElementById('laramedia-files-error-close').addEventListener('click', function (event) {
-			this.parentElement.style.display = 'none';
+			this.parentElement.classList.add('laramedia-hidden');
 
 			// Remove the errors
 			document.querySelectorAll('.laramedia-files-error').forEach(function (element) {
@@ -107,37 +113,37 @@ function Listings() {
 
 		// Disk filter
 		document.getElementById('laramedia-filter-disk').addEventListener('change', function (event) {
-			self.loader.setRequestParameters({
+			self.loader.loadContentFromParameters({
 				disk: this.value,
-			}).loadFreshContent();
+			});
 		});
 
 		// Visibility filter
 		document.getElementById('laramedia-filter-visibility').addEventListener('change', function (event) {
-			self.loader.setRequestParameters({
+			self.loader.loadContentFromParameters({
 				visibility: this.value,
-			}).loadFreshContent();
+			});
 		});
 
 		// Type filter
 		document.getElementById('laramedia-filter-type').addEventListener('change', function (event) {
-			self.loader.setRequestParameters({
+			self.loader.loadContentFromParameters({
 				type: this.value,
-			}).loadFreshContent();
+			});
 		});
 
 		// Ownership filter
 		document.getElementById('laramedia-filter-ownership').addEventListener('change', function (event) {
-			self.loader.setRequestParameters({
+			self.loader.loadContentFromParameters({
 				ownership: this.value,
-			}).loadFreshContent();
+			});
 		});
 
 		// Search filter
 		document.getElementById('laramedia-filter-search').addEventListener('change', function (event) {
-			self.loader.setRequestParameters({
+			self.loader.loadContentFromParameters({
 				search: this.value,
-			}).loadFreshContent();
+			});
 		});
 
 		// Active Section filter
@@ -148,9 +154,9 @@ function Listings() {
 
 			this.classList.add('laramedia-current-section');
 
-			self.loader.setRequestParameters({
+			self.loader.loadContentFromParameters({
 				section: 'active',
-			}).loadFreshContent();
+			});
 		});
 
 		// Trash Section filter
@@ -161,9 +167,9 @@ function Listings() {
 			
 			this.classList.add('laramedia-current-section');
 
-			self.loader.setRequestParameters({
+			self.loader.loadContentFromParameters({
 				section: 'trash',
-			}).loadFreshContent();
+			});
 		});
 	}
 
@@ -183,13 +189,24 @@ function Listings() {
 
 		// Things to do when file has been loaded
 		this.loader.events.on('file_loaded', function (file) {
+			self.stopSpinner();
+
 			self.loadedFiles[file.uuid] = file;
 			self.files[file.uuid] = file;
+
+			document.getElementById('laramedia-no-files-container').classList.add('laramedia-hidden');
+
 			self.showFilePreview(file);
 		});
 
 		// Things to do when load is completed
-		this.loader.events.on('load_complete', function (allFilesLoaded) {
+		this.loader.events.on('load_complete', function (allFilesLoaded, recentFilesQueue, recentFilesCount) {
+			self.stopSpinner();
+
+			if (recentFilesCount == 0) {
+				document.getElementById('laramedia-no-files-container').classList.remove('laramedia-hidden');
+			}
+
 			if (! allFilesLoaded) {
 				document.getElementById('laramedia-files-load-more-btn').classList.remove('laramedia-hidden');
 			}
@@ -510,6 +527,49 @@ function Listings() {
         }
 
         return document.importNode(template.content, true);
+	}
+
+	/**
+	 * Start the spinner.
+	 * 
+	 * @return void
+	 */
+	this.startSpinner = function () {
+		var opts = {
+		  lines: 13, // The number of lines to draw
+		  length: 20, // The length of each line
+		  width: 10, // The line thickness
+		  radius: 45, // The radius of the inner circle
+		  scale: 1, // Scales overall size of the spinner
+		  corners: 1, // Corner roundness (0..1)
+		  speed: 1, // Rounds per second
+		  rotate: 0, // The rotation offset
+		  animation: 'spinner-line-fade-quick', // The CSS animation name for the lines
+		  direction: 1, // 1: clockwise, -1: counterclockwise
+		  color: '#000', // CSS color or array of colors
+		  fadeColor: 'transparent', // CSS color or array of colors
+		  top: '50%', // Top position relative to parent
+		  left: '50%', // Left position relative to parent
+		  shadow: '0 0 1px transparent', // Box-shadow for the lines
+		  zIndex: 2000000000, // The z-index (defaults to 2e9)
+		  className: 'spinner', // The CSS class to assign to the spinner
+		  position: 'absolute', // Element positioning
+		};
+
+		if (this.spinner == null) {
+			this.spinner = new Spinner(opts);
+		}
+
+		this.spinner.spin(document.querySelector('body'));
+	}
+
+	/**
+	 * Stop the spinner.
+	 * 
+	 * @return void
+	 */
+	this.stopSpinner = function () {
+		this.spinner.stop();
 	}
 }
 

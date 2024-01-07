@@ -1,3 +1,7 @@
+#laramedia-file-editor-body {
+	flex-direction: row;
+}
+
 #laramedia-file-editor-preview-container {
 	display: flex;
 	align-items: center;

@@ -424,7 +424,6 @@ export default function FilesUploader() {
      * Upload the file
      * 
      * @param  object  file
-     * @param  object  formData
      * 
      * @return void
      */
@@ -467,6 +466,8 @@ export default function FilesUploader() {
 
         // Handle the upload complete
         handler.events.on('upload_complete', function (browserFile, response) {
+            var fileId = self.generateFileId(browserFile);
+            
             self.completedFilesQueue[fileId] = browserFile;
             self.totalFilesCompleted += 1;
 

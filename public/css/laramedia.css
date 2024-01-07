@@ -20,16 +20,16 @@
 	margin-bottom: 12px;
 }
 
-#laramedia-listings-filter-active-section-container,
-#laramedia-listings-filter-trash-section-container {
+#laramedia-filter-active-section-container,
+#laramedia-filter-trash-section-container {
 	color: #808B96;
 }
 
-#laramedia-listings-filter-active-section-container.laramedia-current-section {
+#laramedia-filter-active-section-container.laramedia-current-section {
 	color: #2E86C1;
 }
 
-#laramedia-listings-filter-trash-section-container.laramedia-current-section {
+#laramedia-filter-trash-section-container.laramedia-current-section {
 	color: #E74C3C;
 }
 
@@ -112,6 +112,30 @@
 	margin-bottom: 12px;
 }
 
+#laramedia-no-files-container {
+	display: flex;
+	flex-direction: column;
+	background-color: #eee;
+	width: 100%;
+	border-radius: 8px;
+}
+
+#laramedia-no-files-container-title {
+	display: flex;
+	justify-content: center;
+	width: 100%;
+	padding: 24px 24px 12px 24px;
+	font-weight: 700;
+	font-size: 1.5rem;
+}
+
+#laramedia-no-files-container-content {
+	display: flex;
+	justify-content: center;
+	width: 100%;
+	padding: 0 24px 24px 24px;
+}
+
 .laramedia-filters-container {
 	display: flex;
 	flex-wrap: wrap;
@@ -121,8 +145,6 @@
 	padding: 12px;
 	margin-bottom: 12px;
 }
-
-
 
 #laramedia-files-upload-progress-container {
 	display: none;
@@ -160,7 +182,7 @@
 
 #laramedia-files-errors-container {
 	position: relative;
-	display: none;
+	display: flex;
 	flex-direction: column;
 	background-color: #eee;
 	padding: 6px 12px;
@@ -272,6 +294,10 @@
 	max-height: 100%;
 }
 
+#laramedia-files-load-more-btn {
+	margin-top: 24px;
+}
+
 .laramedia-uploader-dropzone {
 	display: flex;
 	flex-direction: column;
@@ -291,7 +317,7 @@
 	position: relative;
 }
 
-.laramedia-uploader-dropzone.dropzone-highlight {
+.laramedia-uploader-dropzone.laramedia-dropzone-highlight {
 	border: 2px dashed #6583fe;
 	background-color: #ededed;
 }
@@ -323,6 +349,10 @@
 
 .laramedia-uploader-dropzone-button {
 	display: none;
+}
+
+#laramedia-file-editor-body {
+	flex-direction: row;
 }
 
 #laramedia-file-editor-preview-container {

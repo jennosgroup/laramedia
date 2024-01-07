@@ -1,5 +1,7 @@
 import AxiosError from './axios-error';
 import Events from './events';
+import Lodash from 'lodash';
+import Handler from './loader-handler';
 
 const CancelToken = window.axios.CancelToken;
 
@@ -12,18 +14,18 @@ export default function FilesLoader() {
     this.events = new Events;
 
     /**
-     * The options.
-     * 
-     * @var obj
-     */
-    this.options = {};
-
-    /**
      * The queue to store the loaded files.
      *
      * @var object
      */
     this.filesQueue = {};
+
+    /**
+     * The queue that would contain the most recently loaded files.
+     *
+     * @var object
+     */
+    this.recentFilesQueue = {};
 
     /**
      * The files count.
@@ -33,13 +35,6 @@ export default function FilesLoader() {
     this.filesCount = 0;
 
     /**
-     * The queue that would contain the most recently loaded files.
-     *
-     * @var object
-     */
-    this.filesRecentQueue = {};
-
-    /**
      * The recent files count.
      *
      * @var int
@@ -47,11 +42,11 @@ export default function FilesLoader() {
     this.recentFilesCount = 0;
 
     /**
-     * Whether content is currently loading.
-     *
-     * @var bool
+     * The number of loads completed.
+     * 
+     * @var int
      */
-    this.isLoadingContent = false;
+    this.loadsCompleted = 0;
 
     /**
      * Indicate whether this is the first load.
@@ -66,13 +61,6 @@ export default function FilesLoader() {
      * @var bool
      */
     this.allFilesLoaded = false;
-
-    /**
-     * To store the axios cancel instance.
-     *
-     * @var obj|null
-     */
-    this.cancel = null;
 
     /**
      * The parameters for when we are sending off a load request.
@@ -90,12 +78,31 @@ export default function FilesLoader() {
     };
 
     /**
+     * The options.
+     * 
+     * @var obj
+     */
+    this.options = {};
+
+    /**
+     * The store the cancel tokens.
+     * 
+     * @var array
+     */
+    this.cancelTokens = [];
+
+    /**
      * Start the loader.
      *
      * @return void
      */
     this.start = function () {
-        this.loadFreshContent();
+        var self = this;
+
+        window.axios.get(this.getOptionsRoute()).then(function (response) {
+            self.options = Lodash.assign(response.data, self.options);
+            self.loadFreshContent();
+        });
     }
 
     /**
@@ -141,18 +148,24 @@ export default function FilesLoader() {
      * @return void
      */
     this.loadFreshContent = function () {
+        // Cancel all previous load requests
         this.cancelRequests();
+
+        // Reset some things
+        this.filesQueue = {};
+        this.recentFilesQueue = {};
+        this.filesCount = 0;
+        this.recentFilesCount = 0;
+        this.loadsCompleted = 0;
+
+        // Set flags
         this.isFirstLoad = true;
+        this.allFilesLoaded = false;
 
         // Fresh content page should always be the first page
         this.requestParameters.page = 1;
 
-        // Reset some other things
-        this.filesQueue = {};
-        this.filesRecentQueue = {};
-        this.filesCount = 0;
-        this.recentFilesCount = 0;
-
+        // Load up the content now
         this.loadContent();
     }
 
@@ -164,54 +177,93 @@ export default function FilesLoader() {
     this.loadContent = function () {
         var self = this;
 
-        this.isLoadingContent = true;
-
+        // Fire first load begin events
         if (this.isFirstLoad) {
             this.events.fire('first_load_begin');
         }
 
-        this.events.fire('loading_begin');
+        // Fire load begin event
+        this.events.fire('load_begin');
 
+        // If not first load, increment the page
         if (! this.isFirstLoad) {
             this.requestParameters.page += 1;
         }
 
-        // Fire off the request
-        window.axios.get(this.getFilesRoute(), {
-            cancelToken: new CancelToken((c) => {self.cancel = c}),
-            params: self.requestParameters,
-        }).then(function (response) {
-            self.filesRecentQueue = {};
-            self.recentFilesCount = 0;
+        // Reset the recent metrics
+        this.recentFilesQueue = {};
+        this.recentFilesCount = 0;
 
-            response.data.data.forEach(function (file) {
-                self.filesRecentQueue[file.uuid] = file;
-                self.filesQueue[file.uuid] = file;
-                self.filesCount += 1;
-                self.recentFilesCount += 1;
-                self.events.fire('file_loaded', [file]);
+        // Load files individually, instead of in bulk so we can get a response faster
+        for (var iteration = 1; iteration <= this.options.pagination_total; iteration++) {
+            var token = new CancelToken(function (token) {
+                self.cancelTokens.push(token);
             });
 
-            self.events.fire('files_loaded', [self.filesRecentQueue]);
+            this.loadFile(iteration, token);
+        }
+    }
 
-            if (self.recentFilesCount < self.options.pagination_total) {
-                self.allFilesLoaded = true;
-            }
-        }).catch(function (error) {
-            new AxiosError().handleError(error);
-        }).then(function () {
-            self.events.fire('load_complete', [self.allFilesLoaded]);
+    /**
+     * Load an individual file.
+     * 
+     * @param  int  iteration
+     * @param  obj  cancelToken
+     * 
+     * @return void
+     */
+    this.loadFile = function (iteration, cancelToken) {
+        var self = this;
 
-            if (self.recentFilesCount < self.options.pagination_total) {
-                self.events.fire('last_load_complete');
-            }
+        var handler = new Handler();
+        var parameters = Lodash.clone(this.requestParameters);
 
-            self.isLoadingContent = false;
+        if (this.isFirstLoad) {
+            parameters.page = parameters.page * iteration;
+        } else {
+            parameters.page = ((parameters.page - 1) * this.options.pagination_total) + iteration;
+        }
 
-            if (self.isFirstLoad) {
+        parameters.pagination_total = 1;
+
+        // Event for when file is loaded by the handler
+        handler.events.on('file_loaded', function (file) {
+            self.recentFilesQueue[file.uuid] = file;
+            self.filesQueue[file.uuid] = file;
+            self.filesCount += 1;
+            self.recentFilesCount += 1;
+
+            self.events.fire('file_loaded', [file]);
+        });
+
+        // Event for when file error by handler
+        handler.events.on('file_error', function (response) {
+            new AxiosError().handleError(response);
+        });
+
+        // Event for when the load is complete
+        handler.events.on('load_complete', function () {
+
+            self.loadsCompleted += 1;
+
+            if (self.loadsCompleted == self.options.pagination_total) {
                 self.isFirstLoad = false;
+                self.allFilesLoaded = self.recentFilesCount < self.loadsCompleted;
+
+                self.events.fire('files_loaded', [self.recentFilesQueue, self.recentFilesCount]);
+                self.events.fire('load_complete', [self.allFilesLoaded, self.recentFilesQueue, self.recentFilesCount]);
             }
         });
+
+        // Event for when last load is completed
+        handler.events.on('last_load_complete', function () {
+            self.isFirstLoad = false;
+            self.allFilesLoaded = true;
+
+            self.events.fire('last_load_complete');
+        });
+
+        handler.start(parameters, cancelToken);
     }
 
     /**
@@ -231,17 +283,23 @@ export default function FilesLoader() {
      * @return void
      */
     this.cancelRequests = function () {
-        if (this.cancel != null) {
-            this.cancel();
+        if (this.cancelTokens.length < 1) {
+            return;
         }
+
+        this.cancelTokens.forEach(function (request) {
+            if (request != null) {
+                request();
+            }
+        });
     }
 
     /**
-     * Get the files route.
-     *
+     * Get the options route.
+     * 
      * @return string
      */
-    this.getFilesRoute = function () {
-        return document.head.querySelector("meta[name='laramedia_files_route']").content;
+    this.getOptionsRoute = function () {
+        return document.head.querySelector("meta[name='laramedia_options_route']").content;
     }
 }

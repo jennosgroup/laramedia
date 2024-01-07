@@ -3,7 +3,12 @@
 		
 	</div>
 	<div id="laramedia-no-files-container" class="laramedia-hidden">
-		There is no files.
+		<div id="laramedia-no-files-container-title">
+			Whoops!
+		</div>
+		<div id="laramedia-no-files-container-content">
+			There are no files.
+		</div>
 	</div>
 	<button id="laramedia-files-load-more-btn" class="laramedia-btn laramedia-btn-secondary laramedia-hidden">
 		Load More

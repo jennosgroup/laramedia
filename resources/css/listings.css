@@ -20,15 +20,15 @@
 	margin-bottom: 12px;
 }
 
-#laramedia-listings-filter-active-section-container,
-#laramedia-listings-filter-trash-section-container {
+#laramedia-filter-active-section-container,
+#laramedia-filter-trash-section-container {
 	color: #808B96;
 }
 
-#laramedia-listings-filter-active-section-container.laramedia-current-section {
+#laramedia-filter-active-section-container.laramedia-current-section {
 	color: #2E86C1;
 }
 
-#laramedia-listings-filter-trash-section-container.laramedia-current-section {
+#laramedia-filter-trash-section-container.laramedia-current-section {
 	color: #E74C3C;
 }
