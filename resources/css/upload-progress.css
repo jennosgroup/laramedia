@@ -1,0 +1,33 @@
+#laramedia-files-upload-progress-container {
+	display: none;
+	margin-bottom: 6px;
+}
+
+#laramedia-files-upload-progress-bar {
+	flex-direction: column;
+	width: 100%;
+	height: 24px;
+	border-radius: 24px;
+	background-color: #eee;
+}
+
+#laramedia-files-upload-progress-units,
+#laramedia-files-upload-message {
+	height: 100%;
+	border-radius: 24px;
+	justify-content: center;
+	align-items: center;
+	font-size: 12px;
+	font-weight: 700;
+	font-style: italic;
+}
+
+#laramedia-files-upload-message {
+	width: 100%;
+	background-color: #F0B27A;
+}
+
+#laramedia-files-upload-progress-units {
+	width: 0;
+	background-color: #82E0AA;
+}

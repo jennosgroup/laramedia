@@ -1,0 +1,45 @@
+#laramedia-files-errors-container {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	background-color: #eee;
+	padding: 6px 12px;
+	margin-bottom: 6px;
+	border: 1px solid #ccc;
+	border-radius: 6px;
+	box-sizing: border-box;
+	overflow: hidden;
+}
+
+#laramedia-files-error-close {
+	position: absolute;
+	right: 10px;
+	top: 10px;
+	cursor: pointer;
+}
+
+.laramedia-files-error {
+	margin-bottom: 6px;
+	padding-right: 48px;
+	min-width: 250px;
+	overflow: hidden;
+}
+
+.laramedia-files-error-name-container {
+	display: flex;
+	align-items: center;
+}
+
+.laramedia-files-error-remove {
+	margin-left: 4px;
+	color: #CB4335;
+	font-weight: 700;
+	font-style: italic;
+	cursor: pointer;
+}
+
+.laramedia-files-error-reason {
+	font-size: 12px;
+	font-style: italic;
+	padding-left: 12px;
+}

@@ -1,0 +1,104 @@
+#laramedia-files-wrapper {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+#laramedia-files-container {
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
+	margin-bottom: 24px;
+}
+
+#laramedia-no-files-container {
+	display: flex;
+	flex-direction: column;
+	background-color: #eee;
+	width: 100%;
+	border-radius: 8px;
+}
+
+#laramedia-no-files-container-title {
+	display: flex;
+	justify-content: center;
+	width: 100%;
+	padding: 24px 24px 12px 24px;
+	font-weight: 700;
+	font-size: 1.5rem;
+}
+
+#laramedia-no-files-container-content {
+	display: flex;
+	justify-content: center;
+	width: 100%;
+	padding: 0 24px 24px 24px;
+}
+
+.laramedia-files-item-wrapper {
+	display: flex;
+	box-sizing: border-box;
+	padding: 6px;
+}
+
+.laramedia-files-item-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: #eee;
+	border: 1px solid #d0d0d0;
+	width: 148px;
+	height: 148px;
+	box-sizing: border-box;
+	cursor: pointer;
+}
+
+.laramedia-files-none-image-container {
+	display: flex;
+	flex-direction: column;
+}
+
+.laramedia-files-item-icon {
+	width: 100%;
+	height: 50%;
+	padding: 12px;
+	box-sizing: border-box;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.laramedia-files-item-icon img {
+	height: auto;
+	width: auto;
+	max-height: 100%;
+	max-width: 100%;
+}
+
+.laramedia-files-item-icon i,
+.laramedia-files-item-icon svg {
+	font-size: 48px;
+}
+
+.laramedia-files-item-name {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-grow: 0;
+	width: 100%;
+	height: 50%;
+	background-color: #f9f9f9;
+	padding: 6px;
+	overflow-y: auto;
+	box-sizing: border-box;
+	font-size: 0.75rem;
+	text-align: center;
+	word-break: break-word;
+}
+
+.laramedia-files-image {
+	width: auto;
+	height: auto;
+	max-width: 100%;
+	max-height: 100%;
+}
