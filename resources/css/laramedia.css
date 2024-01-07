@@ -2,3 +2,5 @@
 @import 'general';
 @import 'dropzone';
 @import 'editor';
+@import 'selector';
+@import 'modal';

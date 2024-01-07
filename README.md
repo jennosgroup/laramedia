@@ -11,6 +11,9 @@ A media library package for Laravel.
 - define options route
 - define upload route
 - vendor publish assets
+- files selector template global
+- files selector js file
+- template files global
 
 Laravel files library is a laravel package that allows you to upload files and manage them through a graphical interface.
 

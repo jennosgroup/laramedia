@@ -1,5 +1,5 @@
-<div class="laramedia-uploader-dropzone">
-	<div class="laramedia-uploader-dropzone-trigger-close">
+<div id="laramedia-uploader-dropzone" class="laramedia-uploader-dropzone laramedia-hidden">
+	<div class="laramedia-uploader-dropzone-close">
 		<i class="fa-solid fa-xmark"></i>
 	</div>
 	<div class="laramedia-uploader-dropzone-icon">

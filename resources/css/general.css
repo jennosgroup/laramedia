@@ -24,3 +24,213 @@
 .laramedia-btn-secondary:hover {
 	background-color: #808B96;
 }
+
+.laramedia-filter-container {
+	display: flex;
+	align-items: center;
+	height: 48px;
+}
+
+.laramedia-filter-section-container {
+	margin-left: 8px;
+	cursor: pointer;
+}
+
+.laramedia-filter-select {
+	height: 100%;
+	width: 148px;
+	padding: 8px;
+	border-radius: 4px;
+	outline: none;
+	appearance: none;
+	border: 1px solid #eee;
+	box-sizing: border-box;
+}
+
+.laramedia-filter-select-container {
+	margin-right: 4px;
+}
+
+#laramedia-filter-search-container {
+	display: flex;
+	justify-content: end;
+	flex-grow: 1;
+}
+
+#laramedia-filter-search {
+	max-width: 240px;
+	border: 1px solid #eee;
+}
+
+#laramedia-files-wrapper {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+#laramedia-files-container {
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
+	margin-bottom: 12px;
+}
+
+.laramedia-filters-container {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	height: 48px;
+	width: 100%;
+	padding: 12px;
+	margin-bottom: 12px;
+}
+
+
+
+#laramedia-files-upload-progress-container {
+	display: none;
+	margin-bottom: 6px;
+}
+
+#laramedia-files-upload-progress-bar {
+	flex-direction: column;
+	width: 100%;
+	height: 24px;
+	border-radius: 24px;
+	background-color: #eee;
+}
+
+#laramedia-files-upload-progress-units,
+#laramedia-files-upload-message {
+	height: 100%;
+	border-radius: 24px;
+	justify-content: center;
+	align-items: center;
+	font-size: 12px;
+	font-weight: 700;
+	font-style: italic;
+}
+
+#laramedia-files-upload-message {
+	width: 100%;
+	background-color: #F0B27A;
+}
+
+#laramedia-files-upload-progress-units {
+	width: 0;
+	background-color: #82E0AA;
+}
+
+#laramedia-files-errors-container {
+	position: relative;
+	display: none;
+	flex-direction: column;
+	background-color: #eee;
+	padding: 6px 12px;
+	margin-bottom: 6px;
+	border: 1px solid #ccc;
+	border-radius: 6px;
+	box-sizing: border-box;
+	overflow: hidden;
+}
+
+#laramedia-files-error-close {
+	position: absolute;
+	right: 10px;
+	top: 10px;
+	cursor: pointer;
+}
+
+.laramedia-files-error {
+	margin-bottom: 6px;
+	padding-right: 48px;
+	min-width: 250px;
+	overflow: hidden;
+}
+
+.laramedia-files-error-name-container {
+	display: flex;
+	align-items: center;
+}
+
+.laramedia-files-error-remove {
+	margin-left: 4px;
+	color: #CB4335;
+	font-weight: 700;
+	font-style: italic;
+	cursor: pointer;
+}
+
+.laramedia-files-error-reason {
+	font-size: 12px;
+	font-style: italic;
+	padding-left: 12px;
+}
+
+.laramedia-files-item-wrapper {
+	display: flex;
+	box-sizing: border-box;
+	padding: 6px;
+}
+
+.laramedia-files-item-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: #eee;
+	border: 1px solid #d0d0d0;
+	width: 148px;
+	height: 148px;
+	box-sizing: border-box;
+	cursor: pointer;
+}
+
+.laramedia-files-none-image-container {
+	display: flex;
+	flex-direction: column;
+}
+
+.laramedia-files-item-icon {
+	width: 100%;
+	height: 50%;
+	padding: 12px;
+	box-sizing: border-box;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.laramedia-files-item-icon img {
+	height: auto;
+	width: auto;
+	max-height: 100%;
+	max-width: 100%;
+}
+
+.laramedia-files-item-icon i,
+.laramedia-files-item-icon svg {
+	font-size: 48px;
+}
+
+.laramedia-files-item-name {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-grow: 0;
+	width: 100%;
+	height: 50%;
+	background-color: #f9f9f9;
+	padding: 6px;
+	overflow-y: auto;
+	box-sizing: border-box;
+	font-size: 0.75rem;
+	text-align: center;
+	word-break: break-word;
+}
+
+.laramedia-files-image {
+	width: auto;
+	height: auto;
+	max-width: 100%;
+	max-height: 100%;
+}

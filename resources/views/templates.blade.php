@@ -1,0 +1,5 @@
+@include('laramedia::templates.file-editor')
+@include('laramedia::templates.files-error')
+@include('laramedia::templates.files-image')
+@include('laramedia::templates.files-none-image')
+@include('laramedia::templates.files-selector')

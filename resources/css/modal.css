@@ -1,0 +1,58 @@
+.laramedia-modal-wrapper {
+	z-index: 100;
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	background-color: rgba(0, 0, 0, 0.85);
+	padding: 24px;
+}
+
+.laramedia-modal-container {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	width: 100%;
+}
+
+.laramedia-modal-header {
+	display: flex;
+	justify-content: flex-end;
+	flex-grow: 0;
+	flex-shrink: 0;
+	background-color: #f9f9f9;
+	height: 48px;
+}
+
+.laramedia-modal-body {
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+	background-color: #fff;
+	overflow-y: auto;
+}
+
+.laramedia-modal-footer {
+	display: flex;
+	justify-content: flex-end;
+	flex-grow: 0;
+	flex-shrink: 0;
+	background-color: #f9f9f9;
+	height: 48px;
+}
+
+.laramedia-modal-button {
+	background-color: #eee;
+	width: 48px;
+	border: 1px solid #ccc;
+	cursor: pointer;
+	font-size: 18px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.laramedia-modal-button:hover {
+	background-color: #E9E9E9;
+}

@@ -1,22 +1,22 @@
 <template id="laramedia-file-editor">
-    <div id="laramedia-file-editor-wrapper">
-        <div id="laramedia-file-editor-container">
+    <div id="laramedia-file-editor-wrapper" class="laramedia-modal-wrapper">
+        <div id="laramedia-file-editor-container" class="laramedia-modal-container">
 
             {{-- Header --}}
-            <div id="laramedia-file-editor-header">
-                <button id="laramedia-file-editor-previous" class="laramedia-file-editor-buttons">
+            <div id="laramedia-file-editor-header" class="laramedia-modal-header">
+                <button id="laramedia-file-editor-previous" class="laramedia-modal-button">
                     <<
                 </button>
-                <button id="laramedia-file-editor-next" class="laramedia-file-editor-buttons">
+                <button id="laramedia-file-editor-next" class="laramedia-modal-button">
                     >>
                 </button>
-                <button id="laramedia-file-editor-close" class="laramedia-file-editor-buttons">
+                <button id="laramedia-file-editor-close" class="laramedia-modal-button">
                     X
                 </button>
             </div>
 
             {{-- Body --}}
-            <div id="laramedia-file-editor-body" >
+            <div id="laramedia-file-editor-body" class="laramedia-modal-body">
 
                 {{-- File Preview --}}
                 <div id="laramedia-file-editor-preview-container">
@@ -119,17 +119,17 @@
             </div>
 
             {{-- Footer --}}
-            <div id="laramedia-file-editor-footer">
-                <button id="laramedia-file-editor-update-btn" class="laramedia-file-editor-buttons">
+            <div id="laramedia-file-editor-footer" class="laramedia-modal-footer">
+                <button id="laramedia-file-editor-update-btn" class="laramedia-modal-button">
                     @include('laramedia::icons.update')
                 </button>
-                <button id="laramedia-file-editor-trash-btn" class="laramedia-file-editor-buttons">
+                <button id="laramedia-file-editor-trash-btn" class="laramedia-modal-button">
                     @include('laramedia::icons.trash')
                 </button>
-                <button id="laramedia-file-editor-restore-btn" class="laramedia-file-editor-buttons">
+                <button id="laramedia-file-editor-restore-btn" class="laramedia-modal-button">
                     @include('laramedia::icons.restore')
                 </button>
-                <button id="laramedia-file-editor-destroy-btn" class="laramedia-file-editor-buttons">
+                <button id="laramedia-file-editor-destroy-btn" class="laramedia-modal-button">
                     @include('laramedia::icons.destroy')
                 </button>
             </div>

@@ -272,757 +272,6 @@ function Events() {
 
 /***/ }),
 
-/***/ "./resources/js/file-editor.js":
-/*!*************************************!*\
-  !*** ./resources/js/file-editor.js ***!
-  \*************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ fileEditor)
-/* harmony export */ });
-/* harmony import */ var _events__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./events */ "./resources/js/events.js");
-/* harmony import */ var _axios_error__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./axios-error */ "./resources/js/axios-error.js");
-/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! sweetalert2 */ "./node_modules/sweetalert2/dist/sweetalert2.all.js");
-/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(sweetalert2__WEBPACK_IMPORTED_MODULE_2__);
-
-
-
-function fileEditor() {
-  /**
-   * The events instance.
-   * 
-   * @var object
-   */
-  this.events = new _events__WEBPACK_IMPORTED_MODULE_0__["default"]();
-
-  /**
-   * The options.
-   * 
-   * @var obj
-   */
-  this.options = {};
-
-  /**
-   * The file instance for the editor.
-   * 
-   * @var obj|null
-   */
-  this.file = null;
-
-  /**
-   * Indicate whether a previous file exists.
-   */
-  this.hasPreviousFile = false;
-
-  /**
-   * Indicate whether a next file exists.
-   */
-  this.hasNextFile = false;
-
-  /**
-   * Start the file editor.
-   * 
-   * @param  obj  args
-   * 
-   * @return void
-   */
-  this.init = function (args) {
-    this.setup(args);
-    this.open();
-    this.registerEventHandlers();
-    this.showFilePreview();
-    this.populateDetails();
-    this.configureNavigationButtons();
-    this.configureCrudButtons();
-  };
-
-  /**
-   * Setup the args.
-   * 
-   * @param  obj  args
-   * 
-   * @return void
-   */
-  this.setup = function (args) {
-    this.file = args.file;
-    this.options = args.options;
-    this.hasPreviousFile = args.has_previous_file;
-    this.hasNextFile = args.has_next_file;
-  };
-
-  /**
-   * Open up the file editor template.
-   *
-   * @return void
-   */
-  this.open = function () {
-    document.querySelector('body').append(this.getTemplate());
-    this.events.fire('open', [this.file]);
-  };
-
-  /**
-   * Close the editor.
-   * 
-   * @return void
-   */
-  this.close = function (file) {
-    this.getWrapperElement().remove();
-    this.events.fire('close', [this.file]);
-  };
-
-  /**
-   * Register the event handlers.
-   * 
-   * @return void
-   */
-  this.registerEventHandlers = function () {
-    var self = this;
-
-    // Close the editor
-    document.getElementById('laramedia-file-editor-close').addEventListener('click', function (event) {
-      self.close(self.file);
-    });
-
-    // Get previous file
-    document.getElementById('laramedia-file-editor-previous').addEventListener('click', function (event) {
-      self.events.fire('previous_file', [self.file]);
-    });
-
-    // Get the next file
-    document.getElementById('laramedia-file-editor-next').addEventListener('click', function (event) {
-      self.events.fire('next_file', [self.file]);
-    });
-
-    // When file is saved
-    this.getUpdateButtonElement().addEventListener('click', function (event) {
-      self.updateFile(self.file);
-    });
-
-    // When file is trashed
-    this.getTrashButtonElement().addEventListener('click', function (event) {
-      self.trashFile(self.file);
-    });
-
-    // When file is restored
-    this.getRestoreButtonElement().addEventListener('click', function (event) {
-      self.restoreFile(self.file);
-    });
-
-    // When file is destroyed
-    this.getDestroyButtonElement().addEventListener('click', function (event) {
-      self.destroyFile(self.file);
-    });
-
-    // When the disk is changed, we dynamically add the disk visibility options
-    this.getDiskElement().addEventListener('change', function (event) {
-      self.handleDiskChange(this.value, self.file);
-    });
-  };
-
-  /**
-   * Show the file preview.
-   *
-   * @return void
-   */
-  this.showFilePreview = function () {
-    if (this.shouldShowFilePreviewIcon()) {
-      return this.showFilePreviewIcon();
-    }
-    this.showImagePreview();
-  };
-
-  /**
-   * Populate the details.
-   * 
-   * @return void
-   */
-  this.populateDetails = function () {
-    this.populateContentData();
-    this.populateContentFields();
-    this.disableFieldsForTrashedFile();
-    this.populateVisibilityOptions();
-    if (this.shouldShowImageFields()) {
-      this.showImageFields();
-    }
-    if (this.shouldShowPublicFields()) {
-      this.showPublicFields();
-    }
-  };
-
-  /**
-   * Configure the navidation buttons.
-   * 
-   * @return void
-   */
-  this.configureNavigationButtons = function () {
-    if (!this.hasPreviousFile) {
-      document.getElementById('laramedia-file-editor-previous').classList.add('laramedia-disabled-button');
-    }
-    if (!this.hasNextFile) {
-      document.getElementById('laramedia-file-editor-next').classList.add('laramedia-disabled-button');
-    }
-  };
-
-  /**
-   * Configure the editor crud buttons.
-   *
-   * @return void
-   */
-  this.configureCrudButtons = function () {
-    var file = this.file;
-    var updateBtnElement = this.getUpdateButtonElement();
-    var trashBtnElement = this.getTrashButtonElement();
-    var restoreBtnElement = this.getRestoreButtonElement();
-    var destroyBtnElement = this.getDestroyButtonElement();
-    if (file.user_can_update && file.deleted_at == null) {
-      updateBtnElement.classList.remove('laramedia-hidden');
-    } else {
-      updateBtnElement.remove();
-    }
-    if (file.user_can_trash && file.deleted_at == null) {
-      trashBtnElement.classList.remove('laramedia-hidden');
-    } else {
-      trashBtnElement.remove();
-    }
-    if (file.user_can_restore && file.deleted_at != null) {
-      restoreBtnElement.classList.remove('laramedia-hidden');
-    } else {
-      restoreBtnElement.remove();
-    }
-    if (file.user_can_destroy && file.deleted_at != null) {
-      destroyBtnElement.classList.remove('laramedia-hidden');
-    } else {
-      destroyBtnElement.remove();
-    }
-  };
-
-  /**
-   * Update the file.
-   * 
-   * @return void
-   */
-  this.updateFile = function () {
-    var self = this;
-    var request = window.axios.patch(this.file.update_route, this.getDataForSaving());
-    request.then(function (response) {
-      var updatedFile = response.data.data;
-      self.events.fire('file_updated', [updatedFile]);
-      if (updatedFile.visibility == 'public') {
-        self.showPublicFields();
-        document.getElementById('laramedia-file-editor-file-url').value = updatedFile.public_url;
-      } else {
-        self.hidePublicFields();
-        document.getElementById('laramedia-file-editor-file-url').value = '';
-      }
-      return sweetalert2__WEBPACK_IMPORTED_MODULE_2___default().fire({
-        title: 'Success',
-        icon: 'success',
-        text: 'File saved successfully.'
-      });
-    });
-    request["catch"](function (error) {
-      new _axios_error__WEBPACK_IMPORTED_MODULE_1__["default"]().handleError(error);
-    });
-  };
-
-  /**
-   * Trash the file.
-   * 
-   * @return void
-   */
-  this.trashFile = function () {
-    var self = this;
-    var file = this.file;
-    var request = window.axios["delete"](file.trash_route);
-    request.then(function (response) {
-      self.events.fire('file_trashed', [file]);
-      self.close(file);
-      return sweetalert2__WEBPACK_IMPORTED_MODULE_2___default().fire({
-        icon: 'success',
-        title: 'Success',
-        text: 'File trashed successfully.'
-      });
-    });
-    request["catch"](function (error) {
-      new _axios_error__WEBPACK_IMPORTED_MODULE_1__["default"]().handleError(error);
-    });
-  };
-
-  /**
-   * Restore the file.
-   * 
-   * @return void
-   */
-  this.restoreFile = function () {
-    var self = this;
-    var file = this.file;
-    var request = window.axios.patch(file.restore_route);
-    request.then(function (response) {
-      self.events.fire('file_restored', [file]);
-      self.close(file);
-      return sweetalert2__WEBPACK_IMPORTED_MODULE_2___default().fire({
-        icon: 'success',
-        title: 'Success',
-        text: 'File restored successfully.'
-      });
-    });
-    request["catch"](function (error) {
-      new _axios_error__WEBPACK_IMPORTED_MODULE_1__["default"]().handleError(error);
-    });
-  };
-
-  /**
-   * Destroy the file.
-   * 
-   * @return void
-   */
-  this.destroyFile = function () {
-    var self = this;
-    var file = this.file;
-    var request = window.axios["delete"](file.destroy_route);
-    request.then(function (response) {
-      self.events.fire('file_destroyed', [file]);
-      self.close();
-      return sweetalert2__WEBPACK_IMPORTED_MODULE_2___default().fire({
-        icon: 'success',
-        title: 'Success',
-        text: 'File destroyed successfully.'
-      });
-    });
-    request["catch"](function (error) {
-      new _axios_error__WEBPACK_IMPORTED_MODULE_1__["default"]().handleError(error);
-    });
-  };
-
-  /**
-      * Handle the disk change.
-      *
-      * @param  string  disk
-      *
-      * @return void
-      */
-  this.handleDiskChange = function (disk) {
-    var file = this.file;
-    var diskVisibilities = this.options.disks_visibilities[disk];
-    var diskDefaultVisibility = this.options.disks_default_visibility[disk];
-    var visibilityElement = this.getVisibilityElement();
-    if (visibilityElement == null) {
-      return;
-    }
-
-    // Reset the visibility options
-    for (var index = visibilityElement.options.length; index >= 0; index--) {
-      visibilityElement.remove(index);
-    }
-    var index = 0;
-
-    // Add the disk visibility options to the visibility select element
-    for (var visibility in diskVisibilities) {
-      var option = document.createElement('option');
-      option.value = visibility;
-      option.text = diskVisibilities[visibility];
-      if (visibility == diskDefaultVisibility) {
-        option.selected = true;
-      }
-      visibilityElement.options[index] = option;
-      index++;
-    }
-    visibilityElement.parentElement.classList.remove('laramedia-hidden');
-  };
-
-  /**
-   * Check if we should show the file preview icon.
-   * 
-   * @return bool
-   */
-  this.shouldShowFilePreviewIcon = function () {
-    var file = this.file;
-    if (file.is_not_image) {
-      return true;
-    }
-    if (file.public_url == null && file.base64_url == null) {
-      return true;
-    }
-    return false;
-  };
-
-  /**
-   * Show the file preview icon.
-   * 
-   * @return void
-   */
-  this.showFilePreviewIcon = function () {
-    var element = document.getElementById('laramedia-file-editor-preview-icon-container');
-    element.style.display = 'flex';
-  };
-
-  /**
-   * Show the image preview.
-   * 
-   * @return void
-   */
-  this.showImagePreview = function () {
-    var file = this.file;
-    var image = document.createElement('img');
-    if (file.public_url != null) {
-      image.src = file.public_url;
-    } else if (file.base64_url != null) {
-      image.src = file.base64_url;
-    }
-    var element = document.getElementById('laramedia-file-editor-preview-image-container');
-    element.style.display = 'flex';
-    element.append(image);
-  };
-
-  /**
-   * Populate the content data.
-   * 
-   * @return void
-   */
-  this.populateContentData = function () {
-    var file = this.file;
-    document.getElementById('laramedia-file-editor-name').innerHTML = file.original_name;
-    document.getElementById('laramedia-file-editor-file-type').innerHTML = file.mimetype;
-    document.getElementById('laramedia-file-editor-uploaded-on').innerHTML = file.human_created_at;
-    document.getElementById('laramedia-file-editor-filesize').innerHTML = file.human_filesize;
-    document.getElementById('laramedia-file-editor-dimensions').innerHTML = file.human_dimensions;
-  };
-
-  /**
-   * Populate the content fields.
-   * 
-   * @return void
-   */
-  this.populateContentFields = function () {
-    var file = this.file;
-    document.getElementById('laramedia-file-editor-title').value = file.title;
-    document.getElementById('laramedia-file-editor-alt-text').value = file.alt_text;
-    document.getElementById('laramedia-file-editor-caption').value = file.caption;
-    document.getElementById('laramedia-file-editor-description').value = file.description;
-
-    // Disk and visibility
-    document.getElementById('laramedia-file-editor-disk').value = file.disk;
-    document.getElementById('laramedia-file-editor-visibility').value = file.visibility;
-
-    // Show the file url only for public files
-    if (file.visibility == 'public') {
-      document.getElementById('laramedia-file-editor-file-url').value = file.public_url;
-    }
-
-    // Preview & Download button
-    if (file.deleted_at == null) {
-      document.getElementById('laramedia-file-editor-contents-preview-btn').classList.remove('laramedia-hidden');
-      document.getElementById('laramedia-file-editor-contents-preview-btn').setAttribute('href', file.preview_route);
-      document.getElementById('laramedia-file-editor-contents-download-btn').classList.remove('laramedia-hidden');
-      document.getElementById('laramedia-file-editor-contents-download-btn').setAttribute('href', file.download_route);
-    }
-  };
-
-  /**
-      * Determine whether we should show the image fields.
-      * 
-      * @return bool
-      */
-  this.shouldShowImageFields = function () {
-    return this.file.is_image;
-  };
-
-  /**
-   * Show the image fields.
-   * 
-   * @return void
-   */
-  this.showImageFields = function () {
-    document.querySelectorAll('.laramedia-file-editor-image-form-group').forEach(function (element) {
-      element.classList.remove('laramedia-hidden');
-    });
-  };
-
-  /**
-   * Determine whether we should show the public fields.
-   * 
-   * @return bool
-   */
-  this.shouldShowPublicFields = function () {
-    return this.file.visibility == 'public';
-  };
-
-  /**
-   * Show the public fields.
-   * 
-   * @return void
-   */
-  this.showPublicFields = function () {
-    document.querySelectorAll('.laramedia-file-editor-public-form-group').forEach(function (element) {
-      element.classList.remove('laramedia-hidden');
-    });
-  };
-
-  /**
-   * Hide the public fields.
-   * 
-   * @return void
-   */
-  this.hidePublicFields = function () {
-    document.querySelectorAll('.laramedia-file-editor-public-form-group').forEach(function (element) {
-      element.classList.add('laramedia-hidden');
-    });
-  };
-
-  /**
-   * Disable fields for trashed file.
-   * 
-   * @return void
-   */
-  this.disableFieldsForTrashedFile = function () {
-    if (this.file.deleted_at == null) {
-      return;
-    }
-    document.getElementById('laramedia-file-editor-title').disabled = true;
-    document.getElementById('laramedia-file-editor-alt-text').disabled = true;
-    document.getElementById('laramedia-file-editor-caption').disabled = true;
-    document.getElementById('laramedia-file-editor-description').disabled = true;
-    document.getElementById('laramedia-file-editor-disk').disabled = true;
-    document.getElementById('laramedia-file-editor-visibility').disabled = true;
-  };
-
-  /**
-   * Populate and show the visibility options.
-   * 
-   * @return void
-   */
-  this.populateVisibilityOptions = function () {
-    var file = this.file;
-    var index = 0;
-    var visibilityElement = document.getElementById('laramedia-file-editor-visibility');
-    var diskVisibilities = this.options.disks_visibilities[file.disk];
-    for (var visibility in diskVisibilities) {
-      var option = document.createElement('option');
-      option.value = visibility;
-      option.text = diskVisibilities[visibility];
-      if (visibility == file.visibility) {
-        option.selected = true;
-      }
-      visibilityElement.options[index] = option;
-      index++;
-    }
-  };
-
-  /**
-   * Get the data for saving.
-   *
-   * @return object
-   */
-  this.getDataForSaving = function () {
-    if (this.file.deleted_at != null) {
-      return {};
-    }
-    return {
-      title: this.getTitleValue(),
-      alt_text: this.getAltTextValue(),
-      caption: this.getCaptionValue(),
-      description: this.getDescriptionValue(),
-      disk: this.getDiskValue(),
-      visibility: this.getVisibilityValue()
-    };
-  };
-
-  /**
-   * Get the title value.
-   *
-   * @return string|null
-   */
-  this.getTitleValue = function () {
-    var element = this.getTitleElement();
-    if (element == null) {
-      return;
-    }
-    return element.value;
-  };
-
-  /**
-   * Get the alt text value.
-   *
-   * @return string|null
-   */
-  this.getAltTextValue = function () {
-    var element = this.getAltTextElement();
-    if (element == null) {
-      return;
-    }
-    return element.value;
-  };
-
-  /**
-   * Get the caption value.
-   *
-   * @return string|null
-   */
-  this.getCaptionValue = function () {
-    var element = this.getCaptionElement();
-    if (element == null) {
-      return;
-    }
-    return element.value;
-  };
-
-  /**
-   * Get the description value.
-   *
-   * @return object|null
-   */
-  this.getDescriptionValue = function () {
-    var element = this.getDescriptionElement();
-    if (element == null) {
-      return;
-    }
-    return element.value;
-  };
-
-  /**
-   * Get the disk value.
-   *
-   * @return object|null
-   */
-  this.getDiskValue = function () {
-    var element = this.getDiskElement();
-    if (element == null) {
-      return;
-    }
-    return element.value;
-  };
-
-  /**
-   * Get the visibility value.
-   *
-   * @return object|null
-   */
-  this.getVisibilityValue = function () {
-    var element = this.getVisibilityElement();
-    if (element == null) {
-      return;
-    }
-    return element.value;
-  };
-
-  /**
-   * Get the wrapper element.
-   *
-   * @return obj
-   */
-  this.getWrapperElement = function () {
-    return document.getElementById('laramedia-file-editor-wrapper');
-  };
-
-  /**
-      * Get the title element.
-      *
-      * @return object|null
-      */
-  this.getTitleElement = function () {
-    return document.getElementById('laramedia-file-editor-title');
-  };
-
-  /**
-   * Get the alt text element.
-   *
-   * @return object|null
-   */
-  this.getAltTextElement = function () {
-    return document.getElementById('laramedia-file-editor-alt-text');
-  };
-
-  /**
-   * Get the caption element.
-   *
-   * @return object|null
-   */
-  this.getCaptionElement = function () {
-    return document.getElementById('laramedia-file-editor-caption');
-  };
-
-  /**
-   * Get the description element.
-   *
-   * @return object|null
-   */
-  this.getDescriptionElement = function () {
-    return document.getElementById('laramedia-file-editor-description');
-  };
-
-  /**
-      * Get the disk element.
-      * 
-      * @return obj
-      */
-  this.getDiskElement = function () {
-    return document.getElementById('laramedia-file-editor-disk');
-  };
-
-  /**
-      * Get the visiblity element.
-      * 
-      * @return obj
-      */
-  this.getVisibilityElement = function () {
-    return document.getElementById('laramedia-file-editor-visibility');
-  };
-
-  /**
-      * Get the update button element.
-      * 
-      * @return obj
-      */
-  this.getUpdateButtonElement = function () {
-    return document.getElementById('laramedia-file-editor-update-btn');
-  };
-
-  /**
-      * Get the trash button element.
-      * 
-      * @return obj
-      */
-  this.getTrashButtonElement = function () {
-    return document.getElementById('laramedia-file-editor-trash-btn');
-  };
-
-  /**
-   * Get the restore button element.
-   * 
-   * @return obj
-   */
-  this.getRestoreButtonElement = function () {
-    return document.getElementById('laramedia-file-editor-restore-btn');
-  };
-
-  /**
-   * Get the destroy button element.
-   * 
-   * @return obj
-   */
-  this.getDestroyButtonElement = function () {
-    return document.getElementById('laramedia-file-editor-destroy-btn');
-  };
-
-  /**
-   * Get the editor template.
-   * 
-   * @return obj|null
-   */
-  this.getTemplate = function () {
-    var template = document.getElementById('laramedia-file-editor');
-    if (template == null) {
-      return;
-    }
-    return document.importNode(template.content, true);
-  };
-}
-
-/***/ }),
-
 /***/ "./resources/js/files-loader.js":
 /*!**************************************!*\
   !*** ./resources/js/files-loader.js ***!
@@ -1269,1269 +518,6 @@ function FilesLoader() {
     return document.head.querySelector("meta[name='laramedia_files_route']").content;
   };
 }
-
-/***/ }),
-
-/***/ "./resources/js/files-uploader.js":
-/*!****************************************!*\
-  !*** ./resources/js/files-uploader.js ***!
-  \****************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ FilesUploader)
-/* harmony export */ });
-/* harmony import */ var _upload_handler__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./upload-handler */ "./resources/js/upload-handler.js");
-/* harmony import */ var _events__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./events */ "./resources/js/events.js");
-/* harmony import */ var _filters__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./filters */ "./resources/js/filters.js");
-/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! sweetalert2 */ "./node_modules/sweetalert2/dist/sweetalert2.all.js");
-/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(sweetalert2__WEBPACK_IMPORTED_MODULE_3__);
-
-
-
-
-function FilesUploader() {
-  /**
-   * The events instance.
-   *
-   * @var object
-   */
-  this.events = new _events__WEBPACK_IMPORTED_MODULE_1__["default"]();
-
-  /**
-   * The filters instance.
-   *
-   * @var object
-   */
-  this.filters = new _filters__WEBPACK_IMPORTED_MODULE_2__["default"]();
-
-  /**
-   * The loaded options.
-   * 
-   * @var object
-   */
-  this.options = {};
-
-  /**
-   * The queue for the accepted files.
-   *
-   * @var object
-   */
-  this.acceptedFilesQueue = {};
-
-  /**
-   * The queue for the rejected files.
-   *
-   * @var object
-   */
-  this.rejectedFilesQueue = {};
-
-  /**
-   * The queue for the completed files.
-   *
-   * @var object
-   */
-  this.completedFilesQueue = {};
-
-  /**
-   * The queue for the failed files.
-   *
-   * @var object
-   */
-  this.failedFilesQueue = {};
-
-  /**
-   * The number of files selected for upload.
-   *
-   * @var int
-   */
-  this.totalSelectedFiles = 0;
-
-  /**
-   * The number of files that have been uploaded so far.
-   *
-   * @var int
-   */
-  this.totalFilesUploaded = 0;
-
-  /**
-   * The percentage point of an upload.
-   *
-   * @var int
-   */
-  this.percentagePoint = 0;
-
-  /**
-   * The progress percentage.
-   *
-   * @var int
-   */
-  this.progressPercentage = 0;
-
-  /**
-   * Indicate whether upload is in progress.
-   * 
-   * @var bool
-   */
-  this.inProgress = false;
-
-  /**
-   * Initiate the uploader.
-   *
-   * @return void
-   */
-  this.init = function () {
-    var self = this;
-
-    // Get the options and save them to the options queue.
-    // Register a few event handlers that will take care of all the magic.
-    window.axios.get(this.getOptionsRoute()).then(function (response) {
-      self.options = self.mergeOptions(self.options, response.data);
-      self.registerDropzoneEventHandlers();
-      self.configureDropzoneFilesInput();
-    });
-  };
-
-  /**
-   * Set the options.
-   * 
-   * @param  obj  options
-   * 
-   * @return this
-   */
-  this.setOptions = function (options) {
-    if (typeof options == 'undefined' || options == null || options == '') {
-      return this;
-    }
-    if (Object.keys(options).length < 1) {
-      return this;
-    }
-    for (var key in options) {
-      this.options[key] = options[key];
-    }
-    return this;
-  };
-
-  /**
-   * Register the dropzone event handlers.
-   * 
-   * @return void
-   */
-  this.registerDropzoneEventHandlers = function () {
-    var self = this;
-    var dropzoneElement = this.getDropzoneElement();
-    var dropzoneInputElement = this.getDropzoneInputElement();
-
-    /**
-     * When anywhere inside the dropzone element is clicked,
-     * we trigger the uploader.
-     */
-    dropzoneElement.addEventListener('click', function (e) {
-      dropzoneInputElement.click();
-    });
-
-    // When the dropzone input element receives files, we process them
-    dropzoneInputElement.addEventListener('change', function (event) {
-      self.processFiles(this.files);
-    });
-
-    // Some drag events we want to prevent default action and propagation.
-    ['dragstart', 'drag', 'dragend', 'dragenter'].forEach(function (eventName) {
-      dropzoneElement.addEventListener(eventName, function (event) {
-        event.preventDefault();
-        event.stopPropagation();
-      }, false);
-    });
-
-    /**
-     * When the dragover event is fired, we want to let the user know that
-     * they are over the drag area.
-     */
-    dropzoneElement.addEventListener('dragover', function (event) {
-      event.preventDefault();
-      event.stopPropagation();
-      this.classList.add('dropzone-highlight');
-    }, false);
-
-    /**
-     * When the dragleave event is fired, we want to let the user know that
-     * they have left the drag area.
-     */
-    dropzoneElement.addEventListener('dragleave', function (event) {
-      event.preventDefault();
-      event.stopPropagation();
-      this.classList.remove('dropzone-highlight');
-    }, false);
-
-    // When the files are dropped, send them off for processing.
-    dropzoneElement.addEventListener('drop', function (event) {
-      event.preventDefault();
-      event.stopPropagation();
-      this.classList.remove('dropzone-highlight');
-      self.processFiles(event.dataTransfer.files);
-    }, false);
-  };
-
-  /**
-   * Configure the files input.
-   *
-   * @return void
-   */
-  this.configureDropzoneFilesInput = function () {
-    var filesInput = this.getDropzoneInputElement();
-    if (filesInput == null) {
-      return;
-    }
-    var allowedTypes = this.getAllowedMimeTypes().concat(this.getAllowedExtensions());
-
-    // Set the files name on the input
-    var inputName = this.getOption('files_input_name');
-    if (this.getOption('allow_multiple_uploads')) {
-      inputName += '[]';
-    }
-    filesInput.setAttribute('name', inputName);
-
-    // Allow multiple uploads on the files input
-    if (this.getOption('allow_multiple_uploads')) {
-      filesInput.setAttribute('multiple', 'multiple');
-    }
-
-    /**
-     * We set the accepted files on the input so that the file explorer when opened,
-     * would block out the disallowed files for us.
-     */
-    if (allowedTypes.length >= 1) {
-      filesInput.setAttribute('accept', allowedTypes.join(','));
-    }
-  };
-
-  /**
-   * Process the files.
-   * 
-   * @param  array  files
-   * 
-   * @return void
-   */
-  this.processFiles = function (files) {
-    var self = this;
-    var files = Array.from(files);
-    var minNumberOfFiles = this.getOption('min_number_of_files');
-    var maxNumberOfFiles = this.getOption('max_number_of_files');
-    this.events.fire('files_processing_start', []);
-
-    // Notify that multipple uploads not allowed
-    if (!this.getOption('allow_multiple_uploads') && files.length > 1) {
-      return this.notifyThatMultipleUploadsNotAllowed();
-    }
-
-    // Notify that not enough files selected
-    if (minNumberOfFiles != null && files.length < minNumberOfFiles) {
-      return this.notifyThatNotEnoughFilesSelected();
-    }
-
-    // Notify that too many files selected
-    if (maxNumberOfFiles != null && files.length > maxNumberOfFiles) {
-      return this.notifyThatTooManyFilesSelected();
-    }
-
-    // Process the files that were selected
-    files.forEach(function (file) {
-      self.processFile(file);
-    });
-    this.events.fire('files_processing_end', [files]);
-
-    // Fire off the individual uploads for the files
-    for (var fileId in this.acceptedFilesQueue) {
-      this.uploadFile(this.acceptedFilesQueue[fileId]);
-    }
-  };
-
-  /**
-   * Process an individual file.
-   *
-   * @param  obj  file
-   * 
-   * @return void
-   */
-  this.processFile = function (file) {
-    var fileId = this.generateFileId(file);
-    var filesize = this.convertBytesToKilobytes(file.size);
-    var mimetype = file.type;
-    var extension = this.getExtensionFromMimeType(mimetype);
-    var mimetypeWildcard = this.getWildCardFromMimeType(mimetype);
-    var minFileSize = this.getOption('min_file_size');
-    var maxFileSize = this.getOption('max_file_size');
-    var allowedMimeTypes = this.getAllowedMimeTypes();
-    var allowedExtensions = this.getAllowedExtensions();
-
-    // Ignore folders
-    if (mimetype == '') {
-      return;
-    }
-    this.totalSelectedFiles += 1;
-    this.percentagePoint = 100 / this.totalSelectedFiles;
-    if (this.rejectedFilesQueue.hasOwnProperty(fileId)) {
-      this.rejectedFilesQueue[fileId] = file;
-      this.totalFilesUploaded += 1;
-      this.events.fire('file_rejected', [file, 'file_already_selected']);
-    } else if (this.acceptedFilesQueue.hasOwnProperty(fileId)) {
-      this.rejectedFilesQueue[fileId] = file;
-      this.totalFilesUploaded += 1;
-      this.events.fire('file_rejected', [file, 'file_already_selected']);
-    } else if (minFileSize != null && filesize < minFileSize) {
-      this.rejectedFilesQueue[fileId] = file;
-      this.totalFilesUploaded += 1;
-      this.events.fire('file_rejected', [file, 'file_small']);
-    } else if (maxFileSize != null && filesize > maxFileSize) {
-      this.rejectedFilesQueue[fileId] = file;
-      this.totalFilesUploaded += 1;
-      this.events.fire('file_rejected', [file, 'file_large']);
-    } else if (allowedMimeTypes.length == 0 && allowedExtensions.length == 0) {
-      this.acceptedFilesQueue[fileId] = file;
-    } else if (allowedMimeTypes.length >= 1 && allowedMimeTypes.indexOf(mimetype) != '-1') {
-      this.acceptedFilesQueue[fileId] = file;
-    } else if (allowedMimeTypes.length >= 1 && allowedMimeTypes.indexOf(mimetypeWildcard) != '-1') {
-      this.acceptedFilesQueue[fileId] = file;
-    } else if (allowedExtensions.length >= 1 && allowedExtensions.indexOf(extension) != '-1') {
-      this.acceptedFilesQueue[fileId] = file;
-    } else {
-      this.rejectedFilesQueue[fileId] = file;
-      this.totalFilesUploaded += 1;
-      this.events.fire('file_rejected', [file, 'file_not_allowed']);
-    }
-  };
-
-  /**
-   * Upload the file
-   * 
-   * @param  object  file
-   * @param  object  formData
-   * 
-   * @return void
-   */
-  this.uploadFile = function (file) {
-    var self = this;
-    var handler = new _upload_handler__WEBPACK_IMPORTED_MODULE_0__["default"]();
-    var formData = new FormData();
-    formData.append('file', file);
-    handler.events.on('upload_success', function (media, browserFile, response) {
-      var fileId = self.generateFileId(browserFile);
-      self.completedFilesQueue[fileId] = media;
-      self.events.fire('upload_success', [media, browserFile, response]);
-    });
-    handler.events.on('upload_fail', function (browserFile, response) {
-      var fileId = self.generateFileId(browserFile);
-      self.failedFilesQueue[fileId] = browserFile;
-      self.events.fire('upload_fail', [browserFile, response]);
-    });
-    handler.events.on('upload_error', function (browserFile, response) {
-      var fileId = self.generateFileId(browserFile);
-      self.failedFilesQueue[fileId] = browserFile;
-      self.events.fire('upload_error', [browserFile, response]);
-    });
-    handler.events.on('upload_complete', function (browserFile, response) {
-      self.totalFilesUploaded += 1;
-      self.progressPercentage = Math.round(self.totalFilesUploaded * self.percentagePoint);
-      self.events.fire('progress_percentage_update', [self.progressPercentage, self.totalFilesUploaded, self.percentagePoint]);
-      if (self.totalSelectedFiles == self.totalFilesUploaded) {
-        self.events.fire('uploads_finish_completed_files', [self.completedFilesQueue]);
-        self.events.fire('uploads_finish_failed_files', [self.failedFilesQueue]);
-        self.resetVariousFileQueues();
-        self.resetMetrics();
-        self.getDropzoneInputElement().value = null;
-        self.inProgress = false;
-      }
-    });
-
-    // Indicate that the upload is in progress
-    this.inProgress = true;
-    this.events.fire('upload_start');
-    handler.start(file, formData);
-  };
-
-  /**
-   * Reset the various file queues.
-   * 
-   * @return void
-   */
-  this.resetVariousFileQueues = function () {
-    this.acceptedFilesQueue = {};
-    this.rejectedFilesQueue = {};
-    this.completedFilesQueue = {};
-    this.failedFilesQueue = {};
-  };
-
-  /**
-   * Reset the metrics.
-   * 
-   * @return void
-   */
-  this.resetMetrics = function () {
-    this.totalFilesUploaded = 0;
-    this.totalSelectedFiles = 0;
-    this.progressPercentage = 0;
-    this.percentagePoint = 0;
-  };
-
-  /**
-   * Get an options.
-   * 
-   * @param  string  option
-   * 
-   * @return mixed
-   */
-  this.getOption = function (option) {
-    if (!this.options.hasOwnProperty(option)) {
-      return;
-    }
-    return this.options[option];
-  };
-
-  /**
-   * Merge options.
-   * 
-   * @param  obj  overridingOptions
-   * @param  obj  options
-   * 
-   * @return obj
-   */
-  this.mergeOptions = function (overridingOptions, options) {
-    if (Object.keys(overridingOptions).length < 1) {
-      return options;
-    }
-    for (var key in overridingOptions) {
-      options[key] = overridingOptions[key];
-    }
-    return options;
-  };
-
-  /**
-   * Get the allowed mimetypes.
-   *
-   * @return array
-   */
-  this.getAllowedMimeTypes = function () {
-    var types = this.getOption('allowed_mimetypes');
-    if (!Array.isArray(types)) {
-      return [];
-    }
-    return types;
-  };
-
-  /**
-   * Get the allowed mimetypes wildcards.
-   *
-   * @return void
-   */
-  this.getAllowedMimeTypesWildcards = function () {
-    var types = this.getOption('allowed_mimetypes_wildcards');
-    if (!Array.isArray(types)) {
-      return [];
-    }
-    return types;
-  };
-
-  /**
-   * Get the allowed extensions.
-   *
-   * @return void
-   */
-  this.getAllowedExtensions = function () {
-    var results = [];
-    var extensions = this.getOption('allowed_extensions');
-    if (!Array.isArray(extensions)) {
-      return [];
-    }
-    extensions.forEach(function (extension) {
-      if (extension[0].charAt(0) == '.') {
-        results.push(extension);
-      } else {
-        results.push('.' + extension);
-      }
-    });
-    return results;
-  };
-
-  /**
-   * Get the mimetype wildcard from a given mimetype.
-   *
-   * @param  string  mimetype
-   *
-   * @return string
-   */
-  this.getWildCardFromMimeType = function (mimetype) {
-    var result = mimetype.match(/^[a-z]+\/(\*{1}|[a-zA-Z0-9-\.\+]+)$/g);
-    if (result == null) {
-      return;
-    }
-    return result[0].replace(/\/.+$/g, '/*');
-  };
-
-  /**
-   * Get the extension from the mimetype.
-   *
-   * @param  string  mimetype
-   * @param  bool  prefix  Whether to prefix the extension with the '.'
-   *
-   * @return string
-   */
-  this.getExtensionFromMimeType = function (mimetype, prefix) {
-    if (prefix != 'undefined') {
-      var prefix = true;
-    }
-    var result = mimetype.match(/^[a-z]+\/[a-zA-Z0-9-\.\+]+$/g);
-    if (result == null) {
-      return;
-    }
-    var extension = result[0].replace(/^[a-z]+\//g, '');
-    if (prefix) {
-      return '.' + extension;
-    }
-    return extension;
-  };
-
-  /**
-   * Convert bytes to kilobytes.
-   *
-   * @param  int  bytes
-   *
-   * @return float
-   */
-  this.convertBytesToKilobytes = function (bytes) {
-    return bytes / 1024;
-  };
-
-  /**
-   * Generate an id for a file.
-   *
-   * @param  object  file
-   *
-   * @return string
-   */
-  this.generateFileId = function (file) {
-    name = file.name;
-    name = name.replace(/\s/g, '-');
-    name = name.replace(/[^a-zA-Z0-9-_]/g, '');
-    return name.toLowerCase();
-  };
-
-  /**
-   * Get the dropzone element.
-   * 
-   * @return object
-   */
-  this.getDropzoneElement = function () {
-    return document.querySelector('.laramedia-uploader-dropzone');
-  };
-
-  /**
-   * Get the dropzone input element.
-   * 
-   * @return object
-   */
-  this.getDropzoneInputElement = function () {
-    return document.querySelector('.laramedia-uploader-dropzone-input');
-  };
-
-  /**
-   * Get the options route.
-   * 
-   * @return string
-   */
-  this.getOptionsRoute = function () {
-    return document.head.querySelector("meta[name='laramedia_options_route']").content;
-  };
-
-  /**
-   * Notify the user that multiple uploads is not enabled.
-   *
-   * @return object
-   */
-  this.notifyThatMultipleUploadsNotAllowed = function () {
-    return sweetalert2__WEBPACK_IMPORTED_MODULE_3___default().fire({
-      icon: 'error',
-      title: 'Error',
-      text: 'You are not allowed to upload multiple files.'
-    });
-  };
-
-  /**
-   * Notify the user that not enough files have been selected.
-   *
-   * @return object
-   */
-  this.notifyThatNotEnoughFilesSelected = function () {
-    var message = '';
-    var minNumberOfFiles = this.getOption('min_number_of_files');
-    if (minNumberOfFiles == 1) {
-      message = 'You cannot upload no less than 1 file';
-    } else {
-      message = 'You cannot upload no less than ' + minNumberOfFiles + ' files.';
-    }
-    return sweetalert2__WEBPACK_IMPORTED_MODULE_3___default().fire({
-      icon: 'error',
-      title: 'Error',
-      text: message
-    });
-  };
-
-  /**
-   * Notify the user that too many files have been selected.
-   *
-   * @return object
-   */
-  this.notifyThatTooManyFilesSelected = function () {
-    var message = '';
-    var maxNumberOfFiles = this.getOption('max_number_of_files');
-    if (maxNumberOfFiles == 1) {
-      message = 'You are not allowed to upload more than 1 file.';
-    } else {
-      message = 'You are not allowed to upload more than ' + maxNumberOfFiles + ' files.';
-    }
-    return sweetalert2__WEBPACK_IMPORTED_MODULE_3___default().fire({
-      icon: 'error',
-      title: 'Error',
-      text: message
-    });
-  };
-}
-
-/***/ }),
-
-/***/ "./resources/js/filters.js":
-/*!*********************************!*\
-  !*** ./resources/js/filters.js ***!
-  \*********************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ Filters)
-/* harmony export */ });
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
-function Filters() {
-  /**
-   * Hold our filters.
-   *
-   * @var object
-   */
-  this.filters = {};
-
-  /**
-   * Subscribe to a filter.
-   *
-   * @param  string  filter
-   * @param  callable  callable
-   *
-   * @return void
-   */
-  this.add = function (filter, callable) {
-    if (!this.filters.hasOwnProperty(filter)) {
-      this.filters[filter] = [];
-    }
-    this.filters[filter].push(callable);
-  };
-
-  /**
-   * Apply the filter.
-   *
-   * @param  string  filter
-   * @param  mixed  value
-   * @param  array  params
-   *
-   * @return mixed
-   */
-  this.apply = function (filter, value, params) {
-    if (!this.filters.hasOwnProperty(filter)) {
-      return value;
-    }
-    this.filters[filter].forEach(function (callable) {
-      if (typeof params == 'undefined') {
-        value = callable(value);
-      } else {
-        value = callable.apply(void 0, [value].concat(_toConsumableArray(params)));
-      }
-    });
-    return value;
-  };
-}
-
-/***/ }),
-
-/***/ "./resources/js/listings.js":
-/*!**********************************!*\
-  !*** ./resources/js/listings.js ***!
-  \**********************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _files_loader__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./files-loader */ "./resources/js/files-loader.js");
-/* harmony import */ var _files_uploader__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./files-uploader */ "./resources/js/files-uploader.js");
-/* harmony import */ var _file_editor__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./file-editor */ "./resources/js/file-editor.js");
-
-
-
-function Listings() {
-  /**
-   * The loader instance.
-   * 
-   * @var obj
-   */
-  this.loader = {};
-
-  /**
-   * The uploader instance.
-   * 
-   * @var obj
-   */
-  this.uploader = {};
-
-  /**
-   * The queue for the loaded files.
-   *
-   * @var obj
-   */
-  this.loadedFiles = {};
-
-  /**
-   * The files successfully uploaded.
-   * 
-   * @var obj
-   */
-  this.uploadedFiles = {};
-
-  /**
-   * The files queue for both the loaded and uploaded files.
-   * 
-   * @var obj
-   */
-  this.files = {};
-
-  /**
-   * The options.
-   * 
-   * @var obj
-   */
-  this.options = {};
-
-  /**
-   * Initiate the listings page.
-   * 
-   * @return void
-   */
-  this.init = function () {
-    var self = this;
-
-    // Get options first then handle business after
-    window.axios.get(this.getOptionsRoute()).then(function (response) {
-      self.options = response.data;
-      self.uploader = new _files_uploader__WEBPACK_IMPORTED_MODULE_1__["default"]();
-      self.loader = new _files_loader__WEBPACK_IMPORTED_MODULE_0__["default"]();
-      self.registerEventHandlers();
-      self.registerLoaderEventHandlers();
-      self.registerUploaderEventHandlers();
-      self.loader.setOptions(self.options).start();
-      self.uploader.init();
-    });
-  };
-
-  /**
-   * Register the events handlers.
-   * 
-   * @return void
-   */
-  this.registerEventHandlers = function () {
-    var self = this;
-
-    // Show the uploader when the add files button is clicked
-    document.getElementById('laramedia-files-trigger-dropzone').addEventListener('click', function (event) {
-      document.getElementById('laramedia-uploader-dropzone').classList.remove('laramedia-hidden');
-    });
-
-    // Hide the uploader when it is clicked to close
-    document.querySelector('.laramedia-uploader-dropzone-close').addEventListener('click', function (event) {
-      event.preventDefault();
-      event.stopPropagation();
-      event.target.closest('.laramedia-uploader-dropzone').classList.add('laramedia-hidden');
-    });
-
-    // Hide the error section when X is clicked. Also remove the errors
-    document.getElementById('laramedia-files-error-close').addEventListener('click', function (event) {
-      this.parentElement.style.display = 'none';
-
-      // Remove the errors
-      document.querySelectorAll('.laramedia-files-error').forEach(function (element) {
-        element.remove();
-      });
-    });
-
-    // Load more
-    document.getElementById('laramedia-files-load-more-btn').addEventListener('click', function (event) {
-      self.loader.loadContent();
-    });
-
-    // Disk filter
-    document.getElementById('laramedia-filter-disk').addEventListener('change', function (event) {
-      self.loader.setRequestParameters({
-        disk: this.value
-      }).loadFreshContent();
-    });
-
-    // Visibility filter
-    document.getElementById('laramedia-filter-visibility').addEventListener('change', function (event) {
-      self.loader.setRequestParameters({
-        visibility: this.value
-      }).loadFreshContent();
-    });
-
-    // Type filter
-    document.getElementById('laramedia-filter-type').addEventListener('change', function (event) {
-      self.loader.setRequestParameters({
-        type: this.value
-      }).loadFreshContent();
-    });
-
-    // Ownership filter
-    document.getElementById('laramedia-filter-ownership').addEventListener('change', function (event) {
-      self.loader.setRequestParameters({
-        ownership: this.value
-      }).loadFreshContent();
-    });
-
-    // Search filter
-    document.getElementById('laramedia-filter-search').addEventListener('change', function (event) {
-      self.loader.setRequestParameters({
-        search: this.value
-      }).loadFreshContent();
-    });
-
-    // Active Section filter
-    document.getElementById('laramedia-filter-active-section-container').addEventListener('click', function (event) {
-      document.querySelectorAll('.laramedia-filter-section-container').forEach(function (element) {
-        element.classList.remove('laramedia-current-section');
-      });
-      this.classList.add('laramedia-current-section');
-      self.loader.setRequestParameters({
-        section: 'active'
-      }).loadFreshContent();
-    });
-
-    // Trash Section filter
-    document.getElementById('laramedia-filter-trash-section-container').addEventListener('click', function (event) {
-      document.querySelectorAll('.laramedia-filter-section-container').forEach(function (element) {
-        element.classList.remove('laramedia-current-section');
-      });
-      this.classList.add('laramedia-current-section');
-      self.loader.setRequestParameters({
-        section: 'trash'
-      }).loadFreshContent();
-    });
-  };
-
-  /**
-   * Register the loader event handlers.
-   * 
-   * @return void
-   */
-  this.registerLoaderEventHandlers = function () {
-    var self = this;
-
-    // Clear files on first load
-    this.loader.events.on('first_load_begin', function () {
-      document.getElementById('laramedia-files-container').innerHTML = null;
-      document.getElementById('laramedia-files-load-more-btn').classList.add('laramedia-hidden');
-    });
-
-    // Things to do when file has been loaded
-    this.loader.events.on('file_loaded', function (file) {
-      self.loadedFiles[file.uuid] = file;
-      self.files[file.uuid] = file;
-      self.showFilePreview(file);
-    });
-
-    // Things to do when load is completed
-    this.loader.events.on('load_complete', function (allFilesLoaded) {
-      if (!allFilesLoaded) {
-        document.getElementById('laramedia-files-load-more-btn').classList.remove('laramedia-hidden');
-      }
-    });
-
-    // Things to do when the last load is completed
-    this.loader.events.on('last_load_complete', function () {
-      document.getElementById('laramedia-files-load-more-btn').classList.add('laramedia-hidden');
-    });
-  };
-
-  /**
-   * Register the uploader event handlers.
-   * 
-   * @return void
-   */
-  this.registerUploaderEventHandlers = function () {
-    var self = this;
-
-    // Show the image preview when file uploaded successfully
-    this.uploader.events.on('upload_success', function (media, file, response) {
-      self.uploadedFiles[media.uuid] = media;
-      self.files[media.uuid] = media;
-      self.showFilePreview(media, true);
-    });
-
-    // Show the error when a file upload fails
-    this.uploader.events.on('upload_fail', function (file, response) {
-      self.showFileError(file, response);
-    });
-
-    // Show the error when a file upload fails
-    this.uploader.events.on('upload_error', function (file, response) {
-      self.showFileError(file, response);
-    });
-
-    // Show the error when a file upload fails
-    this.uploader.events.on('file_rejected', function (file, reason) {
-      self.showFileValidationError(file, reason);
-    });
-
-    // When the progress changes
-    this.uploader.events.on('progress_percentage_update', function (percentage) {
-      self.showUploadProgress(percentage);
-    });
-
-    // When the processing start
-    this.uploader.events.on('files_processing_start', function () {
-      self.showUploadProcessing();
-    });
-  };
-
-  /**
-   * Show the file preview.
-   * 
-   * @param  obj  media
-   * @param  bool  prepend
-   * 
-   * @return void
-   */
-  this.showFilePreview = function (media, prepend) {
-    var self = this;
-    var container = this.getFilesContainerElement();
-    var template = this.getFilePreviewTemplate(media);
-
-    // Add file id to template
-    template.querySelector('.laramedia-files-item-wrapper').setAttribute('file_id', media.uuid);
-
-    // Enable the file editor when file preview is clicked
-    template.querySelector('.laramedia-files-item-container').addEventListener('click', function (event) {
-      var wrapper = event.target.closest('.laramedia-files-item-wrapper');
-      var hasPreviousFile = wrapper.previousElementSibling != null;
-      var hasNextFile = wrapper.nextElementSibling != null;
-      var editor = new _file_editor__WEBPACK_IMPORTED_MODULE_2__["default"]();
-
-      // When the editor previous file button is clicked
-      editor.events.on('previous_file', function (file) {
-        if (hasPreviousFile) {
-          editor.close(file);
-          wrapper.previousElementSibling.querySelector('.laramedia-files-item-container').click();
-        }
-      });
-
-      // When the next file is requested from the editor
-      editor.events.on('next_file', function (file) {
-        if (hasNextFile) {
-          editor.close(file);
-          wrapper.nextElementSibling.querySelector('.laramedia-files-item-container').click();
-        }
-      });
-
-      // When file updated in editor
-      editor.events.on('file_updated', function (updatedFile) {
-        self.files[updatedFile.uuid] = updatedFile;
-      });
-
-      // When file trashed from editor
-      editor.events.on('file_trashed', function (file) {
-        document.querySelector("[file_id='" + file.uuid + "']").remove();
-      });
-
-      // When file restored from editor
-      editor.events.on('file_restored', function (file) {
-        document.querySelector("[file_id='" + file.uuid + "']").remove();
-      });
-
-      // When file destroyed from editor
-      editor.events.on('file_destroyed', function (file) {
-        document.querySelector("[file_id='" + file.uuid + "']").remove();
-      });
-
-      // Start the editor
-      editor.init({
-        file: self.files[media.uuid],
-        has_previous_file: hasPreviousFile,
-        has_next_file: hasNextFile,
-        options: self.options
-      });
-    });
-
-    // Show image preview or file preview
-    if (media.file_type == 'image') {
-      template.querySelector('.laramedia-files-image').src = media.base64_url;
-    } else {
-      template.querySelector('.laramedia-files-item-name').innerHTML = media.original_name;
-    }
-    if (prepend != 'undefined' && prepend == true) {
-      container.prepend(template);
-    } else {
-      container.append(template);
-    }
-  };
-
-  /**
-   * Show the file error.
-   * 
-   * @param  obj  file
-   * @parma  obj  response
-   * 
-   * @return void
-   */
-  this.showFileError = function (file, response) {
-    var self = this;
-    var container = this.getErrorsContainerElement();
-    var template = this.getFileErrorTemplate();
-
-    // Event listener to remove error
-    template.querySelector('.laramedia-files-error-remove').addEventListener('click', function (event) {
-      this.parentElement.parentElement.remove();
-      if (self.getErrorsContainerElement().querySelectorAll('.laramedia-files-error').length == 0) {
-        self.getErrorsContainerElement().style.display = 'none';
-      }
-    });
-    template.querySelector('.laramedia-files-error-name').innerHTML = file.name;
-    if (response.hasOwnProperty('response')) {
-      template.querySelector('.laramedia-files-error-reason').innerHTML = response.response.data.message;
-    } else {
-      template.querySelector('.laramedia-files-error-reason').innerHTML = response.messages.join(' ');
-    }
-    container.style.display = 'flex';
-    container.prepend(template);
-  };
-
-  /**
-   * Show the file validation error.
-   * 
-   * @param  obj  file
-   * @parma  obj  reason
-   * 
-   * @return void
-   */
-  this.showFileValidationError = function (file, reason) {
-    var self = this;
-    var container = this.getErrorsContainerElement();
-    var template = this.getFileErrorTemplate();
-
-    // Event listener to remove error
-    template.querySelector('.laramedia-files-error-remove').addEventListener('click', function (event) {
-      this.parentElement.parentElement.remove();
-      if (self.getErrorsContainerElement().querySelectorAll('.laramedia-files-error').length == 0) {
-        self.getErrorsContainerElement().style.display = 'none';
-      }
-    });
-    if (reason == 'file_large') {
-      reason = 'File exceeds the maximum size allowed.';
-    } else if (reason == 'file_small') {
-      reason = 'File does not meet the minimum size allowed.';
-    } else if (reason == 'file_not_allowed') {
-      reason = 'File type is not allowed.';
-    } else if (reason == 'file_already_selected') {
-      reason = 'File has already been selected.';
-    } else {
-      reason = 'File rejected';
-    }
-    template.querySelector('.laramedia-files-error-name').innerHTML = file.name;
-    template.querySelector('.laramedia-files-error-reason').innerHTML = reason;
-    container.style.display = 'flex';
-    container.prepend(template);
-  };
-
-  /**
-   * Show the upload progress.
-   * 
-   * @param  int  percentage
-   * 
-   * @return void
-   */
-  this.showUploadProgress = function (percentage) {
-    var container = this.getUploadProgressContainerElement();
-    if (container.style.display != 'flex') {
-      container.style.display = 'flex';
-    }
-    document.getElementById('laramedia-files-upload-message').style.display = 'none';
-    var unitsElement = document.getElementById('laramedia-files-upload-progress-units');
-    unitsElement.style.display = 'flex';
-    unitsElement.style.width = percentage + '%';
-    unitsElement.innerHTML = percentage + '%';
-  };
-
-  /**
-   * Show the upload processing.
-   * 
-   * @return void
-   */
-  this.showUploadProcessing = function () {
-    var container = this.getUploadProgressContainerElement();
-    if (container.style.display != 'flex') {
-      container.style.display = 'flex';
-    }
-    document.getElementById('laramedia-files-upload-progress-units').style.display = 'none';
-    document.getElementById('laramedia-files-upload-message').style.display = 'flex';
-  };
-
-  /**
-   * Get the options route.
-   * 
-   * @return string
-   */
-  this.getOptionsRoute = function () {
-    return document.head.querySelector("meta[name='laramedia_options_route']").content;
-  };
-
-  /**
-   * Get the files container element.
-   * 
-   * @return obj
-   */
-  this.getFilesContainerElement = function () {
-    return document.getElementById('laramedia-files-container');
-  };
-
-  /**
-   * Get the errors container element.
-   * 
-   * @return obj
-   */
-  this.getErrorsContainerElement = function () {
-    return document.getElementById('laramedia-files-errors-container');
-  };
-
-  /**
-   * Get the upload progress container element.
-   * 
-   * @return obj
-   */
-  this.getUploadProgressContainerElement = function () {
-    return document.getElementById('laramedia-files-upload-progress-container');
-  };
-
-  /**
-   * Get the file preview template.
-   * 
-   * @param  obj  media
-   * @param  obj  file
-   * 
-   * @return obj
-   */
-  this.getFilePreviewTemplate = function (media, file) {
-    if (media.is_image) {
-      var template = document.getElementById('laramedia-files-image-template');
-    } else {
-      var template = document.getElementById('laramedia-files-none-image-template');
-    }
-    if (template == null) {
-      return;
-    }
-    return document.importNode(template.content, true);
-  };
-
-  /**
-   * Get the file error template.
-   * 
-   * @return obj
-   */
-  this.getFileErrorTemplate = function () {
-    var template = document.getElementById('laramedia-files-error-template');
-    if (template == null) {
-      return;
-    }
-    return document.importNode(template.content, true);
-  };
-}
-new Listings().init();
-
-/***/ }),
-
-/***/ "./resources/js/upload-handler.js":
-/*!****************************************!*\
-  !*** ./resources/js/upload-handler.js ***!
-  \****************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ UploadHandler)
-/* harmony export */ });
-/* harmony import */ var _events__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./events */ "./resources/js/events.js");
-
-function UploadHandler() {
-  /**
-   * The events instance.
-   *
-   * @var object
-   */
-  this.events = new _events__WEBPACK_IMPORTED_MODULE_0__["default"]();
-
-  /**
-   * Start the upload.
-   * 
-   * @param  object  file
-   * @param  FormData  formData
-   *
-   * @return void
-   */
-  this.start = function (file, formData) {
-    var self = this;
-    window.axios.post(this.getUploadRoute(), formData).then(function (response) {
-      if (response.data.success) {
-        self.events.fire('upload_success', [response.data.file, file, response.data]);
-      } else {
-        self.events.fire('upload_fail', [file, response.data]);
-      }
-    })["catch"](function (response) {
-      self.events.fire('upload_error', [file, response]);
-    }).then(function (response) {
-      self.events.fire('upload_complete', [file, response]);
-    });
-  };
-
-  /**
-   * Get the upload route.
-   * 
-   * @return string
-   */
-  this.getUploadRoute = function () {
-    return document.head.querySelector("meta[name='laramedia_upload_route']").content;
-  };
-}
-
-/***/ }),
-
-/***/ "./resources/css/laramedia.css":
-/*!*************************************!*\
-  !*** ./resources/css/laramedia.css ***!
-  \*************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-// extracted by mini-css-extract-plugin
-
 
 /***/ }),
 
@@ -7226,42 +5212,7 @@ if (typeof this !== 'undefined' && this.Sweetalert2){this.swal = this.sweetAlert
 /******/ 		return module.exports;
 /******/ 	}
 /******/ 	
-/******/ 	// expose the modules object (__webpack_modules__)
-/******/ 	__webpack_require__.m = __webpack_modules__;
-/******/ 	
 /************************************************************************/
-/******/ 	/* webpack/runtime/chunk loaded */
-/******/ 	(() => {
-/******/ 		var deferred = [];
-/******/ 		__webpack_require__.O = (result, chunkIds, fn, priority) => {
-/******/ 			if(chunkIds) {
-/******/ 				priority = priority || 0;
-/******/ 				for(var i = deferred.length; i > 0 && deferred[i - 1][2] > priority; i--) deferred[i] = deferred[i - 1];
-/******/ 				deferred[i] = [chunkIds, fn, priority];
-/******/ 				return;
-/******/ 			}
-/******/ 			var notFulfilled = Infinity;
-/******/ 			for (var i = 0; i < deferred.length; i++) {
-/******/ 				var [chunkIds, fn, priority] = deferred[i];
-/******/ 				var fulfilled = true;
-/******/ 				for (var j = 0; j < chunkIds.length; j++) {
-/******/ 					if ((priority & 1 === 0 || notFulfilled >= priority) && Object.keys(__webpack_require__.O).every((key) => (__webpack_require__.O[key](chunkIds[j])))) {
-/******/ 						chunkIds.splice(j--, 1);
-/******/ 					} else {
-/******/ 						fulfilled = false;
-/******/ 						if(priority < notFulfilled) notFulfilled = priority;
-/******/ 					}
-/******/ 				}
-/******/ 				if(fulfilled) {
-/******/ 					deferred.splice(i--, 1)
-/******/ 					var r = fn();
-/******/ 					if (r !== undefined) result = r;
-/******/ 				}
-/******/ 			}
-/******/ 			return result;
-/******/ 		};
-/******/ 	})();
-/******/ 	
 /******/ 	/* webpack/runtime/compat get default export */
 /******/ 	(() => {
 /******/ 		// getDefaultExport function for compatibility with non-harmony modules
@@ -7302,68 +5253,311 @@ if (typeof this !== 'undefined' && this.Sweetalert2){this.swal = this.sweetAlert
 /******/ 		};
 /******/ 	})();
 /******/ 	
-/******/ 	/* webpack/runtime/jsonp chunk loading */
-/******/ 	(() => {
-/******/ 		// no baseURI
-/******/ 		
-/******/ 		// object to store loaded and loading chunks
-/******/ 		// undefined = chunk not loaded, null = chunk preloaded/prefetched
-/******/ 		// [resolve, reject, Promise] = chunk loading, 0 = chunk loaded
-/******/ 		var installedChunks = {
-/******/ 			"/public/js/listings": 0,
-/******/ 			"public/css/laramedia": 0
-/******/ 		};
-/******/ 		
-/******/ 		// no chunk on demand loading
-/******/ 		
-/******/ 		// no prefetching
-/******/ 		
-/******/ 		// no preloaded
-/******/ 		
-/******/ 		// no HMR
-/******/ 		
-/******/ 		// no HMR manifest
-/******/ 		
-/******/ 		__webpack_require__.O.j = (chunkId) => (installedChunks[chunkId] === 0);
-/******/ 		
-/******/ 		// install a JSONP callback for chunk loading
-/******/ 		var webpackJsonpCallback = (parentChunkLoadingFunction, data) => {
-/******/ 			var [chunkIds, moreModules, runtime] = data;
-/******/ 			// add "moreModules" to the modules object,
-/******/ 			// then flag all "chunkIds" as loaded and fire callback
-/******/ 			var moduleId, chunkId, i = 0;
-/******/ 			if(chunkIds.some((id) => (installedChunks[id] !== 0))) {
-/******/ 				for(moduleId in moreModules) {
-/******/ 					if(__webpack_require__.o(moreModules, moduleId)) {
-/******/ 						__webpack_require__.m[moduleId] = moreModules[moduleId];
-/******/ 					}
-/******/ 				}
-/******/ 				if(runtime) var result = runtime(__webpack_require__);
-/******/ 			}
-/******/ 			if(parentChunkLoadingFunction) parentChunkLoadingFunction(data);
-/******/ 			for(;i < chunkIds.length; i++) {
-/******/ 				chunkId = chunkIds[i];
-/******/ 				if(__webpack_require__.o(installedChunks, chunkId) && installedChunks[chunkId]) {
-/******/ 					installedChunks[chunkId][0]();
-/******/ 				}
-/******/ 				installedChunks[chunkId] = 0;
-/******/ 			}
-/******/ 			return __webpack_require__.O(result);
-/******/ 		}
-/******/ 		
-/******/ 		var chunkLoadingGlobal = self["webpackChunk"] = self["webpackChunk"] || [];
-/******/ 		chunkLoadingGlobal.forEach(webpackJsonpCallback.bind(null, 0));
-/******/ 		chunkLoadingGlobal.push = webpackJsonpCallback.bind(null, chunkLoadingGlobal.push.bind(chunkLoadingGlobal));
-/******/ 	})();
-/******/ 	
 /************************************************************************/
-/******/ 	
-/******/ 	// startup
-/******/ 	// Load entry module and return exports
-/******/ 	// This entry module depends on other loaded chunks and execution need to be delayed
-/******/ 	__webpack_require__.O(undefined, ["public/css/laramedia"], () => (__webpack_require__("./resources/js/listings.js")))
-/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["public/css/laramedia"], () => (__webpack_require__("./resources/css/laramedia.css")))
-/******/ 	__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
-/******/ 	
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+(() => {
+"use strict";
+/*!****************************************!*\
+  !*** ./resources/js/files-selector.js ***!
+  \****************************************/
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ FilesSelector)
+/* harmony export */ });
+/* harmony import */ var _events__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./events */ "./resources/js/events.js");
+/* harmony import */ var _files_loader__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./files-loader */ "./resources/js/files-loader.js");
+
+
+function FilesSelector() {
+  /**
+   * The events instance.
+   * 
+   * @var obj
+   */
+  this.events = new _events__WEBPACK_IMPORTED_MODULE_0__["default"]();
+
+  /**
+   * The loader instance.
+   * 
+   * @var obj
+   */
+  this.loader = new _files_loader__WEBPACK_IMPORTED_MODULE_1__["default"]();
+
+  /**
+   * The queue for the loaded and uploaded files.
+   * 
+   * @var obj
+   */
+  this.files = {};
+
+  /**
+   * The queue for the loaded files.
+   * 
+   * @var obj
+   */
+  this.loadedFiles = {};
+
+  /**
+   * The queue for the uploaded files.
+   * 
+   * @var obj
+   */
+  this.uploadedFiles = {};
+
+  /**
+   * The selected files queue.
+   * 
+   * @var obj
+   */
+  this.selectedFiles = {};
+
+  /**
+   * The last file selected.
+   * 
+   * @var obj
+   */
+  this.lastSelectedFile = {};
+
+  /**
+   * Start the files selector.
+   * 
+   * @return void
+   */
+  this.start = function () {
+    var self = this;
+    this.open();
+    this.registerEventHandlers();
+    this.registerLoaderEvents();
+
+    // Get options first then handle business after
+    window.axios.get(this.getOptionsRoute()).then(function (response) {
+      self.loader.setOptions(response.data).start();
+    });
+  };
+
+  /**
+   * Register the event handlers.
+   * 
+   * @return void
+   */
+  this.registerEventHandlers = function () {
+    var self = this;
+
+    // When the close button is hit
+    document.getElementById('laramedia-selector-close').addEventListener('click', function (event) {
+      self.close();
+    });
+
+    // When the load more button is clicked
+    document.getElementById('laramedia-files-load-more-btn').addEventListener('click', function (event) {
+      self.loader.loadContent();
+    });
+
+    // When select files button is clicked
+    document.getElementById('laramedia-selector-select-files').addEventListener('click', function (event) {
+      self.close();
+      self.events.fire('files_selected', [self.selectedFiles]);
+    });
+
+    // Disk filter
+    document.getElementById('laramedia-filter-disk').addEventListener('change', function (event) {
+      self.loader.setRequestParameters({
+        disk: this.value
+      }).loadFreshContent();
+    });
+
+    // Visibility filter
+    document.getElementById('laramedia-filter-visibility').addEventListener('change', function (event) {
+      self.loader.setRequestParameters({
+        visibility: this.value
+      }).loadFreshContent();
+    });
+
+    // Type filter
+    document.getElementById('laramedia-filter-type').addEventListener('change', function (event) {
+      self.loader.setRequestParameters({
+        type: this.value
+      }).loadFreshContent();
+    });
+
+    // Ownership filter
+    document.getElementById('laramedia-filter-ownership').addEventListener('change', function (event) {
+      self.loader.setRequestParameters({
+        ownership: this.value
+      }).loadFreshContent();
+    });
+
+    // Search filter
+    document.getElementById('laramedia-filter-search').addEventListener('change', function (event) {
+      self.loader.setRequestParameters({
+        search: this.value
+      }).loadFreshContent();
+    });
+  };
+
+  /**
+   * Register the loader events.
+   * 
+   * @return void
+   */
+  this.registerLoaderEvents = function () {
+    var self = this;
+
+    // Clear files on first load
+    this.loader.events.on('first_load_begin', function () {
+      document.getElementById('laramedia-files-container').innerHTML = null;
+      document.getElementById('laramedia-files-load-more-btn').classList.add('laramedia-hidden');
+    });
+
+    // Things to do when file has been loaded
+    this.loader.events.on('file_loaded', function (file) {
+      self.files[file.uuid] = file;
+      self.loadedFiles[file.uuid] = file;
+      self.showFilePreview(file);
+    });
+
+    // Things to do when load is completed
+    this.loader.events.on('load_complete', function (allFilesLoaded) {
+      if (!allFilesLoaded) {
+        document.getElementById('laramedia-files-load-more-btn').classList.remove('laramedia-hidden');
+      }
+    });
+
+    // Things to do when the last load is completed
+    this.loader.events.on('last_load_complete', function () {
+      document.getElementById('laramedia-files-load-more-btn').classList.add('laramedia-hidden');
+    });
+  };
+
+  /**
+   * Open the files selector.
+   * 
+   * @return void
+   */
+  this.open = function () {
+    document.querySelector('body').append(this.getTemplate());
+  };
+
+  /**
+   * Close the selector.
+   * 
+   * @return void
+   */
+  this.close = function () {
+    document.getElementById('laramedia-selector-wrapper').remove();
+  };
+
+  /**
+   * Show the file preview.
+   * 
+   * @param  obj  media
+   * @param  bool  prepend
+   * 
+   * @return void
+   */
+  this.showFilePreview = function (media, prepend) {
+    var self = this;
+    var container = document.getElementById('laramedia-files-container');
+    var template = this.getFilePreviewTemplate(media);
+
+    // Add file id to template
+    template.querySelector('.laramedia-files-item-wrapper').setAttribute('file_id', media.uuid);
+
+    // When the file is clicked
+    template.querySelector('.laramedia-files-item-container').addEventListener('click', function (event) {
+      if (this.classList.contains('laramedia-selector-selected')) {
+        this.classList.remove('laramedia-selector-selected');
+        self.handleFileDeselection(media);
+      } else {
+        this.classList.add('laramedia-selector-selected');
+        self.handleFileSelection(media);
+        self.events.fire('file_selected', [media]);
+      }
+    });
+
+    // Show image preview or file preview
+    if (media.file_type == 'image') {
+      template.querySelector('.laramedia-files-image').src = media.base64_url;
+    } else {
+      template.querySelector('.laramedia-files-item-name').innerHTML = media.original_name;
+    }
+    if (prepend != 'undefined' && prepend == true) {
+      container.prepend(template);
+    } else {
+      container.append(template);
+    }
+  };
+  this.handleFileSelection = function (file) {
+    this.lastSelectedFile = file;
+    this.selectedFiles[file.uuid] = file;
+  };
+  this.handleFileDeselection = function (file) {
+    delete this.selectedFiles[file.uuid];
+  };
+
+  /**
+   * Get the file preview template.
+   * 
+   * @param  obj  media
+   * 
+   * @return obj
+   */
+  this.getFilePreviewTemplate = function (media) {
+    if (media.is_image) {
+      var template = document.getElementById('laramedia-files-image-template');
+    } else {
+      var template = document.getElementById('laramedia-files-none-image-template');
+    }
+    if (template == null) {
+      return;
+    }
+    return document.importNode(template.content, true);
+  };
+
+  /**
+   * Get the template.
+   * 
+   * @return obj
+   */
+  this.getTemplate = function () {
+    var template = document.getElementById('laramedia-files-selector-template');
+    if (template == null) {
+      return;
+    }
+    return document.importNode(template.content, true);
+  };
+
+  /**
+   * Get the options route.
+   * 
+   * @return string
+   */
+  this.getOptionsRoute = function () {
+    return document.head.querySelector("meta[name='laramedia_options_route']").content;
+  };
+}
+document.getElementById('select-featured-image').addEventListener('click', function (event) {
+  var selector = new FilesSelector();
+  selector.events.on('file_selected', function (file) {
+    document.getElementById('featured-image-id').value = file.uuid;
+    var image = document.getElementById('featured-image-preview');
+    image.setAttribute('src', file.base64_url);
+    image.classList.remove('hidden');
+    document.getElementById('select-featured-image').classList.add('hidden');
+    document.getElementById('remove-featured-image').classList.remove('hidden');
+  });
+  selector.start();
+});
+document.getElementById('remove-featured-image').addEventListener('click', function (event) {
+  var image = document.getElementById('featured-image-preview');
+  image.setAttribute('str', null);
+  image.classList.add('hidden');
+  document.getElementById('featured-image-id').value = null;
+  document.getElementById('remove-featured-image').classList.add('hidden');
+  document.getElementById('select-featured-image').classList.remove('hidden');
+});
+})();
+
 /******/ })()
 ;

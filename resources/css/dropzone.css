@@ -1,8 +1,3 @@
-#laramedia-listings-body .laramedia-uploader-dropzone {
-	display: none;
-	margin-bottom: 24px;
-}
-
 .laramedia-uploader-dropzone {
 	display: flex;
 	flex-direction: column;
@@ -12,6 +7,7 @@
 	width: 100%;
 	background-color: #f6f6f6;
 	padding: 24px;
+	margin-bottom: 24px;
 	box-sizing: border-box;
 	cursor: pointer;
 	border: 4px dashed #c9c9c9;
@@ -30,14 +26,14 @@
 	background-color: #ededed;
 }
 
-.laramedia-uploader-dropzone-trigger-close {
+.laramedia-uploader-dropzone-close {
 	position: absolute;
 	right: 18px;
 	top: 18px;
 }
 
-.laramedia-uploader-dropzone-trigger-close i,
-.laramedia-uploader-dropzone-trigger-close svg {
+.laramedia-uploader-dropzone-close i,
+.laramedia-uploader-dropzone-close svg {
 	font-size: 24px;
 }
 
