@@ -17,7 +17,7 @@
 	position: relative;
 }
 
-.laramedia-uploader-dropzone.dropzone-highlight {
+.laramedia-uploader-dropzone.laramedia-dropzone-highlight {
 	border: 2px dashed #6583fe;
 	background-color: #ededed;
 }

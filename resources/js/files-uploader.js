@@ -200,7 +200,7 @@ export default function FilesUploader() {
         var dropzoneElement = this.getDropzoneElement();
         var dropzoneInputElement = this.getDropzoneInputElement();
 
-        // When the dropzone element is clicked, we trigger the uploader.
+        // When the dropzone element is clicked, we trigger the browser files selector.
         dropzoneElement.addEventListener('click', function(e) {
             dropzoneInputElement.click();
         });
@@ -223,7 +223,7 @@ export default function FilesUploader() {
             event.preventDefault();
             event.stopPropagation();
 
-            this.classList.add('dropzone-highlight');
+            this.classList.add('laramedia-dropzone-highlight');
         }, false);
 
         // Let the user know that they have left the drag area.
@@ -231,7 +231,7 @@ export default function FilesUploader() {
             event.preventDefault();
             event.stopPropagation();
 
-            this.classList.remove('dropzone-highlight');
+            this.classList.remove('laramedia-dropzone-highlight');
         }, false);
 
         // When the files are dropped, send them off for processing.
@@ -239,7 +239,7 @@ export default function FilesUploader() {
             event.preventDefault();
             event.stopPropagation();
 
-            this.classList.remove('dropzone-highlight');
+            this.classList.remove('laramedia-dropzone-highlight');
 
             self.processFiles(event.dataTransfer.files);
         }, false);
