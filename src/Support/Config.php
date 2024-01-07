@@ -292,9 +292,6 @@ class Config
             'trash' => null,
             'restore' => null,
             'destroy' => null,
-            'trash_bulk' => null,
-            'restore_bulk' => null,
-            'destroy_bulk' => null,
         ];
 
         $config = config(static::$configFileName.'.policies', []);

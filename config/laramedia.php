@@ -170,7 +170,7 @@ return [
     /**
      * The route base name.
      */
-    'route_as' => 'lfl.',
+    'route_as' => 'laramedia.',
 
     /**
      * The policies mapping.
@@ -188,15 +188,12 @@ return [
         'trash' => null,
         'restore' => null,
         'destroy' => null,
-        'trash_bulk' => null,
-        'restore_bulk' => null,
-        'destroy_bulk' => null,
     ],
 
     /**
      * The prefix for the tables.
      */
-    'table_prefix' => 'lfl_',
+    'table_prefix' => 'laramedia_',
 
     /**
      * The table names.

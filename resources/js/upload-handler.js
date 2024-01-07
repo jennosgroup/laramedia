@@ -21,15 +21,76 @@ export default function UploadHandler() {
 
         window.axios.post(this.getUploadRoute(), formData).then(function (response) {
             if (response.data.success) {
-                self.events.fire('upload_success', [response.data.file, file, response.data]);
+                self.events.fire('upload_success', selt.getSuccessEventPayload(file, response));
             } else {
-                self.events.fire('upload_fail', [file, response.data]);
+                self.events.fire('upload_fail', selt.getFailEventPayload(file, response));
             }
         }).catch(function (response) {
-            self.events.fire('upload_error', [file, response])
+            self.events.fire('upload_error', selt.getErrorEventPayload(file, response))
         }).then(function (response) {
-            self.events.fire('upload_complete', [file, response]);
+            self.events.fire('upload_complete', selt.getCompleteEventPayload(file, response));
         });
+    }
+
+    /**
+     * Get the success event payload.
+     * 
+     * @param  obj  file
+     * @param  obj  response
+     * 
+     * @return array
+     */
+    this.getSuccessEventPayload = function (file, response) {
+        return [
+            response.data.file, // The laravel media resource file
+            file, // The browser file
+            response.data // The data returned from the backend
+        ];
+    }
+
+    /**
+     * Get the fail event payload.
+     * 
+     * @param  obj  file
+     * @param  obj  response
+     * 
+     * @return array
+     */
+    this.getFailEventPayload = function (file, response) {
+        return [
+            file, // The browser file
+            response.data // The data returned from the backend
+        ];
+    }
+
+    /**
+     * Get the error event payload.
+     * 
+     * @param  obj  file
+     * @param  obj  response
+     * 
+     * @return array
+     */
+    this.getErrorEventPayload = function (file, response) {
+        return [
+            file, // The browser file
+            response // The axios response
+        ];
+    }
+
+    /**
+     * Get the complete event payload.
+     * 
+     * @param  obj  file
+     * @param  obj  response
+     * 
+     * @return array
+     */
+    this.getCompleteEventPayload = function (file, response) {
+        return [
+            file, // The browser file
+            response // The axios response
+        ];
     }
 
     /**
