@@ -200,10 +200,7 @@ export default function FilesUploader() {
         var dropzoneElement = this.getDropzoneElement();
         var dropzoneInputElement = this.getDropzoneInputElement();
 
-        /**
-         * When anywhere inside the dropzone element is clicked,
-         * we trigger the uploader.
-         */
+        // When the dropzone element is clicked, we trigger the uploader.
         dropzoneElement.addEventListener('click', function(e) {
             dropzoneInputElement.click();
         });
