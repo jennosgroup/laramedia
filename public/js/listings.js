@@ -1174,6 +1174,13 @@ function FilesLoader() {
    */
   this.setOptions = function (options) {
     this.options = options;
+
+    // Add the user option to the request parameter if it's an option
+    for (var option in options) {
+      if (this.requestParameters.hasOwnProperty(option)) {
+        this.requestParameters[option] = options[option];
+      }
+    }
     return this;
   };
 
@@ -1504,7 +1511,6 @@ function FilesUploader() {
       return this;
     }
     if (Object.keys(options).length < 1) {
-      this.options = {};
       return this;
     }
     for (var key in options) {

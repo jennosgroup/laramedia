@@ -159,7 +159,6 @@ export default function FilesUploader() {
         }
 
         if (Object.keys(options).length < 1) {
-            this.options = {};
             return this;
         }
 

@@ -1,5 +1,8 @@
+import AxiosError from './axios-error';
 import Events from './events';
 import Loader from './files-loader';
+import Lodash from 'lodash';
+import Swal from 'sweetalert2';
 
 export default function FilesSelector() {
 	/**
@@ -47,9 +50,29 @@ export default function FilesSelector() {
 	/**
 	 * The last file selected.
 	 * 
+	 * @var obj|null
+	 */
+	this.lastSelectedFile = null;
+
+	/**
+	 * Keep track of the order for the files selected.
+	 * 
+	 * @var array.
+	 */
+	this.filesSelectedOrder = [];
+
+	/**
+	 * The options.
+	 * 
 	 * @var obj
 	 */
-	this.lastSelectedFile = {};
+	this.options = {
+		hide_disk: false,
+		hide_visibility: false,
+		hide_type: false,
+		hide_ownership: false,
+		select_multiple: true,
+	};
 
 	/**
 	 * Start the files selector.
@@ -59,15 +82,36 @@ export default function FilesSelector() {
 	this.start = function () {
 		var self = this;
 
-		this.open();
-
-		this.registerEventHandlers();
-		this.registerLoaderEvents();
-
-		// Get options first then handle business after
         window.axios.get(this.getOptionsRoute()).then(function (response) {
-			self.loader.setOptions(response.data).start();
+        	self.loader.setOptions(Lodash.assign(response.data, self.options));
+
+			self.open();
+			self.registerEventHandlers();
+			self.registerLoaderEvents();
+			self.configure();
+
+			self.loader.start();
+		}).catch(function (response) {
+			new AxiosError.handleError(response);
 		});
+	}
+
+	/**
+	 * Open the files selector.
+	 * 
+	 * @return void
+	 */
+	this.open = function () {
+		document.querySelector('body').append(this.getTemplate());
+	}
+
+	/**
+	 * Close the selector.
+	 * 
+	 * @return void
+	 */
+	this.close = function () {
+		document.getElementById('laramedia-selector-wrapper').remove();
 	}
 
 	/**
@@ -90,8 +134,17 @@ export default function FilesSelector() {
 
 		// When select files button is clicked
 		document.getElementById('laramedia-selector-select-files').addEventListener('click', function (event) {
-			self.close();
-			self.events.fire('files_selected', [self.selectedFiles]);
+			if (Object.keys(self.selectedFiles).length >= 1) {
+				self.events.fire('file_selected', [self.lastSelectedFile]);
+				self.events.fire('files_selected', [self.selectedFiles]);
+				return self.close();
+			}
+
+			return Swal.fire({
+				icon: 'error',
+                title: 'Error',
+                text: 'No file selected',
+			});
 		});
 
 		// Disk filter
@@ -148,11 +201,18 @@ export default function FilesSelector() {
 		this.loader.events.on('file_loaded', function (file) {
 			self.files[file.uuid] = file;
 			self.loadedFiles[file.uuid] = file;
+
+			document.getElementById('laramedia-no-files-container').classList.add('laramedia-hidden');
+
 			self.showFilePreview(file);
 		});
 
 		// Things to do when load is completed
-		this.loader.events.on('load_complete', function (allFilesLoaded) {
+		this.loader.events.on('load_complete', function (allFilesLoaded, recentFilesQueue, recentFilesCount) {
+			if (recentFilesCount == 0) {
+				document.getElementById('laramedia-no-files-container').classList.remove('laramedia-hidden');
+			}
+
 			if (! allFilesLoaded) {
 				document.getElementById('laramedia-files-load-more-btn').classList.remove('laramedia-hidden');
 			}
@@ -165,21 +225,49 @@ export default function FilesSelector() {
 	}
 
 	/**
-	 * Open the files selector.
+	 * Configure some stuff.
 	 * 
 	 * @return void
 	 */
-	this.open = function () {
-		document.querySelector('body').append(this.getTemplate());
+	this.configure = function () {
+		if (this.options.hasOwnProperty('disk') || this.options.hide_disk == true) {
+			document.getElementById('laramedia-filter-disk').parentElement.remove();
+		}
+
+		if (this.options.hasOwnProperty('visibility') || this.options.hide_visibility == true) {
+			document.getElementById('laramedia-filter-visibility').parentElement.remove();
+		}
+
+		if (this.options.hasOwnProperty('type') || this.options.hide_type == true) {
+			document.getElementById('laramedia-filter-type').parentElement.remove();
+		}
+
+		if (this.options.hasOwnProperty('ownership') || this.options.hide_ownership == true) {
+			document.getElementById('laramedia-filter-ownership').parentElement.remove();
+		}
 	}
 
 	/**
-	 * Close the selector.
+	 * Set the options.
 	 * 
-	 * @return void
+	 * @param  obj  options
+	 *
+	 * @return this
 	 */
-	this.close = function () {
-		document.getElementById('laramedia-selector-wrapper').remove();
+	this.setOptions = function (options) {
+		if (typeof options == 'undefined' || options == null || options == '') {
+            return this;
+        }
+
+        if (Object.keys(options).length < 1) {
+            return this;
+        }
+
+        for (var key in options) {
+            this.options[key] = options[key];
+        }
+
+        return this;
 	}
 
 	/**
@@ -200,14 +288,7 @@ export default function FilesSelector() {
 
 		// When the file is clicked
         template.querySelector('.laramedia-files-item-container').addEventListener('click', function (event) {
-        	if (this.classList.contains('laramedia-selector-selected')) {
-        		this.classList.remove('laramedia-selector-selected');
-        		self.handleFileDeselection(media);
-        	} else {
-        		this.classList.add('laramedia-selector-selected');
-        		self.handleFileSelection(media);
-        		self.events.fire('file_selected', [media]);
-        	}
+        	self.handleFileClick(media, this, event);
         });
 
         // Show image preview or file preview
@@ -224,13 +305,86 @@ export default function FilesSelector() {
         }
 	}
 
+	/**
+	 * Handle the file click.
+	 * 
+	 * @param  obj  media
+	 * @param  obj  element
+	 * @param  obj  event
+	 * 
+	 * @return void
+	 */
+	this.handleFileClick = function (media, element, event) {
+		if (element.classList.contains('laramedia-selector-selected')) {
+    		element.classList.remove('laramedia-selector-selected');
+    		element.querySelector('.laramedia-selector-overlay').classList.add('laramedia-hidden');
+
+    		return this.handleFileDeselection(media);
+    	}
+
+    	if (! this.options.select_multiple) {
+    		this.filesSelectedOrder = [];
+    		this.selectedFiles = {};
+    		this.lastSelectedFile = null;
+
+    		document.querySelectorAll('.laramedia-files-item-container').forEach(function (element) {
+    			element.classList.remove('laramedia-selector-selected');
+    			element.querySelector('.laramedia-selector-overlay').classList.add('laramedia-hidden');
+    		});
+    	}
+
+		element.classList.add('laramedia-selector-selected');
+    	element.querySelector('.laramedia-selector-overlay').classList.remove('laramedia-hidden');
+
+    	this.handleFileSelection(media);
+	}
+
+	/**
+	 * Handle the file selection.
+	 * 
+	 * @param  obj  file
+	 * 
+	 * @return void
+	 */
 	this.handleFileSelection = function (file) {
 		this.lastSelectedFile = file;
 		this.selectedFiles[file.uuid] = file;
+		this.filesSelectedOrder.push(file);
 	}
 
+	/**
+	 * Handle the file deselection.
+	 * 
+	 * @param  obj  file
+	 * 
+	 * @return void
+	 */
 	this.handleFileDeselection = function (file) {
+		var self = this;
+
+		// Remove file from the selected queue
 		delete this.selectedFiles[file.uuid];
+
+		// If the file deselected was not the last file selected, we don't need to do anything
+		if (this.lastSelectedFile.uuid != file.uuid) {
+        	return;
+        }
+
+        // If no files are left in the queue, it means the last file has been deselected
+        if (Object.keys(this.selectedFiles).length < 1) {
+        	return this.lastSelectedFile = null;
+        }
+
+		/**
+		 * If the last selected file was deselected, look for the previously selected file
+         * and set it as the last selected file.
+         */
+      	this.filesSelectedOrder.reverse().forEach(function (lastFile, index) {
+            if (self.selectedFiles.hasOwnProperty(lastFile.uuid)) {
+                self.lastSelectedFile = lastFile;
+                return false;
+            }
+        });
 	}
 
 	/**
@@ -279,28 +433,8 @@ export default function FilesSelector() {
     }
 }
 
-document.getElementById('select-featured-image').addEventListener('click', function (event) {
-	var selector = new FilesSelector();
+if (! window.hasOwnProperty('laramedia')) {
+	window.laramedia = {};
+}
 
-	selector.events.on('file_selected', function (file) {
-		document.getElementById('featured-image-id').value = file.uuid;
-		var image = document.getElementById('featured-image-preview');
-		image.setAttribute('src', file.base64_url);
-		image.classList.remove('hidden')
-
-		document.getElementById('select-featured-image').classList.add('hidden');
-		document.getElementById('remove-featured-image').classList.remove('hidden');
-	});
-
-	selector.start();
-});
-
-document.getElementById('remove-featured-image').addEventListener('click', function (event) {
-	var image = document.getElementById('featured-image-preview');
-	image.setAttribute('str', null);
-	image.classList.add('hidden');
-
-	document.getElementById('featured-image-id').value = null;
-	document.getElementById('remove-featured-image').classList.add('hidden');
-	document.getElementById('select-featured-image').classList.remove('hidden');
-});
+window.laramedia.selector = FilesSelector;

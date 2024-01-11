@@ -6,5 +6,8 @@
         <div class="laramedia-files-item-name">
             {{ $name ?? null }}
         </div>
+        <div class="laramedia-selector-overlay laramedia-hidden">
+            <i class="fa-regular fa-circle-check"></i>
+        </div>
     </div>
 </div>

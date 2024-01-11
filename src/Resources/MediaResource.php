@@ -21,8 +21,9 @@ class MediaResource extends JsonResource
         $attributes['is_image'] = $this->resource->isImage();
         $attributes['is_not_image'] = $this->resource->isNotImage();
         $attributes['local_path'] = $this->resource->getFullPath();
-        $attributes['public_url'] = $this->resource->getPublicUrl();
-        $attributes['base64_url'] = $this->resource->getBase64Url();
+        $attributes['public_url'] = $publicUrl = $this->resource->getPublicUrl();
+        $attributes['base64_url'] = $base64Url = $this->resource->getBase64Url();
+        $attributes['display_url'] = $publicUrl ?? $base64Url ?? null;
         $attributes['human_created_at'] = Carbon::parse($this->created_at)->toFormattedDateString();
         $attributes['human_filesize'] = $this->resource->humanFilesize();
         $attributes['human_dimensions'] = $this->resource->humanDimensions();

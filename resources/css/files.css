@@ -8,7 +8,7 @@
 	display: flex;
 	justify-content: center;
 	flex-wrap: wrap;
-	margin-bottom: 24px;
+	padding-bottom: 24px;
 }
 
 #laramedia-no-files-container {
@@ -42,6 +42,7 @@
 }
 
 .laramedia-files-item-container {
+	position: relative;
 	display: flex;
 	justify-content: center;
 	align-items: center;

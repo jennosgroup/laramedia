@@ -423,6 +423,13 @@ function FilesLoader() {
    */
   this.setOptions = function (options) {
     this.options = options;
+
+    // Add the user option to the request parameter if it's an option
+    for (var option in options) {
+      if (this.requestParameters.hasOwnProperty(option)) {
+        this.requestParameters[option] = options[option];
+      }
+    }
     return this;
   };
 
@@ -22619,8 +22626,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ FilesSelector)
 /* harmony export */ });
-/* harmony import */ var _events__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./events */ "./resources/js/events.js");
-/* harmony import */ var _files_loader__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./files-loader */ "./resources/js/files-loader.js");
+/* harmony import */ var _axios_error__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./axios-error */ "./resources/js/axios-error.js");
+/* harmony import */ var _events__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./events */ "./resources/js/events.js");
+/* harmony import */ var _files_loader__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./files-loader */ "./resources/js/files-loader.js");
+/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
+/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! sweetalert2 */ "./node_modules/sweetalert2/dist/sweetalert2.all.js");
+/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(sweetalert2__WEBPACK_IMPORTED_MODULE_4__);
+
+
+
 
 
 function FilesSelector() {
@@ -22629,14 +22644,14 @@ function FilesSelector() {
    * 
    * @var obj
    */
-  this.events = new _events__WEBPACK_IMPORTED_MODULE_0__["default"]();
+  this.events = new _events__WEBPACK_IMPORTED_MODULE_1__["default"]();
 
   /**
    * The loader instance.
    * 
    * @var obj
    */
-  this.loader = new _files_loader__WEBPACK_IMPORTED_MODULE_1__["default"]();
+  this.loader = new _files_loader__WEBPACK_IMPORTED_MODULE_2__["default"]();
 
   /**
    * The queue for the loaded and uploaded files.
@@ -22669,9 +22684,29 @@ function FilesSelector() {
   /**
    * The last file selected.
    * 
+   * @var obj|null
+   */
+  this.lastSelectedFile = null;
+
+  /**
+   * Keep track of the order for the files selected.
+   * 
+   * @var array.
+   */
+  this.filesSelectedOrder = [];
+
+  /**
+   * The options.
+   * 
    * @var obj
    */
-  this.lastSelectedFile = {};
+  this.options = {
+    hide_disk: false,
+    hide_visibility: false,
+    hide_type: false,
+    hide_ownership: false,
+    select_multiple: true
+  };
 
   /**
    * Start the files selector.
@@ -22680,14 +22715,34 @@ function FilesSelector() {
    */
   this.start = function () {
     var self = this;
-    this.open();
-    this.registerEventHandlers();
-    this.registerLoaderEvents();
-
-    // Get options first then handle business after
     window.axios.get(this.getOptionsRoute()).then(function (response) {
-      self.loader.setOptions(response.data).start();
+      self.loader.setOptions(lodash__WEBPACK_IMPORTED_MODULE_3___default().assign(response.data, self.options));
+      self.open();
+      self.registerEventHandlers();
+      self.registerLoaderEvents();
+      self.configure();
+      self.loader.start();
+    })["catch"](function (response) {
+      new _axios_error__WEBPACK_IMPORTED_MODULE_0__["default"].handleError(response);
     });
+  };
+
+  /**
+   * Open the files selector.
+   * 
+   * @return void
+   */
+  this.open = function () {
+    document.querySelector('body').append(this.getTemplate());
+  };
+
+  /**
+   * Close the selector.
+   * 
+   * @return void
+   */
+  this.close = function () {
+    document.getElementById('laramedia-selector-wrapper').remove();
   };
 
   /**
@@ -22710,8 +22765,16 @@ function FilesSelector() {
 
     // When select files button is clicked
     document.getElementById('laramedia-selector-select-files').addEventListener('click', function (event) {
-      self.close();
-      self.events.fire('files_selected', [self.selectedFiles]);
+      if (Object.keys(self.selectedFiles).length >= 1) {
+        self.events.fire('file_selected', [self.lastSelectedFile]);
+        self.events.fire('files_selected', [self.selectedFiles]);
+        return self.close();
+      }
+      return sweetalert2__WEBPACK_IMPORTED_MODULE_4___default().fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No file selected'
+      });
     });
 
     // Disk filter
@@ -22768,11 +22831,15 @@ function FilesSelector() {
     this.loader.events.on('file_loaded', function (file) {
       self.files[file.uuid] = file;
       self.loadedFiles[file.uuid] = file;
+      document.getElementById('laramedia-no-files-container').classList.add('laramedia-hidden');
       self.showFilePreview(file);
     });
 
     // Things to do when load is completed
-    this.loader.events.on('load_complete', function (allFilesLoaded) {
+    this.loader.events.on('load_complete', function (allFilesLoaded, recentFilesQueue, recentFilesCount) {
+      if (recentFilesCount == 0) {
+        document.getElementById('laramedia-no-files-container').classList.remove('laramedia-hidden');
+      }
       if (!allFilesLoaded) {
         document.getElementById('laramedia-files-load-more-btn').classList.remove('laramedia-hidden');
       }
@@ -22785,21 +22852,43 @@ function FilesSelector() {
   };
 
   /**
-   * Open the files selector.
+   * Configure some stuff.
    * 
    * @return void
    */
-  this.open = function () {
-    document.querySelector('body').append(this.getTemplate());
+  this.configure = function () {
+    if (this.options.hasOwnProperty('disk') || this.options.hide_disk == true) {
+      document.getElementById('laramedia-filter-disk').parentElement.remove();
+    }
+    if (this.options.hasOwnProperty('visibility') || this.options.hide_visibility == true) {
+      document.getElementById('laramedia-filter-visibility').parentElement.remove();
+    }
+    if (this.options.hasOwnProperty('type') || this.options.hide_type == true) {
+      document.getElementById('laramedia-filter-type').parentElement.remove();
+    }
+    if (this.options.hasOwnProperty('ownership') || this.options.hide_ownership == true) {
+      document.getElementById('laramedia-filter-ownership').parentElement.remove();
+    }
   };
 
   /**
-   * Close the selector.
+   * Set the options.
    * 
-   * @return void
+   * @param  obj  options
+   *
+   * @return this
    */
-  this.close = function () {
-    document.getElementById('laramedia-selector-wrapper').remove();
+  this.setOptions = function (options) {
+    if (typeof options == 'undefined' || options == null || options == '') {
+      return this;
+    }
+    if (Object.keys(options).length < 1) {
+      return this;
+    }
+    for (var key in options) {
+      this.options[key] = options[key];
+    }
+    return this;
   };
 
   /**
@@ -22820,14 +22909,7 @@ function FilesSelector() {
 
     // When the file is clicked
     template.querySelector('.laramedia-files-item-container').addEventListener('click', function (event) {
-      if (this.classList.contains('laramedia-selector-selected')) {
-        this.classList.remove('laramedia-selector-selected');
-        self.handleFileDeselection(media);
-      } else {
-        this.classList.add('laramedia-selector-selected');
-        self.handleFileSelection(media);
-        self.events.fire('file_selected', [media]);
-      }
+      self.handleFileClick(media, this, event);
     });
 
     // Show image preview or file preview
@@ -22842,12 +22924,82 @@ function FilesSelector() {
       container.append(template);
     }
   };
+
+  /**
+   * Handle the file click.
+   * 
+   * @param  obj  media
+   * @param  obj  element
+   * @param  obj  event
+   * 
+   * @return void
+   */
+  this.handleFileClick = function (media, element, event) {
+    if (element.classList.contains('laramedia-selector-selected')) {
+      element.classList.remove('laramedia-selector-selected');
+      element.querySelector('.laramedia-selector-overlay').classList.add('laramedia-hidden');
+      return this.handleFileDeselection(media);
+    }
+    if (!this.options.select_multiple) {
+      this.filesSelectedOrder = [];
+      this.selectedFiles = {};
+      this.lastSelectedFile = null;
+      document.querySelectorAll('.laramedia-files-item-container').forEach(function (element) {
+        element.classList.remove('laramedia-selector-selected');
+        element.querySelector('.laramedia-selector-overlay').classList.add('laramedia-hidden');
+      });
+    }
+    element.classList.add('laramedia-selector-selected');
+    element.querySelector('.laramedia-selector-overlay').classList.remove('laramedia-hidden');
+    this.handleFileSelection(media);
+  };
+
+  /**
+   * Handle the file selection.
+   * 
+   * @param  obj  file
+   * 
+   * @return void
+   */
   this.handleFileSelection = function (file) {
     this.lastSelectedFile = file;
     this.selectedFiles[file.uuid] = file;
+    this.filesSelectedOrder.push(file);
   };
+
+  /**
+   * Handle the file deselection.
+   * 
+   * @param  obj  file
+   * 
+   * @return void
+   */
   this.handleFileDeselection = function (file) {
+    var self = this;
+
+    // Remove file from the selected queue
     delete this.selectedFiles[file.uuid];
+
+    // If the file deselected was not the last file selected, we don't need to do anything
+    if (this.lastSelectedFile.uuid != file.uuid) {
+      return;
+    }
+
+    // If no files are left in the queue, it means the last file has been deselected
+    if (Object.keys(this.selectedFiles).length < 1) {
+      return this.lastSelectedFile = null;
+    }
+
+    /**
+     * If the last selected file was deselected, look for the previously selected file
+           * and set it as the last selected file.
+           */
+    this.filesSelectedOrder.reverse().forEach(function (lastFile, index) {
+      if (self.selectedFiles.hasOwnProperty(lastFile.uuid)) {
+        self.lastSelectedFile = lastFile;
+        return false;
+      }
+    });
   };
 
   /**
@@ -22891,26 +23043,10 @@ function FilesSelector() {
     return document.head.querySelector("meta[name='laramedia_options_route']").content;
   };
 }
-document.getElementById('select-featured-image').addEventListener('click', function (event) {
-  var selector = new FilesSelector();
-  selector.events.on('file_selected', function (file) {
-    document.getElementById('featured-image-id').value = file.uuid;
-    var image = document.getElementById('featured-image-preview');
-    image.setAttribute('src', file.base64_url);
-    image.classList.remove('hidden');
-    document.getElementById('select-featured-image').classList.add('hidden');
-    document.getElementById('remove-featured-image').classList.remove('hidden');
-  });
-  selector.start();
-});
-document.getElementById('remove-featured-image').addEventListener('click', function (event) {
-  var image = document.getElementById('featured-image-preview');
-  image.setAttribute('str', null);
-  image.classList.add('hidden');
-  document.getElementById('featured-image-id').value = null;
-  document.getElementById('remove-featured-image').classList.add('hidden');
-  document.getElementById('select-featured-image').classList.remove('hidden');
-});
+if (!window.hasOwnProperty('laramedia')) {
+  window.laramedia = {};
+}
+window.laramedia.selector = FilesSelector;
 })();
 
 /******/ })()
