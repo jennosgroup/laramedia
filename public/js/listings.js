@@ -364,8 +364,8 @@ function fileEditor() {
     if (file.is_not_image) {
       return true;
     }
-    if (file.public_url == null && file.base64_url == null) {
-      return true;
+    if (file.display_url != null) {
+      return false;
     }
     return false;
   };
@@ -1886,7 +1886,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _files_loader__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./files-loader */ "./resources/js/files-loader.js");
 /* harmony import */ var _files_uploader__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./files-uploader */ "./resources/js/files-uploader.js");
 /* harmony import */ var _support_routes__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./support/routes */ "./resources/js/support/routes.js");
-/* harmony import */ var _support_spin__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./support/spin */ "./resources/js/support/spin.js");
+/* harmony import */ var _support_debounce__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./support/debounce */ "./resources/js/support/debounce.js");
+/* harmony import */ var _support_spin__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./support/spin */ "./resources/js/support/spin.js");
+
 
 
 
@@ -1912,7 +1914,7 @@ function Listings() {
    * 
    * @var obj
    */
-  this.spinner = new _support_spin__WEBPACK_IMPORTED_MODULE_4__["default"]();
+  this.spinner = new _support_spin__WEBPACK_IMPORTED_MODULE_5__["default"]();
 
   /**
    * The files queue for both the loaded and uploaded files.
@@ -2044,11 +2046,11 @@ function Listings() {
     });
 
     // Search filter
-    document.getElementById('laramedia-filter-search').addEventListener('change', function (event) {
+    document.getElementById('laramedia-filter-search').addEventListener('input', (0,_support_debounce__WEBPACK_IMPORTED_MODULE_4__["default"])(function (event) {
       self.loader.loadContentFromParameters({
         search: this.value
       });
-    });
+    }));
 
     // Active Section filter
     document.getElementById('laramedia-filter-active-section-container').addEventListener('click', function (event) {
@@ -2589,6 +2591,70 @@ function AxiosError() {
       text: message.join(' '),
       icon: 'error'
     });
+  };
+}
+
+/***/ }),
+
+/***/ "./resources/js/support/debounce.js":
+/*!******************************************!*\
+  !*** ./resources/js/support/debounce.js ***!
+  \******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ debounce)
+/* harmony export */ });
+/**
+ * Credit David Walsh (https://davidwalsh.name/javascript-debounce-function)
+ * Returns a function, that, as long as it continues to be invoked, will not
+ * be triggered. The function will be called after it stops being called for
+ * N milliseconds. If `immediate` is passed, trigger the function on the
+ * leading edge, instead of the trailing.
+ */
+function debounce(func, wait, immediate) {
+  var timeout;
+  if (typeof wait == 'undefined') {
+    wait = 250;
+  }
+
+  // This is the function that is actually executed when
+  // the DOM event is triggered.
+  return function executedFunction() {
+    // Store the context of this and any
+    // parameters passed to executedFunction
+    var context = this;
+    var args = arguments;
+
+    // The function to be called after
+    // the debounce time has elapsed
+    var later = function later() {
+      // null timeout to indicate the debounce ended
+      timeout = null;
+
+      // Call function now if you did not on the leading end
+      if (!immediate) func.apply(context, args);
+    };
+
+    // Determine if you should call the function
+    // on the leading or trail end
+    var callNow = immediate && !timeout;
+
+    // This will reset the waiting every function execution.
+    // This is the step that prevents the function from
+    // being executed because it will never reach the
+    // inside of the previous setTimeout
+    clearTimeout(timeout);
+
+    // Restart the debounce waiting period.
+    // setTimeout returns a truthy value (it differs in web vs node)
+    timeout = setTimeout(later, wait);
+
+    // Call immediately if you're dong a leading
+    // end execution
+    if (callNow) func.apply(context, args);
   };
 }
 

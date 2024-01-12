@@ -1,6 +1,7 @@
 import AxiosError from './support/axios-error';
 import Events from './support/events';
 import Loader from './files-loader';
+import Uploader from './files-uploader';
 import Lodash from 'lodash';
 import Swal from 'sweetalert2';
 
@@ -18,6 +19,13 @@ export default function FilesSelector() {
 	 * @var obj
 	 */
 	this.loader = new Loader();
+
+	/**
+	 * The uploader instance.
+	 * 
+	 * @var obj
+	 */
+	this.uploader = new Uploader();
 
 	/**
 	 * The queue for the loaded and uploaded files.
@@ -88,6 +96,7 @@ export default function FilesSelector() {
 			self.open();
 			self.registerEventHandlers();
 			self.registerLoaderEvents();
+			self.registerUploaderEventHandlers();
 			self.configure();
 
 			self.loader.start();
@@ -121,6 +130,22 @@ export default function FilesSelector() {
 	 */
 	this.registerEventHandlers = function () {
 		var self = this;
+
+		// When the uploader button is hit
+		document.getElementById('laramedia-selector-trigger-uploader').addEventListener('click', function (event) {
+			document.getElementById('laramedia-selector-files-container').classList.add('laramedia-hidden');
+			document.getElementById('laramedia-selector-uploader-container').classList.remove('laramedia-hidden');
+			document.getElementById('laramedia-uploader-dropzone').classList.remove('laramedia-hidden');
+			
+			self.uploader.init();
+		});
+
+		// When the files selector button is clicked
+		document.getElementById('laramedia-selector-trigger-files').addEventListener('click', function (event) {
+			document.getElementById('laramedia-selector-uploader-container').classList.add('laramedia-hidden');
+			document.getElementById('laramedia-selector-files-container').classList.remove('laramedia-hidden');
+			document.getElementById('laramedia-uploader-dropzone').classList.add('laramedia-hidden');
+		});
 
 		// When the close button is hit
 		document.getElementById('laramedia-selector-close').addEventListener('click', function(event) {
@@ -225,6 +250,57 @@ export default function FilesSelector() {
 	}
 
 	/**
+	 * Register the uploader event handlers.
+	 * 
+	 * @return void
+	 */
+	this.registerUploaderEventHandlers = function () {
+		var self = this;
+
+		// Hide the error section when X is clicked. Also remove the errors
+		document.getElementById('laramedia-files-error-close').addEventListener('click', function (event) {
+			this.parentElement.classList.add('laramedia-hidden');
+
+			// Remove the errors
+			document.querySelectorAll('.laramedia-files-error').forEach(function (element) {
+				element.remove();
+			});
+		})
+
+		// Show the image preview when file uploaded successfully
+		this.uploader.events.on('upload_success', function (media, file, response) {
+			self.uploadedFiles[media.uuid] = media;
+			self.files[media.uuid] = media;
+			self.showFilePreview(media, true);
+		});
+
+		// Show the error when a file upload fails
+		this.uploader.events.on('upload_fail', function (file, response) {
+			self.showFileError(file, response);
+		});
+
+		// Show the error when a file upload fails
+		this.uploader.events.on('upload_error', function (file, response) {
+			self.showFileError(file, response);
+		});
+
+		// Show the error when a file upload fails
+		this.uploader.events.on('file_rejected', function (file, reason) {
+			self.showFileValidationError(file, reason);
+		});
+
+		// When the progress changes
+		this.uploader.events.on('progress_percentage_update', function (percentage) {
+			self.showUploadProgress(percentage);
+		});
+
+		// When the processing start
+		this.uploader.events.on('files_processing_start', function () {
+			self.showUploadProcessing();
+		});
+	}
+
+	/**
 	 * Configure some stuff.
 	 * 
 	 * @return void
@@ -293,7 +369,7 @@ export default function FilesSelector() {
 
         // Show image preview or file preview
         if (media.file_type == 'image') {
-            template.querySelector('.laramedia-files-image').src = media.base64_url;
+            template.querySelector('.laramedia-files-image').src = media.display_url;
         } else {
         	template.querySelector('.laramedia-files-item-name').innerHTML = media.original_name;
         }

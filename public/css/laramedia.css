@@ -434,6 +434,10 @@
 	margin: 0 12px;
 }
 
+#laramedia-selector-uploader-container {
+	margin: 12px;
+}
+
 .laramedia-selector-selected .laramedia-selector-overlay {
 	position: absolute;
 	top: 0;

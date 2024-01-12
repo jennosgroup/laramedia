@@ -2,6 +2,7 @@ import Editor from './file-editor';
 import Loader from './files-loader';
 import Uploader from './files-uploader';
 import Routes from './support/routes';
+import debounce from './support/debounce';
 import Spin from './support/spin';
 
 function Listings() {
@@ -164,11 +165,11 @@ function Listings() {
 		});
 
 		// Search filter
-		document.getElementById('laramedia-filter-search').addEventListener('change', function (event) {
+		document.getElementById('laramedia-filter-search').addEventListener('input', debounce(function (event) {
 			self.loader.loadContentFromParameters({
 				search: this.value,
 			});
-		});
+		}));
 
 		// Active Section filter
 		document.getElementById('laramedia-filter-active-section-container').addEventListener('click', function (event) {

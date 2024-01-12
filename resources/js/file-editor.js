@@ -378,8 +378,8 @@ export default function fileEditor() {
             return true;
         }
 
-        if (file.public_url == null && file.base64_url == null) {
-            return true;
+        if (file.display_url != null) {
+            return false;
         }
 
         return false;

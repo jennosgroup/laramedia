@@ -22,8 +22,7 @@ class MediaResource extends JsonResource
         $attributes['is_not_image'] = $this->resource->isNotImage();
         $attributes['local_path'] = $this->resource->getFullPath();
         $attributes['public_url'] = $publicUrl = $this->resource->getPublicUrl();
-        $attributes['base64_url'] = $base64Url = $this->resource->getBase64Url();
-        $attributes['display_url'] = $publicUrl ?? $base64Url ?? null;
+        $attributes['display_url'] = $publicUrl ?? $this->resource->getBase64Url() ?? null;
         $attributes['human_created_at'] = Carbon::parse($this->created_at)->toFormattedDateString();
         $attributes['human_filesize'] = $this->resource->humanFilesize();
         $attributes['human_dimensions'] = $this->resource->humanDimensions();
@@ -46,14 +45,6 @@ class MediaResource extends JsonResource
         $attributes['base64url_route'] = Laramedia::base64UrlRoute($this->resource);
         $attributes['restore_route'] = Laramedia::restoreRoute($this->resource);
         $attributes['destroy_route'] = Laramedia::destroyRoute($this->resource);
-
-        if ($this->resource->getType() != 'image') {
-            return $attributes;
-        }
-
-        foreach (Laramedia::imageCutDirectories() as $cut => $data) {
-            $attributes[$cut.'_public_url'] = $this->resource->getPublicUrl($cut);
-        }
 
         return $attributes;
     }
