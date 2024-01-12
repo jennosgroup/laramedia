@@ -1,6 +1,6 @@
-import Events from './events';
-import Filters from './filters';
-import UploadHandler from './upload-handler';
+import Events from './support/events';
+import Filters from './support/filters';
+import UploadHandler from './support/upload-handler';
 import Swal from 'sweetalert2';
 
 export default function FilesUploader() {

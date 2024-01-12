@@ -1,5 +1,5 @@
-import Events from './events';
-import AxiosError from './axios-error';
+import Events from './support/events';
+import AxiosError from './support/axios-error';
 import Swal from 'sweetalert2';
 
 export default function fileEditor() {

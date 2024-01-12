@@ -1,7 +1,7 @@
-import AxiosError from './axios-error';
-import Events from './events';
+import AxiosError from './support/axios-error';
+import Events from './support/events';
 import Lodash from 'lodash';
-import Handler from './loader-handler';
+import Handler from './support/loader-handler';
 
 const CancelToken = window.axios.CancelToken;
 
