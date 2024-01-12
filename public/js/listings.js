@@ -12,8 +12,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ fileEditor)
 /* harmony export */ });
-/* harmony import */ var _support_events__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./support/events */ "./resources/js/support/events.js");
-/* harmony import */ var _support_axios_error__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./support/axios-error */ "./resources/js/support/axios-error.js");
+/* harmony import */ var _support_axios_error__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./support/axios-error */ "./resources/js/support/axios-error.js");
+/* harmony import */ var _support_events__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./support/events */ "./resources/js/support/events.js");
 /* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! sweetalert2 */ "./node_modules/sweetalert2/dist/sweetalert2.all.js");
 /* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(sweetalert2__WEBPACK_IMPORTED_MODULE_2__);
 
@@ -25,14 +25,7 @@ function fileEditor() {
    * 
    * @var object
    */
-  this.events = new _support_events__WEBPACK_IMPORTED_MODULE_0__["default"]();
-
-  /**
-   * The options.
-   * 
-   * @var obj
-   */
-  this.options = {};
+  this.events = new _support_events__WEBPACK_IMPORTED_MODULE_1__["default"]();
 
   /**
    * The file instance for the editor.
@@ -50,6 +43,13 @@ function fileEditor() {
    * Indicate whether a next file exists.
    */
   this.hasNextFile = false;
+
+  /**
+   * The options.
+   * 
+   * @var obj
+   */
+  this.options = {};
 
   /**
    * Start the file editor.
@@ -77,9 +77,9 @@ function fileEditor() {
    */
   this.setup = function (args) {
     this.file = args.file;
-    this.options = args.options;
     this.hasPreviousFile = args.has_previous_file;
     this.hasNextFile = args.has_next_file;
+    this.options = args.options;
   };
 
   /**
@@ -235,8 +235,7 @@ function fileEditor() {
    */
   this.updateFile = function () {
     var self = this;
-    var request = window.axios.patch(this.file.update_route, this.getDataForSaving());
-    request.then(function (response) {
+    window.axios.patch(this.file.update_route, this.getDataForSaving()).then(function (response) {
       var updatedFile = response.data.data;
       self.events.fire('file_updated', [updatedFile]);
       if (updatedFile.visibility == 'public') {
@@ -251,9 +250,8 @@ function fileEditor() {
         icon: 'success',
         text: 'File saved successfully.'
       });
-    });
-    request["catch"](function (error) {
-      new _support_axios_error__WEBPACK_IMPORTED_MODULE_1__["default"]().handleError(error);
+    })["catch"](function (error) {
+      new _support_axios_error__WEBPACK_IMPORTED_MODULE_0__["default"]().handleError(error);
     });
   };
 
@@ -265,8 +263,7 @@ function fileEditor() {
   this.trashFile = function () {
     var self = this;
     var file = this.file;
-    var request = window.axios["delete"](file.trash_route);
-    request.then(function (response) {
+    window.axios["delete"](file.trash_route).then(function (response) {
       self.events.fire('file_trashed', [file]);
       self.close(file);
       return sweetalert2__WEBPACK_IMPORTED_MODULE_2___default().fire({
@@ -274,9 +271,8 @@ function fileEditor() {
         title: 'Success',
         text: 'File trashed successfully.'
       });
-    });
-    request["catch"](function (error) {
-      new _support_axios_error__WEBPACK_IMPORTED_MODULE_1__["default"]().handleError(error);
+    })["catch"](function (error) {
+      new _support_axios_error__WEBPACK_IMPORTED_MODULE_0__["default"]().handleError(error);
     });
   };
 
@@ -288,8 +284,7 @@ function fileEditor() {
   this.restoreFile = function () {
     var self = this;
     var file = this.file;
-    var request = window.axios.patch(file.restore_route);
-    request.then(function (response) {
+    window.axios.patch(file.restore_route).then(function (response) {
       self.events.fire('file_restored', [file]);
       self.close(file);
       return sweetalert2__WEBPACK_IMPORTED_MODULE_2___default().fire({
@@ -297,9 +292,8 @@ function fileEditor() {
         title: 'Success',
         text: 'File restored successfully.'
       });
-    });
-    request["catch"](function (error) {
-      new _support_axios_error__WEBPACK_IMPORTED_MODULE_1__["default"]().handleError(error);
+    })["catch"](function (error) {
+      new _support_axios_error__WEBPACK_IMPORTED_MODULE_0__["default"]().handleError(error);
     });
   };
 
@@ -311,8 +305,7 @@ function fileEditor() {
   this.destroyFile = function () {
     var self = this;
     var file = this.file;
-    var request = window.axios["delete"](file.destroy_route);
-    request.then(function (response) {
+    window.axios["delete"](file.destroy_route).then(function (response) {
       self.events.fire('file_destroyed', [file]);
       self.close();
       return sweetalert2__WEBPACK_IMPORTED_MODULE_2___default().fire({
@@ -320,9 +313,8 @@ function fileEditor() {
         title: 'Success',
         text: 'File destroyed successfully.'
       });
-    });
-    request["catch"](function (error) {
-      new _support_axios_error__WEBPACK_IMPORTED_MODULE_1__["default"]().handleError(error);
+    })["catch"](function (error) {
+      new _support_axios_error__WEBPACK_IMPORTED_MODULE_0__["default"]().handleError(error);
     });
   };
 
@@ -396,12 +388,8 @@ function fileEditor() {
   this.showImagePreview = function () {
     var file = this.file;
     var image = document.createElement('img');
-    if (file.public_url != null) {
-      image.src = file.public_url;
-    } else if (file.base64_url != null) {
-      image.src = file.base64_url;
-    }
     var element = document.getElementById('laramedia-file-editor-preview-image-container');
+    image.src = file.display_url;
     element.style.display = 'flex';
     element.append(image);
   };
@@ -1090,10 +1078,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (/* binding */ FilesUploader)
 /* harmony export */ });
 /* harmony import */ var _support_events__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./support/events */ "./resources/js/support/events.js");
-/* harmony import */ var _support_filters__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./support/filters */ "./resources/js/support/filters.js");
-/* harmony import */ var _support_upload_handler__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./support/upload-handler */ "./resources/js/support/upload-handler.js");
-/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! sweetalert2 */ "./node_modules/sweetalert2/dist/sweetalert2.all.js");
-/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(sweetalert2__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _support_upload_handler__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./support/upload-handler */ "./resources/js/support/upload-handler.js");
+/* harmony import */ var _support_routes__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./support/routes */ "./resources/js/support/routes.js");
+/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
+/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! sweetalert2 */ "./node_modules/sweetalert2/dist/sweetalert2.all.js");
+/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(sweetalert2__WEBPACK_IMPORTED_MODULE_4__);
+
 
 
 
@@ -1105,13 +1096,6 @@ function FilesUploader() {
    * @var object
    */
   this.events = new _support_events__WEBPACK_IMPORTED_MODULE_0__["default"]();
-
-  /**
-   * The filters instance.
-   *
-   * @var object
-   */
-  this.filters = new _support_filters__WEBPACK_IMPORTED_MODULE_1__["default"]();
 
   /**
    * The files queue.
@@ -1232,8 +1216,10 @@ function FilesUploader() {
    */
   this.init = function () {
     var self = this;
-    window.axios.get(this.getOptionsRoute()).then(function (response) {
-      self.options = self.mergeOptions(self.options, response.data);
+    window.axios.get(new _support_routes__WEBPACK_IMPORTED_MODULE_2__["default"]().getOptionsRoute()).then(function (response) {
+      // We take the options from the server and add it to our options queue.
+      // However, the options set through the uploader should take precedence.
+      self.setOptions(lodash__WEBPACK_IMPORTED_MODULE_3___default().assign(response.data, self.options));
       self.populateVisibilityOptions();
       self.registerDropzoneEventHandlers();
       self.configureDropzoneFilesInput();
@@ -1258,24 +1244,6 @@ function FilesUploader() {
       this.options[key] = options[key];
     }
     return this;
-  };
-
-  /**
-   * Merge options.
-   * 
-   * @param  obj  overridingOptions
-   * @param  obj  options
-   * 
-   * @return obj
-   */
-  this.mergeOptions = function (overridingOptions, options) {
-    if (Object.keys(overridingOptions).length < 1) {
-      return options;
-    }
-    for (var key in overridingOptions) {
-      options[key] = overridingOptions[key];
-    }
-    return options;
   };
 
   /**
@@ -1304,10 +1272,10 @@ function FilesUploader() {
       if (self.validateDiskAndVisiblity()) {
         return dropzoneInputElement.click();
       }
-      sweetalert2__WEBPACK_IMPORTED_MODULE_3___default().fire({
+      sweetalert2__WEBPACK_IMPORTED_MODULE_4___default().fire({
         icon: 'error',
         title: 'Error',
-        text: 'Invalid visibility selected for the chosen disk.'
+        text: 'Invalid visibility selected for the chosen disk'
       });
     });
 
@@ -1316,10 +1284,10 @@ function FilesUploader() {
       if (self.validateDiskAndVisiblity()) {
         return self.processFiles(this.files);
       }
-      sweetalert2__WEBPACK_IMPORTED_MODULE_3___default().fire({
+      sweetalert2__WEBPACK_IMPORTED_MODULE_4___default().fire({
         icon: 'error',
         title: 'Error',
-        text: 'Invalid visibility selected for the chosen disk.'
+        text: 'Invalid visibility selected for the chosen disk'
       });
     });
 
@@ -1353,10 +1321,10 @@ function FilesUploader() {
       if (self.validateDiskAndVisiblity()) {
         return self.processFiles(event.dataTransfer.files);
       }
-      sweetalert2__WEBPACK_IMPORTED_MODULE_3___default().fire({
+      sweetalert2__WEBPACK_IMPORTED_MODULE_4___default().fire({
         icon: 'error',
         title: 'Error',
-        text: 'Invalid visibility selected for the chosen disk.'
+        text: 'Invalid visibility selected for the chosen disk'
       });
     }, false);
   };
@@ -1403,9 +1371,11 @@ function FilesUploader() {
    */
   this.processFiles = function (files) {
     var self = this;
-    this.files = Array.from(files);
     var minNumberOfFiles = this.getOption('min_number_of_files');
     var maxNumberOfFiles = this.getOption('max_number_of_files');
+
+    // Set the files in the files queue
+    this.files = Array.from(files);
 
     // Fire processing start event
     this.events.fire('files_processing_start', [this.files]);
@@ -1528,7 +1498,7 @@ function FilesUploader() {
    */
   this.uploadFile = function (file) {
     var self = this;
-    var handler = new _support_upload_handler__WEBPACK_IMPORTED_MODULE_2__["default"]();
+    var handler = new _support_upload_handler__WEBPACK_IMPORTED_MODULE_1__["default"]();
     var formData = new FormData();
     formData.append('file', file);
     formData.append('disk', this.getDiskValue());
@@ -1849,21 +1819,12 @@ function FilesUploader() {
   };
 
   /**
-   * Get the options route.
-   * 
-   * @return string
-   */
-  this.getOptionsRoute = function () {
-    return document.head.querySelector("meta[name='laramedia_options_route']").content;
-  };
-
-  /**
    * Notify the user that multiple uploads is not enabled.
    *
    * @return object
    */
   this.notifyThatMultipleUploadsNotAllowed = function () {
-    return sweetalert2__WEBPACK_IMPORTED_MODULE_3___default().fire({
+    return sweetalert2__WEBPACK_IMPORTED_MODULE_4___default().fire({
       icon: 'error',
       title: 'Error',
       text: 'You are not allowed to upload multiple files.'
@@ -1883,7 +1844,7 @@ function FilesUploader() {
     } else {
       message = 'You cannot upload no less than ' + minNumberOfFiles + ' files.';
     }
-    return sweetalert2__WEBPACK_IMPORTED_MODULE_3___default().fire({
+    return sweetalert2__WEBPACK_IMPORTED_MODULE_4___default().fire({
       icon: 'error',
       title: 'Error',
       text: message
@@ -1903,7 +1864,7 @@ function FilesUploader() {
     } else {
       message = 'You are not allowed to upload more than ' + maxNumberOfFiles + ' files.';
     }
-    return sweetalert2__WEBPACK_IMPORTED_MODULE_3___default().fire({
+    return sweetalert2__WEBPACK_IMPORTED_MODULE_4___default().fire({
       icon: 'error',
       title: 'Error',
       text: message
@@ -2749,72 +2710,6 @@ function Events() {
         }
       });
     });
-  };
-}
-
-/***/ }),
-
-/***/ "./resources/js/support/filters.js":
-/*!*****************************************!*\
-  !*** ./resources/js/support/filters.js ***!
-  \*****************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ Filters)
-/* harmony export */ });
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
-function Filters() {
-  /**
-   * Hold our filters.
-   *
-   * @var object
-   */
-  this.filters = {};
-
-  /**
-   * Subscribe to a filter.
-   *
-   * @param  string  filter
-   * @param  callable  callable
-   *
-   * @return void
-   */
-  this.add = function (filter, callable) {
-    if (!this.filters.hasOwnProperty(filter)) {
-      this.filters[filter] = [];
-    }
-    this.filters[filter].push(callable);
-  };
-
-  /**
-   * Apply the filter.
-   *
-   * @param  string  filter
-   * @param  mixed  value
-   * @param  array  params
-   *
-   * @return mixed
-   */
-  this.apply = function (filter, value, params) {
-    if (!this.filters.hasOwnProperty(filter)) {
-      return value;
-    }
-    this.filters[filter].forEach(function (callable) {
-      if (typeof params == 'undefined') {
-        value = callable(value);
-      } else {
-        value = callable.apply(void 0, [value].concat(_toConsumableArray(params)));
-      }
-    });
-    return value;
   };
 }
 

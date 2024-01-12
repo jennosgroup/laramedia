@@ -1,5 +1,5 @@
-import Events from './support/events';
 import AxiosError from './support/axios-error';
+import Events from './support/events';
 import Swal from 'sweetalert2';
 
 export default function fileEditor() {
@@ -9,13 +9,6 @@ export default function fileEditor() {
 	 * @var object
 	 */
 	this.events = new Events();
-
-	/**
-	 * The options.
-	 * 
-	 * @var obj
-	 */
-	this.options = {};
 
 	/**
 	 * The file instance for the editor.
@@ -33,6 +26,13 @@ export default function fileEditor() {
 	 * Indicate whether a next file exists.
 	 */
 	this.hasNextFile = false;
+
+    /**
+     * The options.
+     * 
+     * @var obj
+     */
+    this.options = {};
 
 	/**
 	 * Start the file editor.
@@ -60,9 +60,9 @@ export default function fileEditor() {
 	 */
 	this.setup = function (args) {
 		this.file = args.file;
-		this.options = args.options;
 		this.hasPreviousFile = args.has_previous_file;
 		this.hasNextFile = args.has_next_file;
+        this.options = args.options;
 	}
 
 	/**
@@ -227,10 +227,9 @@ export default function fileEditor() {
 	this.updateFile = function () {
 		var self = this;
 
-        var request = window.axios.patch(this.file.update_route, this.getDataForSaving());
-
-        request.then(function (response) {
+        window.axios.patch(this.file.update_route, this.getDataForSaving()).then(function (response) {
             var updatedFile = response.data.data;
+
             self.events.fire('file_updated', [updatedFile]);
 
             if (updatedFile.visibility == 'public') {
@@ -246,9 +245,7 @@ export default function fileEditor() {
                 icon: 'success',
                 text: 'File saved successfully.',
             });
-        });
-
-        request.catch(function (error) {
+        }).catch(function (error) {
             new AxiosError().handleError(error);
         });
 	}
@@ -262,10 +259,10 @@ export default function fileEditor() {
 		var self = this;
 
 		var file = this.file;
-        var request = window.axios.delete(file.trash_route);
 
-        request.then(function (response) {
+        window.axios.delete(file.trash_route).then(function (response) {
             self.events.fire('file_trashed', [file]);
+
             self.close(file);
 
             return Swal.fire({
@@ -273,9 +270,7 @@ export default function fileEditor() {
                 title: 'Success',
                 text: 'File trashed successfully.',
             });
-        });
-
-        request.catch(function (error) {
+        }).catch(function (error) {
             new AxiosError().handleError(error);
         });
 	}
@@ -289,10 +284,10 @@ export default function fileEditor() {
 		var self = this;
 
 		var file = this.file;
-        var request = window.axios.patch(file.restore_route);
 
-        request.then(function (response) {
+        window.axios.patch(file.restore_route).then(function (response) {
             self.events.fire('file_restored', [file]);
+
             self.close(file);
 
             return Swal.fire({
@@ -300,9 +295,7 @@ export default function fileEditor() {
                 title: 'Success',
                 text: 'File restored successfully.',
             });
-        });
-
-        request.catch(function (error) {
+        }).catch(function (error) {
             new AxiosError().handleError(error);
         });
 	}
@@ -316,10 +309,10 @@ export default function fileEditor() {
 		var self = this;
 
 		var file = this.file;
-        var request = window.axios.delete(file.destroy_route);
 
-        request.then(function (response) {
+        window.axios.delete(file.destroy_route).then(function (response) {
             self.events.fire('file_destroyed', [file]);
+
             self.close();
 
             return Swal.fire({
@@ -327,9 +320,7 @@ export default function fileEditor() {
                 title: 'Success',
                 text: 'File destroyed successfully.',
             });
-        });
-        
-        request.catch(function (error) {
+        }).catch(function (error) {
             new AxiosError().handleError(error);
         });
 	}
@@ -412,15 +403,11 @@ export default function fileEditor() {
 	this.showImagePreview = function () {
 		var file = this.file;
 		var image = document.createElement('img');
-
-        if (file.public_url != null) {
-            image.src = file.public_url;
-        } else if (file.base64_url != null) {
-            image.src = file.base64_url;
-        }
-
         var element = document.getElementById('laramedia-file-editor-preview-image-container');
+
+        image.src = file.display_url;
         element.style.display = 'flex';
+        
         element.append(image);
 	}
 
