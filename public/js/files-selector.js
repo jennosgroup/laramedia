@@ -598,6 +598,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (/* binding */ FilesLoader)
 /* harmony export */ });
 /* harmony import */ var _events__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./events */ "./resources/js/events.js");
+/* harmony import */ var _routes__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./routes */ "./resources/js/routes.js");
+
 
 function FilesLoader() {
   /**
@@ -617,7 +619,7 @@ function FilesLoader() {
    */
   this.start = function (parameters, cancelToken) {
     var self = this;
-    window.axios.get(this.getFilesRoute(), {
+    window.axios.get(new _routes__WEBPACK_IMPORTED_MODULE_1__["default"]().getFilesRoute(), {
       cancelToken: cancelToken,
       params: parameters
     }).then(function (response) {
@@ -633,14 +635,47 @@ function FilesLoader() {
       self.events.fire('load_complete');
     });
   };
+}
+
+/***/ }),
+
+/***/ "./resources/js/routes.js":
+/*!********************************!*\
+  !*** ./resources/js/routes.js ***!
+  \********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Routes)
+/* harmony export */ });
+function Routes() {
+  /**
+   * Get the options route.
+   * 
+   * @return string
+   */
+  this.getOptionsRoute = function () {
+    return document.head.querySelector("meta[name='laramedia_options_route']").content;
+  };
 
   /**
    * Get the files route.
-   *
+   * 
    * @return string
    */
   this.getFilesRoute = function () {
     return document.head.querySelector("meta[name='laramedia_files_route']").content;
+  };
+
+  /**
+   * Get the upload route.
+   * 
+   * @return string
+   */
+  this.getUploadRoute = function () {
+    return document.head.querySelector("meta[name='laramedia_upload_route']").content;
   };
 }
 

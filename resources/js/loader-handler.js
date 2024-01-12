@@ -1,4 +1,5 @@
 import Events from './events';
+import Routes from './routes';
 
 export default function FilesLoader() {
     /**
@@ -19,7 +20,7 @@ export default function FilesLoader() {
     this.start = function (parameters, cancelToken) {
         var self = this;
 
-        window.axios.get(this.getFilesRoute(), {
+        window.axios.get(new Routes().getFilesRoute(), {
             cancelToken: cancelToken,
             params: parameters,
         }).then(function (response) {
@@ -35,14 +36,5 @@ export default function FilesLoader() {
         }).then(function (response) {
             self.events.fire('load_complete');
         });
-    }
-
-    /**
-     * Get the files route.
-     *
-     * @return string
-     */
-    this.getFilesRoute = function () {
-        return document.head.querySelector("meta[name='laramedia_files_route']").content;
     }
 }

@@ -1,4 +1,5 @@
 import Events from './events';
+import Routes from './routes';
 
 export default function UploadHandler() {
     /**
@@ -19,7 +20,7 @@ export default function UploadHandler() {
     this.start = function (file, formData) {
         var self = this;
 
-        window.axios.post(this.getUploadRoute(), formData).then(function (response) {
+        window.axios.post(new Routes().getUploadRoute(), formData).then(function (response) {
             if (response.data.success) {
                 self.events.fire('upload_success', self.getSuccessEventPayload(file, response));
             } else {
@@ -91,14 +92,5 @@ export default function UploadHandler() {
             file, // The browser file
             response // The axios response
         ];
-    }
-
-    /**
-     * Get the upload route.
-     * 
-     * @return string
-     */
-    this.getUploadRoute = function () {
-        return document.head.querySelector("meta[name='laramedia_upload_route']").content;
     }
 }
