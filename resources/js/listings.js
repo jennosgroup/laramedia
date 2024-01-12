@@ -1,7 +1,8 @@
 import Editor from './file-editor';
 import Loader from './files-loader';
 import Uploader from './files-uploader';
-import {Spinner} from 'spin.js';
+import Routes from './support/routes';
+import Spin from './support/spin';
 
 function Listings() {
 	/**
@@ -21,9 +22,9 @@ function Listings() {
 	/**
 	 * The spinner instance.
 	 * 
-	 * @var obj|null
+	 * @var obj
 	 */
-	this.spinner = null;
+	this.spinner = new Spin();
 
 	/**
 	 * The files queue for both the loaded and uploaded files.
@@ -61,10 +62,10 @@ function Listings() {
 	this.init = function () {
 		var self = this;
 
-		this.startSpinner();
+		this.spinner.start();
 
-        window.axios.get(this.getOptionsRoute()).then(function (response) {
-            self.options = response.data;
+        window.axios.get(new Routes().getOptionsRoute()).then(function (response) {
+            self.setOptions(response.data);
 
 			self.registerEventHandlers();
 			self.registerLoaderEventHandlers();
@@ -74,6 +75,29 @@ function Listings() {
 			self.uploader.init();
         });
 	}
+
+    /**
+     * Set the options.
+     * 
+     * @param  obj  options
+     * 
+     * @return this
+     */
+    this.setOptions = function (options) {
+        if (typeof options == 'undefined' || options == null || options == '') {
+            return this;
+        }
+
+        if (Object.keys(options).length < 1) {
+            return this;
+        }
+
+        for (var key in options) {
+            this.options[key] = options[key];
+        }
+
+        return this;
+    }
 
 	/**
 	 * Register the events handlers.
@@ -189,7 +213,7 @@ function Listings() {
 
 		// Things to do when file has been loaded
 		this.loader.events.on('file_loaded', function (file) {
-			self.stopSpinner();
+			self.spinner.stop();
 
 			self.loadedFiles[file.uuid] = file;
 			self.files[file.uuid] = file;
@@ -201,7 +225,7 @@ function Listings() {
 
 		// Things to do when load is completed
 		this.loader.events.on('load_complete', function (allFilesLoaded, recentFilesQueue, recentFilesCount) {
-			self.stopSpinner();
+			self.spinner.stop();
 
 			if (recentFilesCount == 0) {
 				document.getElementById('laramedia-no-files-container').classList.remove('laramedia-hidden');
@@ -330,7 +354,7 @@ function Listings() {
 
         // Show image preview or file preview
         if (media.file_type == 'image') {
-            template.querySelector('.laramedia-files-image').src = media.base64_url;
+            template.querySelector('.laramedia-files-image').src = media.display_url;
         } else {
         	template.querySelector('.laramedia-files-item-name').innerHTML = media.original_name;
         }
@@ -457,15 +481,6 @@ function Listings() {
 		document.getElementById('laramedia-files-upload-message').style.display = 'flex';
 	}
 
-    /**
-     * Get the options route.
-     * 
-     * @return string
-     */
-    this.getOptionsRoute = function () {
-        return document.head.querySelector("meta[name='laramedia_options_route']").content;
-    }
-
 	/**
 	 * Get the files container element.
 	 * 
@@ -528,49 +543,6 @@ function Listings() {
         }
 
         return document.importNode(template.content, true);
-	}
-
-	/**
-	 * Start the spinner.
-	 * 
-	 * @return void
-	 */
-	this.startSpinner = function () {
-		var opts = {
-		  lines: 13, // The number of lines to draw
-		  length: 20, // The length of each line
-		  width: 10, // The line thickness
-		  radius: 45, // The radius of the inner circle
-		  scale: 1, // Scales overall size of the spinner
-		  corners: 1, // Corner roundness (0..1)
-		  speed: 1, // Rounds per second
-		  rotate: 0, // The rotation offset
-		  animation: 'spinner-line-fade-quick', // The CSS animation name for the lines
-		  direction: 1, // 1: clockwise, -1: counterclockwise
-		  color: '#000', // CSS color or array of colors
-		  fadeColor: 'transparent', // CSS color or array of colors
-		  top: '50%', // Top position relative to parent
-		  left: '50%', // Left position relative to parent
-		  shadow: '0 0 1px transparent', // Box-shadow for the lines
-		  zIndex: 2000000000, // The z-index (defaults to 2e9)
-		  className: 'spinner', // The CSS class to assign to the spinner
-		  position: 'absolute', // Element positioning
-		};
-
-		if (this.spinner == null) {
-			this.spinner = new Spinner(opts);
-		}
-
-		this.spinner.spin(document.querySelector('body'));
-	}
-
-	/**
-	 * Stop the spinner.
-	 * 
-	 * @return void
-	 */
-	this.stopSpinner = function () {
-		this.spinner.stop();
 	}
 }
 

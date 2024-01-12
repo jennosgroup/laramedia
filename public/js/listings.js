@@ -1885,7 +1885,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _file_editor__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./file-editor */ "./resources/js/file-editor.js");
 /* harmony import */ var _files_loader__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./files-loader */ "./resources/js/files-loader.js");
 /* harmony import */ var _files_uploader__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./files-uploader */ "./resources/js/files-uploader.js");
-/* harmony import */ var spin_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! spin.js */ "./node_modules/spin.js/spin.js");
+/* harmony import */ var _support_routes__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./support/routes */ "./resources/js/support/routes.js");
+/* harmony import */ var _support_spin__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./support/spin */ "./resources/js/support/spin.js");
+
 
 
 
@@ -1908,9 +1910,9 @@ function Listings() {
   /**
    * The spinner instance.
    * 
-   * @var obj|null
+   * @var obj
    */
-  this.spinner = null;
+  this.spinner = new _support_spin__WEBPACK_IMPORTED_MODULE_4__["default"]();
 
   /**
    * The files queue for both the loaded and uploaded files.
@@ -1947,15 +1949,35 @@ function Listings() {
    */
   this.init = function () {
     var self = this;
-    this.startSpinner();
-    window.axios.get(this.getOptionsRoute()).then(function (response) {
-      self.options = response.data;
+    this.spinner.start();
+    window.axios.get(new _support_routes__WEBPACK_IMPORTED_MODULE_3__["default"]().getOptionsRoute()).then(function (response) {
+      self.setOptions(response.data);
       self.registerEventHandlers();
       self.registerLoaderEventHandlers();
       self.registerUploaderEventHandlers();
       self.loader.start();
       self.uploader.init();
     });
+  };
+
+  /**
+   * Set the options.
+   * 
+   * @param  obj  options
+   * 
+   * @return this
+   */
+  this.setOptions = function (options) {
+    if (typeof options == 'undefined' || options == null || options == '') {
+      return this;
+    }
+    if (Object.keys(options).length < 1) {
+      return this;
+    }
+    for (var key in options) {
+      this.options[key] = options[key];
+    }
+    return this;
   };
 
   /**
@@ -2067,7 +2089,7 @@ function Listings() {
 
     // Things to do when file has been loaded
     this.loader.events.on('file_loaded', function (file) {
-      self.stopSpinner();
+      self.spinner.stop();
       self.loadedFiles[file.uuid] = file;
       self.files[file.uuid] = file;
       document.getElementById('laramedia-no-files-container').classList.add('laramedia-hidden');
@@ -2076,7 +2098,7 @@ function Listings() {
 
     // Things to do when load is completed
     this.loader.events.on('load_complete', function (allFilesLoaded, recentFilesQueue, recentFilesCount) {
-      self.stopSpinner();
+      self.spinner.stop();
       if (recentFilesCount == 0) {
         document.getElementById('laramedia-no-files-container').classList.remove('laramedia-hidden');
       }
@@ -2202,7 +2224,7 @@ function Listings() {
 
     // Show image preview or file preview
     if (media.file_type == 'image') {
-      template.querySelector('.laramedia-files-image').src = media.base64_url;
+      template.querySelector('.laramedia-files-image').src = media.display_url;
     } else {
       template.querySelector('.laramedia-files-item-name').innerHTML = media.original_name;
     }
@@ -2314,15 +2336,6 @@ function Listings() {
   };
 
   /**
-   * Get the options route.
-   * 
-   * @return string
-   */
-  this.getOptionsRoute = function () {
-    return document.head.querySelector("meta[name='laramedia_options_route']").content;
-  };
-
-  /**
    * Get the files container element.
    * 
    * @return obj
@@ -2380,64 +2393,6 @@ function Listings() {
       return;
     }
     return document.importNode(template.content, true);
-  };
-
-  /**
-   * Start the spinner.
-   * 
-   * @return void
-   */
-  this.startSpinner = function () {
-    var opts = {
-      lines: 13,
-      // The number of lines to draw
-      length: 20,
-      // The length of each line
-      width: 10,
-      // The line thickness
-      radius: 45,
-      // The radius of the inner circle
-      scale: 1,
-      // Scales overall size of the spinner
-      corners: 1,
-      // Corner roundness (0..1)
-      speed: 1,
-      // Rounds per second
-      rotate: 0,
-      // The rotation offset
-      animation: 'spinner-line-fade-quick',
-      // The CSS animation name for the lines
-      direction: 1,
-      // 1: clockwise, -1: counterclockwise
-      color: '#000',
-      // CSS color or array of colors
-      fadeColor: 'transparent',
-      // CSS color or array of colors
-      top: '50%',
-      // Top position relative to parent
-      left: '50%',
-      // Left position relative to parent
-      shadow: '0 0 1px transparent',
-      // Box-shadow for the lines
-      zIndex: 2000000000,
-      // The z-index (defaults to 2e9)
-      className: 'spinner',
-      // The CSS class to assign to the spinner
-      position: 'absolute' // Element positioning
-    };
-    if (this.spinner == null) {
-      this.spinner = new spin_js__WEBPACK_IMPORTED_MODULE_3__.Spinner(opts);
-    }
-    this.spinner.spin(document.querySelector('body'));
-  };
-
-  /**
-   * Stop the spinner.
-   * 
-   * @return void
-   */
-  this.stopSpinner = function () {
-    this.spinner.stop();
   };
 }
 new Listings().init();
@@ -2805,6 +2760,88 @@ function Routes() {
    */
   this.getUploadRoute = function () {
     return document.head.querySelector("meta[name='laramedia_upload_route']").content;
+  };
+}
+
+/***/ }),
+
+/***/ "./resources/js/support/spin.js":
+/*!**************************************!*\
+  !*** ./resources/js/support/spin.js ***!
+  \**************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Spin)
+/* harmony export */ });
+/* harmony import */ var spin_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! spin.js */ "./node_modules/spin.js/spin.js");
+
+function Spin() {
+  /**
+   * The spin instance.
+   * 
+   * @var obj|null
+   */
+  this.spinner = null;
+
+  /**
+   * Start the spinner.
+   * 
+   * @return void
+   */
+  this.start = function () {
+    var opts = {
+      lines: 13,
+      // The number of lines to draw
+      length: 20,
+      // The length of each line
+      width: 10,
+      // The line thickness
+      radius: 45,
+      // The radius of the inner circle
+      scale: 1,
+      // Scales overall size of the spinner
+      corners: 1,
+      // Corner roundness (0..1)
+      speed: 1,
+      // Rounds per second
+      rotate: 0,
+      // The rotation offset
+      animation: 'spinner-line-fade-quick',
+      // The CSS animation name for the lines
+      direction: 1,
+      // 1: clockwise, -1: counterclockwise
+      color: '#000',
+      // CSS color or array of colors
+      fadeColor: 'transparent',
+      // CSS color or array of colors
+      top: '50%',
+      // Top position relative to parent
+      left: '50%',
+      // Left position relative to parent
+      shadow: '0 0 1px transparent',
+      // Box-shadow for the lines
+      zIndex: 2000000000,
+      // The z-index (defaults to 2e9)
+      className: 'spinner',
+      // The CSS class to assign to the spinner
+      position: 'absolute' // Element positioning
+    };
+    if (this.spinner == null) {
+      this.spinner = new spin_js__WEBPACK_IMPORTED_MODULE_0__.Spinner(opts);
+    }
+    this.spinner.spin(document.querySelector('body'));
+  };
+
+  /**
+   * Stop the spinner.
+   * 
+   * @return void
+   */
+  this.stop = function () {
+    this.spinner.stop();
   };
 }
 
