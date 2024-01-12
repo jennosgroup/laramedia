@@ -1,7 +1,8 @@
 import AxiosError from './support/axios-error';
 import Events from './support/events';
-import Lodash from 'lodash';
 import Handler from './support/loader-handler';
+import Routes from './support/routes';
+import Lodash from 'lodash';
 
 const CancelToken = window.axios.CancelToken;
 
@@ -42,11 +43,11 @@ export default function FilesLoader() {
     this.recentFilesCount = 0;
 
     /**
-     * The number of loads completed.
+     * The number of recent loads completed.
      * 
      * @var int
      */
-    this.loadsCompleted = 0;
+    this.recentLoadsCompleted = 0;
 
     /**
      * Indicate whether this is the first load.
@@ -99,10 +100,44 @@ export default function FilesLoader() {
     this.start = function () {
         var self = this;
 
-        window.axios.get(this.getOptionsRoute()).then(function (response) {
-            self.options = Lodash.assign(response.data, self.options);
+        window.axios.get(new Routes().getOptionsRoute()).then(function (response) {
+            // We are going to take the system options and set it into our options queue.
+            // However, the options that were set through the loader should take precedence.
+            self.setOptions(Lodash.assign(response.data, self.options));
+
+            // Let's load fresh content, that will take the set options into consideration.
             self.loadFreshContent();
+        }).catch(function (response) {
+            new AxiosError.handleError(response);
         });
+    }
+
+    /**
+     * Set the options.
+     * 
+     * @param  obj  options
+     *
+     * @return void
+     */
+    this.setOptions = function (options) {
+        if (typeof options == 'undefined' || options == null || options == '') {
+            return this;
+        }
+
+        if (Object.keys(options).length < 1) {
+            return this;
+        }
+
+        for (var option in options) {
+            this.options[option] = options[option];
+
+            // Add the user option to the request parameter if it's an option
+            if (this.requestParameters.hasOwnProperty(option)) {
+                this.requestParameters[option] = options[option];
+            }
+        }
+
+        return this;
     }
 
     /**
@@ -131,27 +166,9 @@ export default function FilesLoader() {
     }
 
     /**
-     * Set the options.
+     * Load fresh content.
      * 
-     * @param  obj  options
-     *
-     * @return void
-     */
-    this.setOptions = function (options) {
-        this.options = options;
-
-        // Add the user option to the request parameter if it's an option
-        for (var option in options) {
-            if (this.requestParameters.hasOwnProperty(option)) {
-                this.requestParameters[option] = options[option];
-            }
-        }
-
-        return this;
-    }
-
-    /**
-     * Load up content from the start.
+     * This will disregard all previous loads.
      *
      * @return void
      */
@@ -164,7 +181,7 @@ export default function FilesLoader() {
         this.recentFilesQueue = {};
         this.filesCount = 0;
         this.recentFilesCount = 0;
-        this.loadsCompleted = 0;
+        this.recentLoadsCompleted = 0;
 
         // Set flags
         this.isFirstLoad = true;
@@ -178,7 +195,9 @@ export default function FilesLoader() {
     }
 
     /**
-     * Load up content. This bulds upon the request parameters properties.
+     * Load up content.
+     * 
+     * This bulds upon the request parameters properties and previous loads.
      *
      * @return void
      */
@@ -201,9 +220,12 @@ export default function FilesLoader() {
         // Reset the recent metrics
         this.recentFilesQueue = {};
         this.recentFilesCount = 0;
+        this.recentLoadsCompleted = 0;
 
-        // Load files individually, instead of in bulk so we can get a response faster
+        // Load files individually instead of in bulk so we get a response faster
         for (var iteration = 1; iteration <= this.options.pagination_total; iteration++) {
+            // Here we get an axios cancel token. 
+            // This will allow us to cancel requests that isn't needed anymore.
             var token = new CancelToken(function (token) {
                 self.cancelTokens.push(token);
             });
@@ -236,8 +258,8 @@ export default function FilesLoader() {
 
         // Event for when file is loaded by the handler
         handler.events.on('file_loaded', function (file) {
-            self.recentFilesQueue[file.uuid] = file;
             self.filesQueue[file.uuid] = file;
+            self.recentFilesQueue[file.uuid] = file;
             self.filesCount += 1;
             self.recentFilesCount += 1;
 
@@ -252,11 +274,11 @@ export default function FilesLoader() {
         // Event for when the load is complete
         handler.events.on('load_complete', function () {
 
-            self.loadsCompleted += 1;
+            self.recentLoadsCompleted += 1;
 
-            if (self.loadsCompleted == self.options.pagination_total) {
+            if (self.recentLoadsCompleted == self.options.pagination_total) {
                 self.isFirstLoad = false;
-                self.allFilesLoaded = self.recentFilesCount < self.loadsCompleted;
+                self.allFilesLoaded = self.recentFilesCount < self.recentLoadsCompleted;
 
                 self.events.fire('files_loaded', [self.recentFilesQueue, self.recentFilesCount]);
                 self.events.fire('load_complete', [self.allFilesLoaded, self.recentFilesQueue, self.recentFilesCount]);
@@ -300,14 +322,5 @@ export default function FilesLoader() {
                 request();
             }
         });
-    }
-
-    /**
-     * Get the options route.
-     * 
-     * @return string
-     */
-    this.getOptionsRoute = function () {
-        return document.head.querySelector("meta[name='laramedia_options_route']").content;
     }
 }

@@ -1,277 +1,6 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./resources/js/axios-error.js":
-/*!*************************************!*\
-  !*** ./resources/js/axios-error.js ***!
-  \*************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ AxiosError)
-/* harmony export */ });
-/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sweetalert2 */ "./node_modules/sweetalert2/dist/sweetalert2.all.js");
-/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sweetalert2__WEBPACK_IMPORTED_MODULE_0__);
-
-function AxiosError() {
-  /**
-   * Error status and their text.
-   *
-   * @var object
-   */
-  this.errorTexts = {
-    100: 'Continue',
-    101: 'Switching Protocols',
-    102: 'Processing',
-    200: 'OK',
-    201: 'Created',
-    202: 'Accepted',
-    203: 'Non-Authoritative Information',
-    204: 'No Content',
-    205: 'Reset Content',
-    206: 'Partial Content',
-    207: 'Multi-Status',
-    208: 'Already Reported',
-    226: 'IM Used',
-    300: 'Multiple Choices',
-    301: 'Moved Permanently',
-    302: 'Found',
-    303: 'See Other',
-    304: 'Not Modified',
-    305: 'Use Proxy',
-    307: 'Temporary Redirect',
-    308: 'Permanent Redirect',
-    400: 'Bad Request',
-    401: 'Unauthorized',
-    402: 'Payment Required',
-    403: 'Forbidden',
-    404: 'Not Found',
-    405: 'Method Not Allowed',
-    406: 'Not Acceptable',
-    407: 'Proxy Authentication Required',
-    408: 'Request Timeout',
-    409: 'Conflict',
-    410: 'Gone',
-    411: 'Length Required',
-    412: 'Precondition Failed',
-    413: 'Payload Too Large',
-    414: 'URI Too Long',
-    415: 'Unsupported Media Type',
-    416: 'Range Not Satisfiable',
-    417: 'Expectation Failed',
-    418: 'I\'m a teapot',
-    421: 'Misdirected Request',
-    422: 'Unprocessable Entity',
-    423: 'Locked',
-    424: 'Failed Dependency',
-    425: 'Reserved for WebDAV advanced collections expired proposal',
-    426: 'Upgrade Required',
-    428: 'Precondition Required',
-    429: 'Too Many Requests',
-    431: 'Request Header Fields Too Large',
-    451: 'Unavailable For Legal Reasons',
-    500: 'Internal Server Error',
-    501: 'Not Implemented',
-    502: 'Bad Gateway',
-    503: 'Service Unavailable',
-    504: 'Gateway Timeout',
-    505: 'HTTP Version Not Supported',
-    506: 'Variant Also Negotiates',
-    507: 'Insufficient Storage',
-    508: 'Loop Detected',
-    510: 'Not Extended',
-    511: 'Network Authentication Required'
-  };
-
-  /**
-   * Handle the error.
-   *
-   * @param  object  axiosError
-   *
-   * @return void
-   */
-  this.handleError = function (axiosError) {
-    if (!axiosError.hasOwnProperty('response')) {
-      return;
-    }
-    var error = axiosError.response;
-    if (axiosError.statusText == 'abort') {
-      return;
-    }
-    if (axiosError.status == 422) {
-      return this.handleValidationErrors(error);
-    }
-    if (axiosError.status == 401) {
-      return this.handleInvalidatedSessionError(error);
-    }
-    if (axiosError.status == 403) {
-      return this.handleUnauthorizedError(error);
-    }
-    return this.handleOtherErrors(error);
-  };
-
-  /**
-   * Handle the validation errors.
-   *
-   * @param  obj  error
-   *
-   * @return void
-   */
-  this.handleValidationErrors = function (error) {
-    var errors = [];
-    var validationErrors = error.request.responseJSON.errors;
-    for (var key in validationErrors) {
-      if (!validationErrors.hasOwnProperty(key)) {
-        return;
-      }
-      validationErrors[key].forEach(function (value) {
-        errors.push(value);
-      });
-    }
-    ;
-    return sweetalert2__WEBPACK_IMPORTED_MODULE_0___default().fire({
-      title: 'Validation Errors',
-      text: errors.join('<br>'),
-      icon: 'error'
-    });
-  };
-
-  /**
-   * Handle the unauthenticated session error.
-   *
-   * @param  obj  error
-   *
-   * @return void
-   */
-  this.handleInvalidatedSessionError = function (error) {
-    return sweetalert2__WEBPACK_IMPORTED_MODULE_0___default().fire({
-      title: 'Unauthenticated Session',
-      text: 'Your session has been invalidated due to inactivity. Please refresh the page and re-login.',
-      icon: 'error'
-    });
-  };
-
-  /**
-   * Handle unauthorized error.
-   *
-   * @param  obj  error
-   *
-   * @return void
-   */
-  this.handleUnauthorizedError = function (error) {
-    return sweetalert2__WEBPACK_IMPORTED_MODULE_0___default().fire({
-      title: 'Unauthorized Action',
-      text: 'You are not authorized to perform that action.',
-      icon: 'error'
-    });
-  };
-
-  /**
-   * Handle errors that are not explicitly defined above.
-   *
-   * @param  obj  error
-   *
-   * @return void
-   */
-  this.handleOtherErrors = function (error) {
-    var message = [];
-    var text = null;
-    if (this.errorTexts.hasOwnProperty(error.status)) {
-      text = this.errorTexts[error.status];
-    }
-    message.push('Oops, something went wrong!');
-    message.push('Refresh the page and try again or contact your website administrator if the problem persists.');
-    if (text != null) {
-      message.push(error.status + ' - ' + text + '.');
-    }
-    return sweetalert2__WEBPACK_IMPORTED_MODULE_0___default().fire({
-      title: 'Error',
-      text: message.join(' '),
-      icon: 'error'
-    });
-  };
-}
-
-/***/ }),
-
-/***/ "./resources/js/events.js":
-/*!********************************!*\
-  !*** ./resources/js/events.js ***!
-  \********************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ Events)
-/* harmony export */ });
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
-function Events() {
-  /**
-   * Hold our events subscribers.
-   *
-   * @var object
-   */
-  this.events = {};
-
-  /**
-   * Subscribe to an event.
-   *
-   * @param  string|array  events
-   * @param  callable  callable
-   *
-   * @return void
-   */
-  this.on = function (events, callable) {
-    var self = this;
-    if (!Array.isArray(events)) {
-      events = [events];
-    }
-    events.forEach(function (event) {
-      if (!self.events.hasOwnProperty(event)) {
-        self.events[event] = [];
-      }
-      self.events[event].push(callable);
-    });
-  };
-
-  /**
-   * Fire off the event.
-   *
-   * @param  string  event
-   * @param  array  params
-   *
-   * @return mixed
-   */
-  this.fire = function (events, params) {
-    var self = this;
-    if (!Array.isArray(events)) {
-      events = [events];
-    }
-    events.forEach(function (event) {
-      if (!self.events.hasOwnProperty(event)) {
-        return;
-      }
-      self.events[event].forEach(function (callable) {
-        if (typeof params == 'undefined') {
-          callable();
-        } else {
-          callable.apply(void 0, _toConsumableArray(params));
-        }
-      });
-    });
-  };
-}
-
-/***/ }),
-
 /***/ "./resources/js/file-editor.js":
 /*!*************************************!*\
   !*** ./resources/js/file-editor.js ***!
@@ -283,8 +12,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ fileEditor)
 /* harmony export */ });
-/* harmony import */ var _events__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./events */ "./resources/js/events.js");
-/* harmony import */ var _axios_error__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./axios-error */ "./resources/js/axios-error.js");
+/* harmony import */ var _support_events__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./support/events */ "./resources/js/support/events.js");
+/* harmony import */ var _support_axios_error__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./support/axios-error */ "./resources/js/support/axios-error.js");
 /* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! sweetalert2 */ "./node_modules/sweetalert2/dist/sweetalert2.all.js");
 /* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(sweetalert2__WEBPACK_IMPORTED_MODULE_2__);
 
@@ -296,7 +25,7 @@ function fileEditor() {
    * 
    * @var object
    */
-  this.events = new _events__WEBPACK_IMPORTED_MODULE_0__["default"]();
+  this.events = new _support_events__WEBPACK_IMPORTED_MODULE_0__["default"]();
 
   /**
    * The options.
@@ -524,7 +253,7 @@ function fileEditor() {
       });
     });
     request["catch"](function (error) {
-      new _axios_error__WEBPACK_IMPORTED_MODULE_1__["default"]().handleError(error);
+      new _support_axios_error__WEBPACK_IMPORTED_MODULE_1__["default"]().handleError(error);
     });
   };
 
@@ -547,7 +276,7 @@ function fileEditor() {
       });
     });
     request["catch"](function (error) {
-      new _axios_error__WEBPACK_IMPORTED_MODULE_1__["default"]().handleError(error);
+      new _support_axios_error__WEBPACK_IMPORTED_MODULE_1__["default"]().handleError(error);
     });
   };
 
@@ -570,7 +299,7 @@ function fileEditor() {
       });
     });
     request["catch"](function (error) {
-      new _axios_error__WEBPACK_IMPORTED_MODULE_1__["default"]().handleError(error);
+      new _support_axios_error__WEBPACK_IMPORTED_MODULE_1__["default"]().handleError(error);
     });
   };
 
@@ -593,7 +322,7 @@ function fileEditor() {
       });
     });
     request["catch"](function (error) {
-      new _axios_error__WEBPACK_IMPORTED_MODULE_1__["default"]().handleError(error);
+      new _support_axios_error__WEBPACK_IMPORTED_MODULE_1__["default"]().handleError(error);
     });
   };
 
@@ -1034,11 +763,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ FilesLoader)
 /* harmony export */ });
-/* harmony import */ var _axios_error__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./axios-error */ "./resources/js/axios-error.js");
-/* harmony import */ var _events__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./events */ "./resources/js/events.js");
-/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
-/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _loader_handler__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./loader-handler */ "./resources/js/loader-handler.js");
+/* harmony import */ var _support_axios_error__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./support/axios-error */ "./resources/js/support/axios-error.js");
+/* harmony import */ var _support_events__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./support/events */ "./resources/js/support/events.js");
+/* harmony import */ var _support_loader_handler__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./support/loader-handler */ "./resources/js/support/loader-handler.js");
+/* harmony import */ var _support_routes__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./support/routes */ "./resources/js/support/routes.js");
+/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
+/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_4__);
+
 
 
 
@@ -1050,7 +781,7 @@ function FilesLoader() {
    *
    * @var object
    */
-  this.events = new _events__WEBPACK_IMPORTED_MODULE_1__["default"]();
+  this.events = new _support_events__WEBPACK_IMPORTED_MODULE_1__["default"]();
 
   /**
    * The queue to store the loaded files.
@@ -1081,11 +812,11 @@ function FilesLoader() {
   this.recentFilesCount = 0;
 
   /**
-   * The number of loads completed.
+   * The number of recent loads completed.
    * 
    * @var int
    */
-  this.loadsCompleted = 0;
+  this.recentLoadsCompleted = 0;
 
   /**
    * Indicate whether this is the first load.
@@ -1137,10 +868,41 @@ function FilesLoader() {
    */
   this.start = function () {
     var self = this;
-    window.axios.get(this.getOptionsRoute()).then(function (response) {
-      self.options = lodash__WEBPACK_IMPORTED_MODULE_2___default().assign(response.data, self.options);
+    window.axios.get(new _support_routes__WEBPACK_IMPORTED_MODULE_3__["default"]().getOptionsRoute()).then(function (response) {
+      // We are going to take the system options and set it into our options queue.
+      // However, the options that were set through the loader should take precedence.
+      self.setOptions(lodash__WEBPACK_IMPORTED_MODULE_4___default().assign(response.data, self.options));
+
+      // Let's load fresh content, that will take the set options into consideration.
       self.loadFreshContent();
+    })["catch"](function (response) {
+      new _support_axios_error__WEBPACK_IMPORTED_MODULE_0__["default"].handleError(response);
     });
+  };
+
+  /**
+   * Set the options.
+   * 
+   * @param  obj  options
+   *
+   * @return void
+   */
+  this.setOptions = function (options) {
+    if (typeof options == 'undefined' || options == null || options == '') {
+      return this;
+    }
+    if (Object.keys(options).length < 1) {
+      return this;
+    }
+    for (var option in options) {
+      this.options[option] = options[option];
+
+      // Add the user option to the request parameter if it's an option
+      if (this.requestParameters.hasOwnProperty(option)) {
+        this.requestParameters[option] = options[option];
+      }
+    }
+    return this;
   };
 
   /**
@@ -1166,26 +928,9 @@ function FilesLoader() {
   };
 
   /**
-   * Set the options.
+   * Load fresh content.
    * 
-   * @param  obj  options
-   *
-   * @return void
-   */
-  this.setOptions = function (options) {
-    this.options = options;
-
-    // Add the user option to the request parameter if it's an option
-    for (var option in options) {
-      if (this.requestParameters.hasOwnProperty(option)) {
-        this.requestParameters[option] = options[option];
-      }
-    }
-    return this;
-  };
-
-  /**
-   * Load up content from the start.
+   * This will disregard all previous loads.
    *
    * @return void
    */
@@ -1198,7 +943,7 @@ function FilesLoader() {
     this.recentFilesQueue = {};
     this.filesCount = 0;
     this.recentFilesCount = 0;
-    this.loadsCompleted = 0;
+    this.recentLoadsCompleted = 0;
 
     // Set flags
     this.isFirstLoad = true;
@@ -1212,7 +957,9 @@ function FilesLoader() {
   };
 
   /**
-   * Load up content. This bulds upon the request parameters properties.
+   * Load up content.
+   * 
+   * This bulds upon the request parameters properties and previous loads.
    *
    * @return void
    */
@@ -1235,9 +982,12 @@ function FilesLoader() {
     // Reset the recent metrics
     this.recentFilesQueue = {};
     this.recentFilesCount = 0;
+    this.recentLoadsCompleted = 0;
 
-    // Load files individually, instead of in bulk so we can get a response faster
+    // Load files individually instead of in bulk so we get a response faster
     for (var iteration = 1; iteration <= this.options.pagination_total; iteration++) {
+      // Here we get an axios cancel token. 
+      // This will allow us to cancel requests that isn't needed anymore.
       var token = new CancelToken(function (token) {
         self.cancelTokens.push(token);
       });
@@ -1255,8 +1005,8 @@ function FilesLoader() {
    */
   this.loadFile = function (iteration, cancelToken) {
     var self = this;
-    var handler = new _loader_handler__WEBPACK_IMPORTED_MODULE_3__["default"]();
-    var parameters = lodash__WEBPACK_IMPORTED_MODULE_2___default().clone(this.requestParameters);
+    var handler = new _support_loader_handler__WEBPACK_IMPORTED_MODULE_2__["default"]();
+    var parameters = lodash__WEBPACK_IMPORTED_MODULE_4___default().clone(this.requestParameters);
     if (this.isFirstLoad) {
       parameters.page = parameters.page * iteration;
     } else {
@@ -1266,8 +1016,8 @@ function FilesLoader() {
 
     // Event for when file is loaded by the handler
     handler.events.on('file_loaded', function (file) {
-      self.recentFilesQueue[file.uuid] = file;
       self.filesQueue[file.uuid] = file;
+      self.recentFilesQueue[file.uuid] = file;
       self.filesCount += 1;
       self.recentFilesCount += 1;
       self.events.fire('file_loaded', [file]);
@@ -1275,15 +1025,15 @@ function FilesLoader() {
 
     // Event for when file error by handler
     handler.events.on('file_error', function (response) {
-      new _axios_error__WEBPACK_IMPORTED_MODULE_0__["default"]().handleError(response);
+      new _support_axios_error__WEBPACK_IMPORTED_MODULE_0__["default"]().handleError(response);
     });
 
     // Event for when the load is complete
     handler.events.on('load_complete', function () {
-      self.loadsCompleted += 1;
-      if (self.loadsCompleted == self.options.pagination_total) {
+      self.recentLoadsCompleted += 1;
+      if (self.recentLoadsCompleted == self.options.pagination_total) {
         self.isFirstLoad = false;
-        self.allFilesLoaded = self.recentFilesCount < self.loadsCompleted;
+        self.allFilesLoaded = self.recentFilesCount < self.recentLoadsCompleted;
         self.events.fire('files_loaded', [self.recentFilesQueue, self.recentFilesCount]);
         self.events.fire('load_complete', [self.allFilesLoaded, self.recentFilesQueue, self.recentFilesCount]);
       }
@@ -1324,15 +1074,6 @@ function FilesLoader() {
       }
     });
   };
-
-  /**
-   * Get the options route.
-   * 
-   * @return string
-   */
-  this.getOptionsRoute = function () {
-    return document.head.querySelector("meta[name='laramedia_options_route']").content;
-  };
 }
 
 /***/ }),
@@ -1348,9 +1089,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ FilesUploader)
 /* harmony export */ });
-/* harmony import */ var _events__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./events */ "./resources/js/events.js");
-/* harmony import */ var _filters__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./filters */ "./resources/js/filters.js");
-/* harmony import */ var _upload_handler__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./upload-handler */ "./resources/js/upload-handler.js");
+/* harmony import */ var _support_events__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./support/events */ "./resources/js/support/events.js");
+/* harmony import */ var _support_filters__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./support/filters */ "./resources/js/support/filters.js");
+/* harmony import */ var _support_upload_handler__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./support/upload-handler */ "./resources/js/support/upload-handler.js");
 /* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! sweetalert2 */ "./node_modules/sweetalert2/dist/sweetalert2.all.js");
 /* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(sweetalert2__WEBPACK_IMPORTED_MODULE_3__);
 
@@ -1363,14 +1104,14 @@ function FilesUploader() {
    *
    * @var object
    */
-  this.events = new _events__WEBPACK_IMPORTED_MODULE_0__["default"]();
+  this.events = new _support_events__WEBPACK_IMPORTED_MODULE_0__["default"]();
 
   /**
    * The filters instance.
    *
    * @var object
    */
-  this.filters = new _filters__WEBPACK_IMPORTED_MODULE_1__["default"]();
+  this.filters = new _support_filters__WEBPACK_IMPORTED_MODULE_1__["default"]();
 
   /**
    * The files queue.
@@ -1787,7 +1528,7 @@ function FilesUploader() {
    */
   this.uploadFile = function (file) {
     var self = this;
-    var handler = new _upload_handler__WEBPACK_IMPORTED_MODULE_2__["default"]();
+    var handler = new _support_upload_handler__WEBPACK_IMPORTED_MODULE_2__["default"]();
     var formData = new FormData();
     formData.append('file', file);
     formData.append('disk', this.getDiskValue());
@@ -2167,72 +1908,6 @@ function FilesUploader() {
       title: 'Error',
       text: message
     });
-  };
-}
-
-/***/ }),
-
-/***/ "./resources/js/filters.js":
-/*!*********************************!*\
-  !*** ./resources/js/filters.js ***!
-  \*********************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ Filters)
-/* harmony export */ });
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
-function Filters() {
-  /**
-   * Hold our filters.
-   *
-   * @var object
-   */
-  this.filters = {};
-
-  /**
-   * Subscribe to a filter.
-   *
-   * @param  string  filter
-   * @param  callable  callable
-   *
-   * @return void
-   */
-  this.add = function (filter, callable) {
-    if (!this.filters.hasOwnProperty(filter)) {
-      this.filters[filter] = [];
-    }
-    this.filters[filter].push(callable);
-  };
-
-  /**
-   * Apply the filter.
-   *
-   * @param  string  filter
-   * @param  mixed  value
-   * @param  array  params
-   *
-   * @return mixed
-   */
-  this.apply = function (filter, value, params) {
-    if (!this.filters.hasOwnProperty(filter)) {
-      return value;
-    }
-    this.filters[filter].forEach(function (callable) {
-      if (typeof params == 'undefined') {
-        value = callable(value);
-      } else {
-        value = callable.apply(void 0, [value].concat(_toConsumableArray(params)));
-      }
-    });
-    return value;
   };
 }
 
@@ -2808,10 +2483,347 @@ new Listings().init();
 
 /***/ }),
 
-/***/ "./resources/js/loader-handler.js":
+/***/ "./resources/js/support/axios-error.js":
+/*!*********************************************!*\
+  !*** ./resources/js/support/axios-error.js ***!
+  \*********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ AxiosError)
+/* harmony export */ });
+/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sweetalert2 */ "./node_modules/sweetalert2/dist/sweetalert2.all.js");
+/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sweetalert2__WEBPACK_IMPORTED_MODULE_0__);
+
+function AxiosError() {
+  /**
+   * Error status and their text.
+   *
+   * @var object
+   */
+  this.errorTexts = {
+    100: 'Continue',
+    101: 'Switching Protocols',
+    102: 'Processing',
+    200: 'OK',
+    201: 'Created',
+    202: 'Accepted',
+    203: 'Non-Authoritative Information',
+    204: 'No Content',
+    205: 'Reset Content',
+    206: 'Partial Content',
+    207: 'Multi-Status',
+    208: 'Already Reported',
+    226: 'IM Used',
+    300: 'Multiple Choices',
+    301: 'Moved Permanently',
+    302: 'Found',
+    303: 'See Other',
+    304: 'Not Modified',
+    305: 'Use Proxy',
+    307: 'Temporary Redirect',
+    308: 'Permanent Redirect',
+    400: 'Bad Request',
+    401: 'Unauthorized',
+    402: 'Payment Required',
+    403: 'Forbidden',
+    404: 'Not Found',
+    405: 'Method Not Allowed',
+    406: 'Not Acceptable',
+    407: 'Proxy Authentication Required',
+    408: 'Request Timeout',
+    409: 'Conflict',
+    410: 'Gone',
+    411: 'Length Required',
+    412: 'Precondition Failed',
+    413: 'Payload Too Large',
+    414: 'URI Too Long',
+    415: 'Unsupported Media Type',
+    416: 'Range Not Satisfiable',
+    417: 'Expectation Failed',
+    418: 'I\'m a teapot',
+    421: 'Misdirected Request',
+    422: 'Unprocessable Entity',
+    423: 'Locked',
+    424: 'Failed Dependency',
+    425: 'Reserved for WebDAV advanced collections expired proposal',
+    426: 'Upgrade Required',
+    428: 'Precondition Required',
+    429: 'Too Many Requests',
+    431: 'Request Header Fields Too Large',
+    451: 'Unavailable For Legal Reasons',
+    500: 'Internal Server Error',
+    501: 'Not Implemented',
+    502: 'Bad Gateway',
+    503: 'Service Unavailable',
+    504: 'Gateway Timeout',
+    505: 'HTTP Version Not Supported',
+    506: 'Variant Also Negotiates',
+    507: 'Insufficient Storage',
+    508: 'Loop Detected',
+    510: 'Not Extended',
+    511: 'Network Authentication Required'
+  };
+
+  /**
+   * Handle the error.
+   *
+   * @param  object  axiosError
+   *
+   * @return void
+   */
+  this.handleError = function (axiosError) {
+    if (!axiosError.hasOwnProperty('response')) {
+      return;
+    }
+    var error = axiosError.response;
+    if (axiosError.statusText == 'abort') {
+      return;
+    }
+    if (axiosError.status == 422) {
+      return this.handleValidationErrors(error);
+    }
+    if (axiosError.status == 401) {
+      return this.handleInvalidatedSessionError(error);
+    }
+    if (axiosError.status == 403) {
+      return this.handleUnauthorizedError(error);
+    }
+    return this.handleOtherErrors(error);
+  };
+
+  /**
+   * Handle the validation errors.
+   *
+   * @param  obj  error
+   *
+   * @return void
+   */
+  this.handleValidationErrors = function (error) {
+    var errors = [];
+    var validationErrors = error.request.responseJSON.errors;
+    for (var key in validationErrors) {
+      if (!validationErrors.hasOwnProperty(key)) {
+        return;
+      }
+      validationErrors[key].forEach(function (value) {
+        errors.push(value);
+      });
+    }
+    ;
+    return sweetalert2__WEBPACK_IMPORTED_MODULE_0___default().fire({
+      title: 'Validation Errors',
+      text: errors.join('<br>'),
+      icon: 'error'
+    });
+  };
+
+  /**
+   * Handle the unauthenticated session error.
+   *
+   * @param  obj  error
+   *
+   * @return void
+   */
+  this.handleInvalidatedSessionError = function (error) {
+    return sweetalert2__WEBPACK_IMPORTED_MODULE_0___default().fire({
+      title: 'Unauthenticated Session',
+      text: 'Your session has been invalidated due to inactivity. Please refresh the page and re-login.',
+      icon: 'error'
+    });
+  };
+
+  /**
+   * Handle unauthorized error.
+   *
+   * @param  obj  error
+   *
+   * @return void
+   */
+  this.handleUnauthorizedError = function (error) {
+    return sweetalert2__WEBPACK_IMPORTED_MODULE_0___default().fire({
+      title: 'Unauthorized Action',
+      text: 'You are not authorized to perform that action.',
+      icon: 'error'
+    });
+  };
+
+  /**
+   * Handle errors that are not explicitly defined above.
+   *
+   * @param  obj  error
+   *
+   * @return void
+   */
+  this.handleOtherErrors = function (error) {
+    var message = [];
+    var text = null;
+    if (this.errorTexts.hasOwnProperty(error.status)) {
+      text = this.errorTexts[error.status];
+    }
+    message.push('Oops, something went wrong!');
+    message.push('Refresh the page and try again or contact your website administrator if the problem persists.');
+    if (text != null) {
+      message.push(error.status + ' - ' + text + '.');
+    }
+    return sweetalert2__WEBPACK_IMPORTED_MODULE_0___default().fire({
+      title: 'Error',
+      text: message.join(' '),
+      icon: 'error'
+    });
+  };
+}
+
+/***/ }),
+
+/***/ "./resources/js/support/events.js":
 /*!****************************************!*\
-  !*** ./resources/js/loader-handler.js ***!
+  !*** ./resources/js/support/events.js ***!
   \****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Events)
+/* harmony export */ });
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+function Events() {
+  /**
+   * Hold our events subscribers.
+   *
+   * @var object
+   */
+  this.events = {};
+
+  /**
+   * Subscribe to an event.
+   *
+   * @param  string|array  events
+   * @param  callable  callable
+   *
+   * @return void
+   */
+  this.on = function (events, callable) {
+    var self = this;
+    if (!Array.isArray(events)) {
+      events = [events];
+    }
+    events.forEach(function (event) {
+      if (!self.events.hasOwnProperty(event)) {
+        self.events[event] = [];
+      }
+      self.events[event].push(callable);
+    });
+  };
+
+  /**
+   * Fire off the event.
+   *
+   * @param  string  event
+   * @param  array  params
+   *
+   * @return mixed
+   */
+  this.fire = function (events, params) {
+    var self = this;
+    if (!Array.isArray(events)) {
+      events = [events];
+    }
+    events.forEach(function (event) {
+      if (!self.events.hasOwnProperty(event)) {
+        return;
+      }
+      self.events[event].forEach(function (callable) {
+        if (typeof params == 'undefined') {
+          callable();
+        } else {
+          callable.apply(void 0, _toConsumableArray(params));
+        }
+      });
+    });
+  };
+}
+
+/***/ }),
+
+/***/ "./resources/js/support/filters.js":
+/*!*****************************************!*\
+  !*** ./resources/js/support/filters.js ***!
+  \*****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Filters)
+/* harmony export */ });
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+function Filters() {
+  /**
+   * Hold our filters.
+   *
+   * @var object
+   */
+  this.filters = {};
+
+  /**
+   * Subscribe to a filter.
+   *
+   * @param  string  filter
+   * @param  callable  callable
+   *
+   * @return void
+   */
+  this.add = function (filter, callable) {
+    if (!this.filters.hasOwnProperty(filter)) {
+      this.filters[filter] = [];
+    }
+    this.filters[filter].push(callable);
+  };
+
+  /**
+   * Apply the filter.
+   *
+   * @param  string  filter
+   * @param  mixed  value
+   * @param  array  params
+   *
+   * @return mixed
+   */
+  this.apply = function (filter, value, params) {
+    if (!this.filters.hasOwnProperty(filter)) {
+      return value;
+    }
+    this.filters[filter].forEach(function (callable) {
+      if (typeof params == 'undefined') {
+        value = callable(value);
+      } else {
+        value = callable.apply(void 0, [value].concat(_toConsumableArray(params)));
+      }
+    });
+    return value;
+  };
+}
+
+/***/ }),
+
+/***/ "./resources/js/support/loader-handler.js":
+/*!************************************************!*\
+  !*** ./resources/js/support/loader-handler.js ***!
+  \************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -2819,8 +2831,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ FilesLoader)
 /* harmony export */ });
-/* harmony import */ var _events__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./events */ "./resources/js/events.js");
-/* harmony import */ var _routes__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./routes */ "./resources/js/routes.js");
+/* harmony import */ var _events__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./events */ "./resources/js/support/events.js");
+/* harmony import */ var _routes__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./routes */ "./resources/js/support/routes.js");
 
 
 function FilesLoader() {
@@ -2861,10 +2873,10 @@ function FilesLoader() {
 
 /***/ }),
 
-/***/ "./resources/js/routes.js":
-/*!********************************!*\
-  !*** ./resources/js/routes.js ***!
-  \********************************/
+/***/ "./resources/js/support/routes.js":
+/*!****************************************!*\
+  !*** ./resources/js/support/routes.js ***!
+  \****************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -2903,10 +2915,10 @@ function Routes() {
 
 /***/ }),
 
-/***/ "./resources/js/upload-handler.js":
-/*!****************************************!*\
-  !*** ./resources/js/upload-handler.js ***!
-  \****************************************/
+/***/ "./resources/js/support/upload-handler.js":
+/*!************************************************!*\
+  !*** ./resources/js/support/upload-handler.js ***!
+  \************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -2914,8 +2926,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ UploadHandler)
 /* harmony export */ });
-/* harmony import */ var _events__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./events */ "./resources/js/events.js");
-/* harmony import */ var _routes__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./routes */ "./resources/js/routes.js");
+/* harmony import */ var _events__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./events */ "./resources/js/support/events.js");
+/* harmony import */ var _routes__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./routes */ "./resources/js/support/routes.js");
 
 
 function UploadHandler() {

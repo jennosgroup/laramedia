@@ -1,6 +1,6 @@
 import AxiosError from './support/axios-error';
 import Events from './support/events';
-import Loader from './support/files-loader';
+import Loader from './files-loader';
 import Lodash from 'lodash';
 import Swal from 'sweetalert2';
 

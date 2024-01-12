@@ -1,10 +1,336 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./resources/js/axios-error.js":
-/*!*************************************!*\
-  !*** ./resources/js/axios-error.js ***!
-  \*************************************/
+/***/ "./resources/js/files-loader.js":
+/*!**************************************!*\
+  !*** ./resources/js/files-loader.js ***!
+  \**************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ FilesLoader)
+/* harmony export */ });
+/* harmony import */ var _support_axios_error__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./support/axios-error */ "./resources/js/support/axios-error.js");
+/* harmony import */ var _support_events__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./support/events */ "./resources/js/support/events.js");
+/* harmony import */ var _support_loader_handler__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./support/loader-handler */ "./resources/js/support/loader-handler.js");
+/* harmony import */ var _support_routes__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./support/routes */ "./resources/js/support/routes.js");
+/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
+/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_4__);
+
+
+
+
+
+var CancelToken = window.axios.CancelToken;
+function FilesLoader() {
+  /**
+   * The events instance.
+   *
+   * @var object
+   */
+  this.events = new _support_events__WEBPACK_IMPORTED_MODULE_1__["default"]();
+
+  /**
+   * The queue to store the loaded files.
+   *
+   * @var object
+   */
+  this.filesQueue = {};
+
+  /**
+   * The queue that would contain the most recently loaded files.
+   *
+   * @var object
+   */
+  this.recentFilesQueue = {};
+
+  /**
+   * The files count.
+   *
+   * @var int
+   */
+  this.filesCount = 0;
+
+  /**
+   * The recent files count.
+   *
+   * @var int
+   */
+  this.recentFilesCount = 0;
+
+  /**
+   * The number of recent loads completed.
+   * 
+   * @var int
+   */
+  this.recentLoadsCompleted = 0;
+
+  /**
+   * Indicate whether this is the first load.
+   * 
+   * @var bool
+   */
+  this.isFirstLoad = false;
+
+  /**
+   * If all the files are loaded.
+   * 
+   * @var bool
+   */
+  this.allFilesLoaded = false;
+
+  /**
+   * The parameters for when we are sending off a load request.
+   *
+   * @var object
+   */
+  this.requestParameters = {
+    page: 1,
+    type: null,
+    disk: null,
+    visibility: null,
+    ownership: null,
+    section: 'active',
+    search: null
+  };
+
+  /**
+   * The options.
+   * 
+   * @var obj
+   */
+  this.options = {};
+
+  /**
+   * The store the cancel tokens.
+   * 
+   * @var array
+   */
+  this.cancelTokens = [];
+
+  /**
+   * Start the loader.
+   *
+   * @return void
+   */
+  this.start = function () {
+    var self = this;
+    window.axios.get(new _support_routes__WEBPACK_IMPORTED_MODULE_3__["default"]().getOptionsRoute()).then(function (response) {
+      // We are going to take the system options and set it into our options queue.
+      // However, the options that were set through the loader should take precedence.
+      self.setOptions(lodash__WEBPACK_IMPORTED_MODULE_4___default().assign(response.data, self.options));
+
+      // Let's load fresh content, that will take the set options into consideration.
+      self.loadFreshContent();
+    })["catch"](function (response) {
+      new _support_axios_error__WEBPACK_IMPORTED_MODULE_0__["default"].handleError(response);
+    });
+  };
+
+  /**
+   * Set the options.
+   * 
+   * @param  obj  options
+   *
+   * @return void
+   */
+  this.setOptions = function (options) {
+    if (typeof options == 'undefined' || options == null || options == '') {
+      return this;
+    }
+    if (Object.keys(options).length < 1) {
+      return this;
+    }
+    for (var option in options) {
+      this.options[option] = options[option];
+
+      // Add the user option to the request parameter if it's an option
+      if (this.requestParameters.hasOwnProperty(option)) {
+        this.requestParameters[option] = options[option];
+      }
+    }
+    return this;
+  };
+
+  /**
+   * Set the request parameters.
+   *
+   * @param  object  parameters
+   *
+   * @return void
+   */
+  this.setRequestParameters = function (parameters) {
+    if (typeof parameters == 'undefined' || parameters == null || parameters == '') {
+      return this;
+    }
+    if (Object.keys(parameters).length < 1) {
+      return this;
+    }
+    for (var key in parameters) {
+      if (this.requestParameters.hasOwnProperty(key)) {
+        this.requestParameters[key] = parameters[key];
+      }
+    }
+    return this;
+  };
+
+  /**
+   * Load fresh content.
+   * 
+   * This will disregard all previous loads.
+   *
+   * @return void
+   */
+  this.loadFreshContent = function () {
+    // Cancel all previous load requests
+    this.cancelRequests();
+
+    // Reset some things
+    this.filesQueue = {};
+    this.recentFilesQueue = {};
+    this.filesCount = 0;
+    this.recentFilesCount = 0;
+    this.recentLoadsCompleted = 0;
+
+    // Set flags
+    this.isFirstLoad = true;
+    this.allFilesLoaded = false;
+
+    // Fresh content page should always be the first page
+    this.requestParameters.page = 1;
+
+    // Load up the content now
+    this.loadContent();
+  };
+
+  /**
+   * Load up content.
+   * 
+   * This bulds upon the request parameters properties and previous loads.
+   *
+   * @return void
+   */
+  this.loadContent = function () {
+    var self = this;
+
+    // Fire first load begin events
+    if (this.isFirstLoad) {
+      this.events.fire('first_load_begin');
+    }
+
+    // Fire load begin event
+    this.events.fire('load_begin');
+
+    // If not first load, increment the page
+    if (!this.isFirstLoad) {
+      this.requestParameters.page += 1;
+    }
+
+    // Reset the recent metrics
+    this.recentFilesQueue = {};
+    this.recentFilesCount = 0;
+    this.recentLoadsCompleted = 0;
+
+    // Load files individually instead of in bulk so we get a response faster
+    for (var iteration = 1; iteration <= this.options.pagination_total; iteration++) {
+      // Here we get an axios cancel token. 
+      // This will allow us to cancel requests that isn't needed anymore.
+      var token = new CancelToken(function (token) {
+        self.cancelTokens.push(token);
+      });
+      this.loadFile(iteration, token);
+    }
+  };
+
+  /**
+   * Load an individual file.
+   * 
+   * @param  int  iteration
+   * @param  obj  cancelToken
+   * 
+   * @return void
+   */
+  this.loadFile = function (iteration, cancelToken) {
+    var self = this;
+    var handler = new _support_loader_handler__WEBPACK_IMPORTED_MODULE_2__["default"]();
+    var parameters = lodash__WEBPACK_IMPORTED_MODULE_4___default().clone(this.requestParameters);
+    if (this.isFirstLoad) {
+      parameters.page = parameters.page * iteration;
+    } else {
+      parameters.page = (parameters.page - 1) * this.options.pagination_total + iteration;
+    }
+    parameters.pagination_total = 1;
+
+    // Event for when file is loaded by the handler
+    handler.events.on('file_loaded', function (file) {
+      self.filesQueue[file.uuid] = file;
+      self.recentFilesQueue[file.uuid] = file;
+      self.filesCount += 1;
+      self.recentFilesCount += 1;
+      self.events.fire('file_loaded', [file]);
+    });
+
+    // Event for when file error by handler
+    handler.events.on('file_error', function (response) {
+      new _support_axios_error__WEBPACK_IMPORTED_MODULE_0__["default"]().handleError(response);
+    });
+
+    // Event for when the load is complete
+    handler.events.on('load_complete', function () {
+      self.recentLoadsCompleted += 1;
+      if (self.recentLoadsCompleted == self.options.pagination_total) {
+        self.isFirstLoad = false;
+        self.allFilesLoaded = self.recentFilesCount < self.recentLoadsCompleted;
+        self.events.fire('files_loaded', [self.recentFilesQueue, self.recentFilesCount]);
+        self.events.fire('load_complete', [self.allFilesLoaded, self.recentFilesQueue, self.recentFilesCount]);
+      }
+    });
+
+    // Event for when last load is completed
+    handler.events.on('last_load_complete', function () {
+      self.isFirstLoad = false;
+      self.allFilesLoaded = true;
+      self.events.fire('last_load_complete');
+    });
+    handler.start(parameters, cancelToken);
+  };
+
+  /**
+   * Load content from some given parameters.
+   *
+   * @param  obj  parameters
+   *
+   * @return void
+   */
+  this.loadContentFromParameters = function (parameters) {
+    this.setRequestParameters(parameters).loadFreshContent();
+  };
+
+  /**
+   * Cancel all the requests.
+   *
+   * @return void
+   */
+  this.cancelRequests = function () {
+    if (this.cancelTokens.length < 1) {
+      return;
+    }
+    this.cancelTokens.forEach(function (request) {
+      if (request != null) {
+        request();
+      }
+    });
+  };
+}
+
+/***/ }),
+
+/***/ "./resources/js/support/axios-error.js":
+/*!*********************************************!*\
+  !*** ./resources/js/support/axios-error.js ***!
+  \*********************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -196,10 +522,10 @@ function AxiosError() {
 
 /***/ }),
 
-/***/ "./resources/js/events.js":
-/*!********************************!*\
-  !*** ./resources/js/events.js ***!
-  \********************************/
+/***/ "./resources/js/support/events.js":
+/*!****************************************!*\
+  !*** ./resources/js/support/events.js ***!
+  \****************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -272,10 +598,10 @@ function Events() {
 
 /***/ }),
 
-/***/ "./resources/js/files-loader.js":
-/*!**************************************!*\
-  !*** ./resources/js/files-loader.js ***!
-  \**************************************/
+/***/ "./resources/js/support/loader-handler.js":
+/*!************************************************!*\
+  !*** ./resources/js/support/loader-handler.js ***!
+  \************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -283,322 +609,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ FilesLoader)
 /* harmony export */ });
-/* harmony import */ var _axios_error__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./axios-error */ "./resources/js/axios-error.js");
-/* harmony import */ var _events__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./events */ "./resources/js/events.js");
-/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
-/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _loader_handler__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./loader-handler */ "./resources/js/loader-handler.js");
-
-
-
-
-var CancelToken = window.axios.CancelToken;
-function FilesLoader() {
-  /**
-   * The events instance.
-   *
-   * @var object
-   */
-  this.events = new _events__WEBPACK_IMPORTED_MODULE_1__["default"]();
-
-  /**
-   * The queue to store the loaded files.
-   *
-   * @var object
-   */
-  this.filesQueue = {};
-
-  /**
-   * The queue that would contain the most recently loaded files.
-   *
-   * @var object
-   */
-  this.recentFilesQueue = {};
-
-  /**
-   * The files count.
-   *
-   * @var int
-   */
-  this.filesCount = 0;
-
-  /**
-   * The recent files count.
-   *
-   * @var int
-   */
-  this.recentFilesCount = 0;
-
-  /**
-   * The number of loads completed.
-   * 
-   * @var int
-   */
-  this.loadsCompleted = 0;
-
-  /**
-   * Indicate whether this is the first load.
-   * 
-   * @var bool
-   */
-  this.isFirstLoad = false;
-
-  /**
-   * If all the files are loaded.
-   * 
-   * @var bool
-   */
-  this.allFilesLoaded = false;
-
-  /**
-   * The parameters for when we are sending off a load request.
-   *
-   * @var object
-   */
-  this.requestParameters = {
-    page: 1,
-    type: null,
-    disk: null,
-    visibility: null,
-    ownership: null,
-    section: 'active',
-    search: null
-  };
-
-  /**
-   * The options.
-   * 
-   * @var obj
-   */
-  this.options = {};
-
-  /**
-   * The store the cancel tokens.
-   * 
-   * @var array
-   */
-  this.cancelTokens = [];
-
-  /**
-   * Start the loader.
-   *
-   * @return void
-   */
-  this.start = function () {
-    var self = this;
-    window.axios.get(this.getOptionsRoute()).then(function (response) {
-      self.options = lodash__WEBPACK_IMPORTED_MODULE_2___default().assign(response.data, self.options);
-      self.loadFreshContent();
-    });
-  };
-
-  /**
-   * Set the request parameters.
-   *
-   * @param  object  parameters
-   *
-   * @return void
-   */
-  this.setRequestParameters = function (parameters) {
-    if (typeof parameters == 'undefined' || parameters == null || parameters == '') {
-      return this;
-    }
-    if (Object.keys(parameters).length < 1) {
-      return this;
-    }
-    for (var key in parameters) {
-      if (this.requestParameters.hasOwnProperty(key)) {
-        this.requestParameters[key] = parameters[key];
-      }
-    }
-    return this;
-  };
-
-  /**
-   * Set the options.
-   * 
-   * @param  obj  options
-   *
-   * @return void
-   */
-  this.setOptions = function (options) {
-    this.options = options;
-
-    // Add the user option to the request parameter if it's an option
-    for (var option in options) {
-      if (this.requestParameters.hasOwnProperty(option)) {
-        this.requestParameters[option] = options[option];
-      }
-    }
-    return this;
-  };
-
-  /**
-   * Load up content from the start.
-   *
-   * @return void
-   */
-  this.loadFreshContent = function () {
-    // Cancel all previous load requests
-    this.cancelRequests();
-
-    // Reset some things
-    this.filesQueue = {};
-    this.recentFilesQueue = {};
-    this.filesCount = 0;
-    this.recentFilesCount = 0;
-    this.loadsCompleted = 0;
-
-    // Set flags
-    this.isFirstLoad = true;
-    this.allFilesLoaded = false;
-
-    // Fresh content page should always be the first page
-    this.requestParameters.page = 1;
-
-    // Load up the content now
-    this.loadContent();
-  };
-
-  /**
-   * Load up content. This bulds upon the request parameters properties.
-   *
-   * @return void
-   */
-  this.loadContent = function () {
-    var self = this;
-
-    // Fire first load begin events
-    if (this.isFirstLoad) {
-      this.events.fire('first_load_begin');
-    }
-
-    // Fire load begin event
-    this.events.fire('load_begin');
-
-    // If not first load, increment the page
-    if (!this.isFirstLoad) {
-      this.requestParameters.page += 1;
-    }
-
-    // Reset the recent metrics
-    this.recentFilesQueue = {};
-    this.recentFilesCount = 0;
-
-    // Load files individually, instead of in bulk so we can get a response faster
-    for (var iteration = 1; iteration <= this.options.pagination_total; iteration++) {
-      var token = new CancelToken(function (token) {
-        self.cancelTokens.push(token);
-      });
-      this.loadFile(iteration, token);
-    }
-  };
-
-  /**
-   * Load an individual file.
-   * 
-   * @param  int  iteration
-   * @param  obj  cancelToken
-   * 
-   * @return void
-   */
-  this.loadFile = function (iteration, cancelToken) {
-    var self = this;
-    var handler = new _loader_handler__WEBPACK_IMPORTED_MODULE_3__["default"]();
-    var parameters = lodash__WEBPACK_IMPORTED_MODULE_2___default().clone(this.requestParameters);
-    if (this.isFirstLoad) {
-      parameters.page = parameters.page * iteration;
-    } else {
-      parameters.page = (parameters.page - 1) * this.options.pagination_total + iteration;
-    }
-    parameters.pagination_total = 1;
-
-    // Event for when file is loaded by the handler
-    handler.events.on('file_loaded', function (file) {
-      self.recentFilesQueue[file.uuid] = file;
-      self.filesQueue[file.uuid] = file;
-      self.filesCount += 1;
-      self.recentFilesCount += 1;
-      self.events.fire('file_loaded', [file]);
-    });
-
-    // Event for when file error by handler
-    handler.events.on('file_error', function (response) {
-      new _axios_error__WEBPACK_IMPORTED_MODULE_0__["default"]().handleError(response);
-    });
-
-    // Event for when the load is complete
-    handler.events.on('load_complete', function () {
-      self.loadsCompleted += 1;
-      if (self.loadsCompleted == self.options.pagination_total) {
-        self.isFirstLoad = false;
-        self.allFilesLoaded = self.recentFilesCount < self.loadsCompleted;
-        self.events.fire('files_loaded', [self.recentFilesQueue, self.recentFilesCount]);
-        self.events.fire('load_complete', [self.allFilesLoaded, self.recentFilesQueue, self.recentFilesCount]);
-      }
-    });
-
-    // Event for when last load is completed
-    handler.events.on('last_load_complete', function () {
-      self.isFirstLoad = false;
-      self.allFilesLoaded = true;
-      self.events.fire('last_load_complete');
-    });
-    handler.start(parameters, cancelToken);
-  };
-
-  /**
-   * Load content from some given parameters.
-   *
-   * @param  obj  parameters
-   *
-   * @return void
-   */
-  this.loadContentFromParameters = function (parameters) {
-    this.setRequestParameters(parameters).loadFreshContent();
-  };
-
-  /**
-   * Cancel all the requests.
-   *
-   * @return void
-   */
-  this.cancelRequests = function () {
-    if (this.cancelTokens.length < 1) {
-      return;
-    }
-    this.cancelTokens.forEach(function (request) {
-      if (request != null) {
-        request();
-      }
-    });
-  };
-
-  /**
-   * Get the options route.
-   * 
-   * @return string
-   */
-  this.getOptionsRoute = function () {
-    return document.head.querySelector("meta[name='laramedia_options_route']").content;
-  };
-}
-
-/***/ }),
-
-/***/ "./resources/js/loader-handler.js":
-/*!****************************************!*\
-  !*** ./resources/js/loader-handler.js ***!
-  \****************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ FilesLoader)
-/* harmony export */ });
-/* harmony import */ var _events__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./events */ "./resources/js/events.js");
-/* harmony import */ var _routes__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./routes */ "./resources/js/routes.js");
+/* harmony import */ var _events__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./events */ "./resources/js/support/events.js");
+/* harmony import */ var _routes__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./routes */ "./resources/js/support/routes.js");
 
 
 function FilesLoader() {
@@ -639,10 +651,10 @@ function FilesLoader() {
 
 /***/ }),
 
-/***/ "./resources/js/routes.js":
-/*!********************************!*\
-  !*** ./resources/js/routes.js ***!
-  \********************************/
+/***/ "./resources/js/support/routes.js":
+/*!****************************************!*\
+  !*** ./resources/js/support/routes.js ***!
+  \****************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -22661,8 +22673,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ FilesSelector)
 /* harmony export */ });
-/* harmony import */ var _axios_error__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./axios-error */ "./resources/js/axios-error.js");
-/* harmony import */ var _events__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./events */ "./resources/js/events.js");
+/* harmony import */ var _support_axios_error__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./support/axios-error */ "./resources/js/support/axios-error.js");
+/* harmony import */ var _support_events__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./support/events */ "./resources/js/support/events.js");
 /* harmony import */ var _files_loader__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./files-loader */ "./resources/js/files-loader.js");
 /* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
 /* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_3__);
@@ -22679,7 +22691,7 @@ function FilesSelector() {
    * 
    * @var obj
    */
-  this.events = new _events__WEBPACK_IMPORTED_MODULE_1__["default"]();
+  this.events = new _support_events__WEBPACK_IMPORTED_MODULE_1__["default"]();
 
   /**
    * The loader instance.
@@ -22758,7 +22770,7 @@ function FilesSelector() {
       self.configure();
       self.loader.start();
     })["catch"](function (response) {
-      new _axios_error__WEBPACK_IMPORTED_MODULE_0__["default"].handleError(response);
+      new _support_axios_error__WEBPACK_IMPORTED_MODULE_0__["default"].handleError(response);
     });
   };
 
