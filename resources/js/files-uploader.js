@@ -1,6 +1,7 @@
 import Events from './support/events';
-import Filters from './support/filters';
 import UploadHandler from './support/upload-handler';
+import Routes from './support/routes';
+import Lodash from 'lodash';
 import Swal from 'sweetalert2';
 
 export default function FilesUploader() {
@@ -10,13 +11,6 @@ export default function FilesUploader() {
      * @var object
      */
     this.events = new Events();
-
-    /**
-     * The filters instance.
-     *
-     * @var object
-     */
-    this.filters = new Filters();
 
     /**
      * The files queue.
@@ -138,8 +132,11 @@ export default function FilesUploader() {
     this.init = function () {
         var self = this;
 
-        window.axios.get(this.getOptionsRoute()).then(function (response) {
-            self.options = self.mergeOptions(self.options, response.data);
+        window.axios.get(new Routes().getOptionsRoute()).then(function (response) {
+            // We take the options from the server and add it to our options queue.
+            // However, the options set through the uploader should take precedence.
+            self.setOptions(Lodash.assign(response.data, self.options));
+
             self.populateVisibilityOptions();
             self.registerDropzoneEventHandlers();
             self.configureDropzoneFilesInput();
@@ -167,26 +164,6 @@ export default function FilesUploader() {
         }
 
         return this;
-    }
-
-    /**
-     * Merge options.
-     * 
-     * @param  obj  overridingOptions
-     * @param  obj  options
-     * 
-     * @return obj
-     */
-    this.mergeOptions = function (overridingOptions, options) {
-        if (Object.keys(overridingOptions).length < 1) {
-            return options;
-        }
-
-        for (var key in overridingOptions) {
-            options[key] = overridingOptions[key];
-        }
-
-        return options;
     }
 
     /**
@@ -220,7 +197,7 @@ export default function FilesUploader() {
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
-                text: 'Invalid visibility selected for the chosen disk.',
+                text: 'Invalid visibility selected for the chosen disk',
             });
         });
 
@@ -233,7 +210,7 @@ export default function FilesUploader() {
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
-                text: 'Invalid visibility selected for the chosen disk.',
+                text: 'Invalid visibility selected for the chosen disk',
             });
         });
 
@@ -275,7 +252,7 @@ export default function FilesUploader() {
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
-                text: 'Invalid visibility selected for the chosen disk.',
+                text: 'Invalid visibility selected for the chosen disk',
             });
         }, false);
     }
@@ -327,9 +304,11 @@ export default function FilesUploader() {
     this.processFiles = function (files) {
         var self = this;
 
-        this.files = Array.from(files);
         var minNumberOfFiles = this.getOption('min_number_of_files');
         var maxNumberOfFiles = this.getOption('max_number_of_files');
+
+        // Set the files in the files queue
+        this.files = Array.from(files);
 
         // Fire processing start event
         this.events.fire('files_processing_start', [this.files]);
@@ -825,15 +804,6 @@ export default function FilesUploader() {
      */
     this.getDropzoneInputElement = function () {
         return document.querySelector('.laramedia-uploader-dropzone-input');
-    }
-
-    /**
-     * Get the options route.
-     * 
-     * @return string
-     */
-    this.getOptionsRoute = function () {
-        return document.head.querySelector("meta[name='laramedia_options_route']").content;
     }
 
     /**

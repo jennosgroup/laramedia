@@ -273,7 +273,6 @@ export default function FilesLoader() {
 
         // Event for when the load is complete
         handler.events.on('load_complete', function () {
-
             self.recentLoadsCompleted += 1;
 
             if (self.recentLoadsCompleted == self.options.pagination_total) {
