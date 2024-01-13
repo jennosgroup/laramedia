@@ -700,6 +700,7 @@ function FilesUploader() {
    * @return void
    */
   this.configureDropzoneFilesInput = function () {
+    return;
     var filesInput = this.getDropzoneInputElement();
     if (filesInput == null) {
       return;
@@ -742,9 +743,6 @@ function FilesUploader() {
     // Set the files in the files queue
     this.files = Array.from(files);
 
-    // Fire processing start event
-    this.events.fire('files_processing_start', [this.files]);
-
     // Notify that multipple uploads not allowed
     if (!this.getOption('allow_multiple_uploads') && this.files.length > 1) {
       return this.notifyThatMultipleUploadsNotAllowed();
@@ -759,6 +757,9 @@ function FilesUploader() {
     if (maxNumberOfFiles != null && this.files.length > maxNumberOfFiles) {
       return this.notifyThatTooManyFilesSelected();
     }
+
+    // Fire processing start event
+    this.events.fire('files_processing_start', [this.files]);
 
     // Process the files that were selected
     this.files.forEach(function (file) {
@@ -929,8 +930,8 @@ function FilesUploader() {
     // Event listener to remove error
     template.querySelector('.laramedia-files-error-remove').addEventListener('click', function (event) {
       this.parentElement.parentElement.remove();
-      if (self.getErrorsContainerElement().querySelectorAll('.laramedia-files-error').length == 0) {
-        self.getErrorsContainerElement().style.display = 'none';
+      if (container.querySelectorAll('.laramedia-files-error').length == 0) {
+        container.classList.add('laramedia-hidden');
       }
     });
     template.querySelector('.laramedia-files-error-name').innerHTML = file.name;
@@ -960,7 +961,7 @@ function FilesUploader() {
     template.querySelector('.laramedia-files-error-remove').addEventListener('click', function (event) {
       this.parentElement.parentElement.remove();
       if (container.querySelectorAll('.laramedia-files-error').length == 0) {
-        container.style.display = 'none';
+        container.classList.add('laramedia-hidden');
       }
     });
     if (reason == 'file_large') {
@@ -976,7 +977,7 @@ function FilesUploader() {
     }
     template.querySelector('.laramedia-files-error-name').innerHTML = file.name;
     template.querySelector('.laramedia-files-error-reason').innerHTML = reason;
-    container.style.display = 'flex';
+    container.classList.remove('laramedia-hidden');
     container.prepend(template);
   };
 
