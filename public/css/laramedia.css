@@ -7,7 +7,7 @@
 	width: 100%;
 	background-color: #f6f6f6;
 	padding: 24px;
-	margin-bottom: 24px;
+	margin-bottom: 12px;
 	box-sizing: border-box;
 	cursor: pointer;
 	border: 4px dashed #c9c9c9;
@@ -295,8 +295,9 @@
 	align-items: center;
 	height: 48px;
 	width: 100%;
-	padding: 12px;
-	margin-bottom: 12px;
+	padding: 0 12px;
+	margin-bottom: 6px;
+	box-sizing: border-box;
 }
 
 #laramedia-filter-search-container {
@@ -358,12 +359,12 @@
 #laramedia-listings-header {
 	display: flex;
 	align-items: center;
-	margin-bottom: 12px;
 }
 
 #laramedia-listings-body {
 	display: flex;
 	flex-direction: column;
+	margin-top: 12px;
 }
 
 .laramedia-modal-wrapper {
@@ -426,16 +427,11 @@
 }
 
 #laramedia-selector-body {
-	padding-bottom: 24px;
+	padding: 12px 24px 24px 24px;
 }
 
-#laramedia-selector-body #laramedia-files-wrapper,
-#laramedia-selector-body #laramedia-no-files-wrapper {
-	margin: 0 12px;
-}
-
-#laramedia-selector-uploader-container {
-	margin: 12px;
+#laramedia-selector-body .laramedia-uploader-dropzone {
+	margin-top: 0;
 }
 
 .laramedia-selector-selected .laramedia-selector-overlay {
@@ -460,7 +456,7 @@
 	flex-direction: column;
 	background-color: #eee;
 	padding: 6px 12px;
-	margin-bottom: 6px;
+	margin-bottom: 12px;
 	border: 1px solid #ccc;
 	border-radius: 6px;
 	box-sizing: border-box;
@@ -502,7 +498,7 @@
 
 #laramedia-files-upload-progress-container {
 	display: none;
-	margin-bottom: 6px;
+	margin-bottom: 12px;
 }
 
 #laramedia-files-upload-progress-bar {
@@ -511,6 +507,7 @@
 	height: 24px;
 	border-radius: 24px;
 	background-color: #eee;
+	overflow: hidden;
 }
 
 #laramedia-files-upload-progress-units,
@@ -532,6 +529,18 @@
 #laramedia-files-upload-progress-units {
 	width: 0;
 	background-color: #82E0AA;
+}
+
+.laramedia-upload-progress-complete #laramedia-files-upload-progress-bar {
+	transition-delay: 10s;
+	transition-property: height;
+	height: 0;
+}
+
+#laramedia-files-upload-progress-container.laramedia-upload-progress-complete {
+	transition-delay: 10s;
+	transition-property: margin-bottom;
+	margin-bottom: 0;
 }
 
 

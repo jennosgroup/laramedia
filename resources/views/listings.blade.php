@@ -8,14 +8,8 @@
 
 	<div id="laramedia-listings-body">
 
-		{{-- Show file upload progress --}}
-		@include('laramedia::partials.files-upload-progress')
-
-		{{-- Show file upload errors --}}
-		@include('laramedia::partials.files-upload-errors')
-
-		{{-- Files Dropzone --}}
-		@include('laramedia::partials.files-upload-dropzone')
+		{{-- Files Upload --}}
+		@include('laramedia::partials.files-upload')
 
 		{{-- Filters --}}
 		@include('laramedia::partials.listings-filters')

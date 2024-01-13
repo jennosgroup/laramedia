@@ -1,14 +1,9 @@
 #laramedia-selector-body {
-	padding-bottom: 24px;
+	padding: 12px 24px 24px 24px;
 }
 
-#laramedia-selector-body #laramedia-files-wrapper,
-#laramedia-selector-body #laramedia-no-files-wrapper {
-	margin: 0 12px;
-}
-
-#laramedia-selector-uploader-container {
-	margin: 12px;
+#laramedia-selector-body .laramedia-uploader-dropzone {
+	margin-top: 0;
 }
 
 .laramedia-selector-selected .laramedia-selector-overlay {

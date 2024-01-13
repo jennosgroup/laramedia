@@ -6,10 +6,10 @@
 #laramedia-listings-header {
 	display: flex;
 	align-items: center;
-	margin-bottom: 12px;
 }
 
 #laramedia-listings-body {
 	display: flex;
 	flex-direction: column;
+	margin-top: 12px;
 }

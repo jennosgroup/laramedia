@@ -5,23 +5,13 @@
 				<button id="laramedia-selector-trigger-uploader" class="laramedia-modal-button">
 					<i class="fa-solid fa-cloud-arrow-up"></i>
 				</button>
-				<button id="laramedia-selector-trigger-files" class="laramedia-modal-button">
-					<i class="fa-solid fa-file-lines"></i>
-				</button>
 				<button id="laramedia-selector-close" class="laramedia-modal-button">
 					X
 				</button>
 			</div>
 			<div id="laramedia-selector-body" class="laramedia-modal-body">
 				<div id="laramedia-selector-uploader-container" class="laramedia-hidden">
-					{{-- Show file upload progress --}}
-					@include('laramedia::partials.files-upload-progress')
-
-					{{-- Show file upload errors --}}
-					@include('laramedia::partials.files-upload-errors')
-
-					{{-- Files Dropzone --}}
-					@include('laramedia::partials.files-upload-dropzone')
+					@include('laramedia::partials.files-upload')
 				</div>
 
 				<div id="laramedia-selector-files-container">

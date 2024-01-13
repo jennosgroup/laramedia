@@ -30,8 +30,9 @@
 	align-items: center;
 	height: 48px;
 	width: 100%;
-	padding: 12px;
-	margin-bottom: 12px;
+	padding: 0 12px;
+	margin-bottom: 6px;
+	box-sizing: border-box;
 }
 
 #laramedia-filter-search-container {

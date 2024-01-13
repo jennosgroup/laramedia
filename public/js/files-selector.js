@@ -481,9 +481,11 @@ function FilesUploader() {
       // We take the options from the server and add it to our options queue.
       // However, the options set through the uploader should take precedence.
       self.setOptions(lodash__WEBPACK_IMPORTED_MODULE_3___default().assign(response.data, self.options));
-      self.populateVisibilityOptions();
+      self.registerEventHandlers();
       self.registerDropzoneEventHandlers();
       self.configureDropzoneFilesInput();
+      self.populateVisibilityOptions();
+      self.configure();
     });
   };
 
@@ -495,6 +497,7 @@ function FilesUploader() {
    * @return this
    */
   this.setOptions = function (options) {
+    var self = this;
     if (typeof options == 'undefined' || options == null || options == '') {
       return this;
     }
@@ -504,7 +507,82 @@ function FilesUploader() {
     for (var key in options) {
       this.options[key] = options[key];
     }
+
+    // Select multiple corresponds to allow multiple uploads
+    if (options.hasOwnProperty('select_multiple')) {
+      this.options['allow_multiple_uploads'] = options.select_multiple;
+    }
+
+    // If the type is passed, we have to refactor the allowed types
+    if (options.hasOwnProperty('type') && options.hasOwnProperty('type_filters')) {
+      var wildcardMimetypes = [];
+      var mimetypes = [];
+      var extensions = [];
+      var filters = options.type_filters[options.type];
+      filters.forEach(function (type) {
+        var wildcardMimetype = self.getWildCardFromMimeType(type);
+        if (self.isValidMimetype(type)) {
+          mimetypes.push(type);
+        } else {
+          extensions.push(type);
+        }
+        if (wildcardMimetype != null) {
+          wildcardMimetypes.push(wildcardMimetype);
+        }
+      });
+      this.options.allowed_mimetypes = mimetypes;
+      this.options.allowed_mimetypes_wildcard = wildcardMimetypes;
+      this.options.allowed_extensions = extensions;
+    }
     return this;
+  };
+
+  /**
+   * Register the event handlers.
+   * 
+   * @return void
+   */
+  this.registerEventHandlers = function () {
+    var self = this;
+
+    // Hide the error section when X is clicked. Also remove the errors
+    document.getElementById('laramedia-files-error-close').addEventListener('click', function (event) {
+      this.parentElement.classList.add('laramedia-hidden');
+
+      // Remove the errors
+      document.querySelectorAll('.laramedia-files-error').forEach(function (element) {
+        element.remove();
+      });
+    });
+
+    // Show the error when a file upload fails
+    this.events.on('upload_fail', function (file, response) {
+      self.showFileError(file, response);
+    });
+
+    // Show the error when a file upload fails
+    this.events.on('upload_error', function (file, response) {
+      self.showFileError(file, response);
+    });
+
+    // Show the error when a file upload fails
+    this.events.on('file_rejected', function (file, reason) {
+      self.showFileValidationError(file, reason);
+    });
+
+    // When the progress changes
+    this.events.on('progress_percentage_update', function (percentage) {
+      self.showUploadProgress(percentage);
+      if (percentage == 100) {
+        document.getElementById('laramedia-files-upload-progress-container').classList.add('laramedia-upload-progress-complete');
+      }
+    });
+
+    // When the processing start
+    this.events.on('files_processing_start', function () {
+      self.showUploadProcessing();
+      document.getElementById('laramedia-files-upload-progress-container').classList.remove('laramedia-upload-progress-complete');
+    });
   };
 
   /**
@@ -603,7 +681,7 @@ function FilesUploader() {
     var allowedTypes = this.getAllowedMimeTypes().concat(this.getAllowedExtensions());
 
     // Set the files name on the input
-    var inputName = this.getOption('files_input_name');
+    var inputName = this.getOption('file_input_name');
     if (this.getOption('allow_multiple_uploads')) {
       inputName += '[]';
     }
@@ -810,11 +888,117 @@ function FilesUploader() {
   };
 
   /**
+   * Show the file error.
+   * 
+   * @param  obj  file
+   * @parma  obj  response
+   * 
+   * @return void
+   */
+  this.showFileError = function (file, response) {
+    var self = this;
+    var container = document.getElementById('laramedia-files-errors-container');
+    var template = document.importNode(document.getElementById('laramedia-files-error-template').content, true);
+
+    // Event listener to remove error
+    template.querySelector('.laramedia-files-error-remove').addEventListener('click', function (event) {
+      this.parentElement.parentElement.remove();
+      if (self.getErrorsContainerElement().querySelectorAll('.laramedia-files-error').length == 0) {
+        self.getErrorsContainerElement().style.display = 'none';
+      }
+    });
+    template.querySelector('.laramedia-files-error-name').innerHTML = file.name;
+    if (response.hasOwnProperty('response')) {
+      template.querySelector('.laramedia-files-error-reason').innerHTML = response.response.data.message;
+    } else {
+      template.querySelector('.laramedia-files-error-reason').innerHTML = response.messages.join(' ');
+    }
+    container.classList.remove('laramedia-hidden');
+    container.prepend(template);
+  };
+
+  /**
+   * Show the file validation error.
+   * 
+   * @param  obj  file
+   * @parma  obj  reason
+   * 
+   * @return void
+   */
+  this.showFileValidationError = function (file, reason) {
+    var self = this;
+    var container = document.getElementById('laramedia-files-errors-container');
+    var template = document.importNode(document.getElementById('laramedia-files-error-template').content, true);
+
+    // Event listener to remove error
+    template.querySelector('.laramedia-files-error-remove').addEventListener('click', function (event) {
+      this.parentElement.parentElement.remove();
+      if (container.querySelectorAll('.laramedia-files-error').length == 0) {
+        container.style.display = 'none';
+      }
+    });
+    if (reason == 'file_large') {
+      reason = 'File exceeds the maximum size allowed.';
+    } else if (reason == 'file_small') {
+      reason = 'File does not meet the minimum size allowed.';
+    } else if (reason == 'file_not_allowed') {
+      reason = 'File type is not allowed.';
+    } else if (reason == 'file_already_selected') {
+      reason = 'File has already been selected.';
+    } else {
+      reason = 'File rejected';
+    }
+    template.querySelector('.laramedia-files-error-name').innerHTML = file.name;
+    template.querySelector('.laramedia-files-error-reason').innerHTML = reason;
+    container.style.display = 'flex';
+    container.prepend(template);
+  };
+
+  /**
+   * Show the upload progress.
+   * 
+   * @param  int  percentage
+   * 
+   * @return void
+   */
+  this.showUploadProgress = function (percentage) {
+    var container = document.getElementById('laramedia-files-upload-progress-container');
+    var unitsElement = document.getElementById('laramedia-files-upload-progress-units');
+    if (container.style.display != 'flex') {
+      container.style.display = 'flex';
+    }
+    document.getElementById('laramedia-files-upload-message').style.display = 'none';
+    unitsElement.style.display = 'flex';
+    unitsElement.style.width = percentage + '%';
+    unitsElement.innerHTML = percentage + '%';
+  };
+
+  /**
+   * Show the upload processing.
+   * 
+   * @return void
+   */
+  this.showUploadProcessing = function () {
+    var container = document.getElementById('laramedia-files-upload-progress-container');
+    if (container.style.display != 'flex') {
+      container.style.display = 'flex';
+    }
+    document.getElementById('laramedia-files-upload-progress-units').style.display = 'none';
+    document.getElementById('laramedia-files-upload-message').style.display = 'flex';
+  };
+
+  /**
    * Get the disk value.
    * 
    * @return mixed
    */
   this.getDiskValue = function () {
+    if (this.options.disk) {
+      return this.options.disk;
+    }
+    if (this.options.hide_disk) {
+      return this.options.default_disk;
+    }
     return document.getElementById('laramedia-dropzone-disk').value;
   };
 
@@ -824,7 +1008,13 @@ function FilesUploader() {
    * @return mixed
    */
   this.getVisibilityValue = function () {
-    return document.getElementById('laramedia-dropzone-visibility').value;
+    if (this.options.visibility) {
+      return this.options.visibility;
+    }
+    if (!this.options.hide_visibility) {
+      return document.getElementById('laramedia-dropzone-visibility').value;
+    }
+    return this.options.disks_default_visibility[this.getDiskValue()];
   };
 
   /**
@@ -872,6 +1062,20 @@ function FilesUploader() {
       option.text = diskVisibilities[visibility];
       visibilityElement.options[index] = option;
       index++;
+    }
+  };
+
+  /**
+   * Configure some stuff.
+   * 
+   * @return void
+   */
+  this.configure = function () {
+    if (this.options.disk || this.options.hide_disk) {
+      document.getElementById('laramedia-dropzone-disk').remove();
+    }
+    if (this.options.visibility || this.options.hide_visibility) {
+      document.getElementById('laramedia-dropzone-visibility').remove();
     }
   };
 
@@ -1003,14 +1207,29 @@ function FilesUploader() {
    *
    * @param  string  mimetype
    *
-   * @return string
+   * @return string|null
    */
   this.getWildCardFromMimeType = function (mimetype) {
     var result = mimetype.match(/^[a-z]+\/(\*{1}|[a-zA-Z0-9-\.\+]+)$/g);
     if (result == null) {
-      return;
+      return null;
     }
     return result[0].replace(/\/.+$/g, '/*');
+  };
+
+  /**
+   * Get the type from the mimetype.
+   *
+   * @param  string  mimetype
+   *
+   * @return string|null
+   */
+  this.getTypeFromMimeType = function (mimetype) {
+    var result = mimetype.match(/^[a-z]+\/(\*{1}|[a-zA-Z0-9-\.\+]+)$/g);
+    if (result == null) {
+      return null;
+    }
+    return result[0].replace(/\/.+$/g, '');
   };
 
   /**
@@ -1019,7 +1238,7 @@ function FilesUploader() {
    * @param  string  mimetype
    * @param  bool  prefix  Whether to prefix the extension with the '.'
    *
-   * @return string
+   * @return string|null
    */
   this.getExtensionFromMimeType = function (mimetype, prefix) {
     if (prefix != 'undefined') {
@@ -1027,13 +1246,25 @@ function FilesUploader() {
     }
     var result = mimetype.match(/^[a-z]+\/[a-zA-Z0-9-\.\+]+$/g);
     if (result == null) {
-      return;
+      return null;
     }
     var extension = result[0].replace(/^[a-z]+\//g, '');
     if (prefix) {
       return '.' + extension;
     }
     return extension;
+  };
+
+  /**
+   * Check if the type is a valid mimetype.
+   * 
+   * @param  string  type
+   * 
+   * @return bool
+   */
+  this.isValidMimetype = function (type) {
+    var result = type.match(/^[a-z]+\/(\*{1}|[a-zA-Z0-9-\.\+]+)$/g);
+    return result != null;
   };
 
   /**
@@ -23698,6 +23929,7 @@ function FilesSelector() {
       self.registerUploaderEventHandlers();
       self.configure();
       self.loader.start();
+      self.uploader.setOptions(self.options).init();
     })["catch"](function (response) {
       new _support_axios_error__WEBPACK_IMPORTED_MODULE_0__["default"].handleError(response);
     });
@@ -23731,27 +23963,20 @@ function FilesSelector() {
 
     // When the uploader button is hit
     document.getElementById('laramedia-selector-trigger-uploader').addEventListener('click', function (event) {
-      document.getElementById('laramedia-selector-files-container').classList.add('laramedia-hidden');
       document.getElementById('laramedia-selector-uploader-container').classList.remove('laramedia-hidden');
       document.getElementById('laramedia-uploader-dropzone').classList.remove('laramedia-hidden');
-      self.uploader.init();
     });
 
-    // When the files selector button is clicked
-    document.getElementById('laramedia-selector-trigger-files').addEventListener('click', function (event) {
-      document.getElementById('laramedia-selector-uploader-container').classList.add('laramedia-hidden');
-      document.getElementById('laramedia-selector-files-container').classList.remove('laramedia-hidden');
+    // Hide the uploader when it is clicked to close
+    document.querySelector('.laramedia-uploader-dropzone-close').addEventListener('click', function (event) {
+      event.preventDefault();
+      event.stopPropagation();
       document.getElementById('laramedia-uploader-dropzone').classList.add('laramedia-hidden');
     });
 
     // When the close button is hit
     document.getElementById('laramedia-selector-close').addEventListener('click', function (event) {
       self.close();
-    });
-
-    // When the load more button is clicked
-    document.getElementById('laramedia-files-load-more-btn').addEventListener('click', function (event) {
-      self.loader.loadContent();
     });
 
     // When select files button is clicked
@@ -23770,37 +23995,42 @@ function FilesSelector() {
 
     // Disk filter
     document.getElementById('laramedia-filter-disk').addEventListener('change', function (event) {
-      self.loader.setRequestParameters({
+      self.loader.loadContentFromParameters({
         disk: this.value
-      }).loadFreshContent();
+      });
     });
 
     // Visibility filter
     document.getElementById('laramedia-filter-visibility').addEventListener('change', function (event) {
-      self.loader.setRequestParameters({
+      self.loader.loadContentFromParameters({
         visibility: this.value
-      }).loadFreshContent();
+      });
     });
 
     // Type filter
     document.getElementById('laramedia-filter-type').addEventListener('change', function (event) {
-      self.loader.setRequestParameters({
+      self.loader.loadContentFromParameters({
         type: this.value
-      }).loadFreshContent();
+      });
     });
 
     // Ownership filter
     document.getElementById('laramedia-filter-ownership').addEventListener('change', function (event) {
-      self.loader.setRequestParameters({
+      self.loader.loadContentFromParameters({
         ownership: this.value
-      }).loadFreshContent();
+      });
     });
 
     // Search filter
     document.getElementById('laramedia-filter-search').addEventListener('change', function (event) {
-      self.loader.setRequestParameters({
+      self.loader.loadContentFromParameters({
         search: this.value
-      }).loadFreshContent();
+      });
+    });
+
+    // When the load more button is clicked
+    document.getElementById('laramedia-files-load-more-btn').addEventListener('click', function (event) {
+      self.loader.loadContent();
     });
   };
 
@@ -23850,46 +24080,21 @@ function FilesSelector() {
   this.registerUploaderEventHandlers = function () {
     var self = this;
 
-    // Hide the error section when X is clicked. Also remove the errors
-    document.getElementById('laramedia-files-error-close').addEventListener('click', function (event) {
-      this.parentElement.classList.add('laramedia-hidden');
-
-      // Remove the errors
-      document.querySelectorAll('.laramedia-files-error').forEach(function (element) {
-        element.remove();
-      });
-    });
-
     // Show the image preview when file uploaded successfully
     this.uploader.events.on('upload_success', function (media, file, response) {
-      self.uploadedFiles[media.uuid] = media;
       self.files[media.uuid] = media;
-      self.showFilePreview(media, true);
-    });
-
-    // Show the error when a file upload fails
-    this.uploader.events.on('upload_fail', function (file, response) {
-      self.showFileError(file, response);
-    });
-
-    // Show the error when a file upload fails
-    this.uploader.events.on('upload_error', function (file, response) {
-      self.showFileError(file, response);
-    });
-
-    // Show the error when a file upload fails
-    this.uploader.events.on('file_rejected', function (file, reason) {
-      self.showFileValidationError(file, reason);
-    });
-
-    // When the progress changes
-    this.uploader.events.on('progress_percentage_update', function (percentage) {
-      self.showUploadProgress(percentage);
-    });
-
-    // When the processing start
-    this.uploader.events.on('files_processing_start', function () {
-      self.showUploadProcessing();
+      self.uploadedFiles[media.uuid] = media;
+      self.showFilePreview(media, true, true);
+      self.lastSelectedFile = media;
+      if (self.options.select_multiple) {
+        self.selectedFiles[media.uuid] = media;
+        self.filesSelectedOrder.push(media);
+      } else {
+        self.selectedFiles = {};
+        self.filesSelectedOrder = [];
+        self.selectedFiles[media.uuid] = media;
+        self.filesSelectedOrder.push(media);
+      }
     });
   };
 
@@ -23941,7 +24146,7 @@ function FilesSelector() {
    * 
    * @return void
    */
-  this.showFilePreview = function (media, prepend) {
+  this.showFilePreview = function (media, select, prepend) {
     var self = this;
     var container = document.getElementById('laramedia-files-container');
     var template = this.getFilePreviewTemplate(media);
@@ -23959,6 +24164,9 @@ function FilesSelector() {
       template.querySelector('.laramedia-files-image').src = media.display_url;
     } else {
       template.querySelector('.laramedia-files-item-name').innerHTML = media.original_name;
+    }
+    if (select != 'undefined' && select == true) {
+      template.querySelector('.laramedia-files-item-container').click();
     }
     if (prepend != 'undefined' && prepend == true) {
       container.prepend(template);
