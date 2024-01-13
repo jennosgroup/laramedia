@@ -700,7 +700,6 @@ function FilesUploader() {
    * @return void
    */
   this.configureDropzoneFilesInput = function () {
-    return;
     var filesInput = this.getDropzoneInputElement();
     if (filesInput == null) {
       return;
@@ -768,6 +767,11 @@ function FilesUploader() {
 
     // Fire processing end event
     this.events.fire('files_processing_end', [this.acceptedFilesQueue, this.rejectedFilesQueue]);
+
+    // If no files to upload, show progress as completed.
+    if (Object.keys(this.acceptedFilesQueue).length < 1) {
+      return this.showUploadProgress(100);
+    }
 
     // Now we upload the files that are accepted
     this.uploadFiles(this.acceptedFilesQueue);
@@ -24188,8 +24192,8 @@ function FilesSelector() {
       self.handleFileClick(media, this, event);
     });
 
-    // Show image preview or file preview
-    if (media.file_type == 'image') {
+    // Set the image display url or file name if not an image
+    if (media.is_image) {
       template.querySelector('.laramedia-files-image').src = media.display_url;
     } else {
       template.querySelector('.laramedia-files-item-name').innerHTML = media.original_name;

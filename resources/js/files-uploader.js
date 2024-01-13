@@ -377,7 +377,6 @@ export default function FilesUploader() {
      * @return void
      */
     this.configureDropzoneFilesInput = function () {
-        return;
         var filesInput = this.getDropzoneInputElement();
 
         if (filesInput == null) {
@@ -450,6 +449,11 @@ export default function FilesUploader() {
 
         // Fire processing end event
         this.events.fire('files_processing_end', [this.acceptedFilesQueue, this.rejectedFilesQueue]);
+
+        // If no files to upload, show progress as completed.
+        if (Object.keys(this.acceptedFilesQueue).length < 1) {
+            return this.showUploadProgress(100);
+        }
 
         // Now we upload the files that are accepted
         this.uploadFiles(this.acceptedFilesQueue);

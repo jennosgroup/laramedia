@@ -334,8 +334,8 @@ export default function FilesSelector() {
         	self.handleFileClick(media, this, event);
         });
 
-        // Show image preview or file preview
-        if (media.file_type == 'image') {
+        // Set the image display url or file name if not an image
+        if (media.is_image) {
             template.querySelector('.laramedia-files-image').src = media.display_url;
         } else {
         	template.querySelector('.laramedia-files-item-name').innerHTML = media.original_name;
