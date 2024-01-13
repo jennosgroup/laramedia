@@ -46,6 +46,12 @@ class MediaResource extends JsonResource
         $attributes['restore_route'] = Laramedia::restoreRoute($this->resource);
         $attributes['destroy_route'] = Laramedia::destroyRoute($this->resource);
 
+        if ($this->resource->isImage()) {
+            foreach (Laramedia::imageCutDirectories() as $cut => $data) {
+                $attributes[$cut.'_public_url'] = $this->resource->getPublicUrl();
+            }
+        }
+
         return $attributes;
     }
 }

@@ -18,7 +18,7 @@ return [
      * Don't use the 'original_files_directory' name as it will be added automatically.
      */
     'image_cut_directories' => [
-        'thumbnail' => ['width' => 100, 'height' => 100],
+        // 'thumbnail' => ['width' => 100, 'height' => 100],
     ],
 
     /**
@@ -64,7 +64,7 @@ return [
     ],
 
     /**
-     * The ownerships.
+     * The ownerships. Only change the values.
      */
     'ownerships' => [
         'mine' => 'Mine',
