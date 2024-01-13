@@ -1,8 +1,16 @@
-## About Laramedia
+# Laramedia
 
-A media library package for Laravel.
+### About
+
+Laramedia is a media library package for Laravel that allows you to upload and manage files through a graphical interface.
+
+### Installation
+
+Install with composer via command `composer require jennosgroup/laramedia`.
 
 ## Setup
+
+We need to allow a few things to be accessed globally.
 
 - Add listings js file to html head
 - php artisan migrate
@@ -15,11 +23,9 @@ A media library package for Laravel.
 - files selector js file
 - template files global
 
-Laravel files library is a laravel package that allows you to upload files and manage them through a graphical interface.
-
 ## Security Vulnerabilities
 
-If you discover a security vulnerability, please send an e-mail to Jenry Ollivierre via [jenry@jenryollivierre.com](mailto:jenry@jenryollivierre.com). All security vulnerabilities will be promptly addressed.
+If you discover a security vulnerability, please send an e-mail to Jenry Ollivierre via [info@jennosgroup.com](mailto:info@jennosgroup.com). All security vulnerabilities will be promptly addressed.
 
 ## License
 

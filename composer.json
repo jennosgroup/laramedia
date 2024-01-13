@@ -1,7 +1,7 @@
 {
     "name": "jennosgroup/laramedia",
     "type": "package",
-    "description": "A media package for Laravel.",
+    "description": "Laramedia is a media library package for Laravel that allows you to upload and manage files through a graphical interface.",
     "keywords": [],
     "license": "MIT",
     "authors": [
