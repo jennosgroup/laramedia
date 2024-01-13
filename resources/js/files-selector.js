@@ -2,6 +2,7 @@ import AxiosError from './support/axios-error';
 import Events from './support/events';
 import Loader from './files-loader';
 import Uploader from './files-uploader';
+import Routes from './support/routes';
 import Lodash from 'lodash';
 import Swal from 'sweetalert2';
 
@@ -90,7 +91,7 @@ export default function FilesSelector() {
 	this.start = function () {
 		var self = this;
 
-        window.axios.get(this.getOptionsRoute()).then(function (response) {
+        window.axios.get(new Routes().getOptionsRoute()).then(function (response) {
         	self.loader.setOptions(Lodash.assign(response.data, self.options));
 
 			self.open();
@@ -102,7 +103,7 @@ export default function FilesSelector() {
 			self.loader.start();
 			self.uploader.setOptions(self.options).init();
 		}).catch(function (response) {
-			new AxiosError.handleError(response);
+			new AxiosError().handleError(response);
 		});
 	}
 
@@ -468,15 +469,6 @@ export default function FilesSelector() {
 
 		return document.importNode(template.content, true);
 	}
-
-    /**
-     * Get the options route.
-     * 
-     * @return string
-     */
-    this.getOptionsRoute = function () {
-        return document.head.querySelector("meta[name='laramedia_options_route']").content;
-    }
 }
 
 if (! window.hasOwnProperty('laramedia')) {

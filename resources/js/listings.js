@@ -292,8 +292,8 @@ function Listings() {
         	});
         });
 
-        // Show image preview or file preview
-        if (media.file_type == 'image') {
+        // Insert the image url or file name if not an image
+        if (media.is_image) {
             template.querySelector('.laramedia-files-image').src = media.display_url;
         } else {
         	template.querySelector('.laramedia-files-item-name').innerHTML = media.original_name;

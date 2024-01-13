@@ -1,3 +1,4 @@
+import AxiosError from './support/axios-error';
 import Events from './support/events';
 import UploadHandler from './support/upload-handler';
 import Routes from './support/routes';
@@ -142,6 +143,8 @@ export default function FilesUploader() {
             self.configureDropzoneFilesInput();
             self.populateVisibilityOptions();
             self.configure();
+        }).catch(function (response) {
+            new AxiosError().handleError(response);
         });
     }
 
@@ -173,11 +176,11 @@ export default function FilesUploader() {
         }
 
         // If the type is passed, we have to refactor the allowed types
-        if (options.hasOwnProperty('type') && options.hasOwnProperty('type_filters')) {
+        if (options.hasOwnProperty('uploader_allowed_file_types')) {
             var wildcardMimetypes = [];
             var mimetypes = [];
             var extensions = [];
-            var filters = options.type_filters[options.type];
+            var filters = options.uploader_file_types;
 
             filters.forEach(function (type) {
                 var wildcardMimetype = self.getWildCardFromMimeType(type);
@@ -193,9 +196,36 @@ export default function FilesUploader() {
                 }
             });
             
-            this.options.allowed_mimetypes = mimetypes;
-            this.options.allowed_mimetypes_wildcard = wildcardMimetypes;
-            this.options.allowed_extensions = extensions;
+            this.options.uploader_mimetypes = mimetypes;
+            this.options.uploader_mimetypes_wildcard = wildcardMimetypes;
+            this.options.uploader_extensions = extensions;
+        }
+
+        if (options.hasOwnProperty('uploader_type') && options.hasOwnProperty('type_filters')) {
+            if (options.type_filters.hasOwnProperty(options.uploader_type)) {
+                var wildcardMimetypes = [];
+                var mimetypes = [];
+                var extensions = [];
+                var filters = options.type_filters[options.uploader_type];
+
+                filters.forEach(function (type) {
+                    var wildcardMimetype = self.getWildCardFromMimeType(type);
+
+                    if (self.isValidMimetype(type)) {
+                        mimetypes.push(type);
+                    } else {
+                        extensions.push(type);
+                    }
+
+                    if (wildcardMimetype != null) {
+                        wildcardMimetypes.push(wildcardMimetype);
+                    }
+                });
+
+                this.options.uploader_mimetypes = mimetypes;
+                this.options.uploader_mimetypes_wildcard = wildcardMimetypes;
+                this.options.uploader_extensions = extensions;
+            }
         }
 
         return this;
@@ -898,7 +928,7 @@ export default function FilesUploader() {
      * @return array
      */
     this.getAllowedMimeTypes = function () {
-        var types = this.getOption('allowed_mimetypes');
+        var types = this.getOption('uploader_mimetypes');
 
         if (! Array.isArray(types)) {
             return [];
@@ -913,7 +943,7 @@ export default function FilesUploader() {
      * @return void
      */
     this.getAllowedMimeTypesWildcards = function () {
-        var types = this.getOption('allowed_mimetypes_wildcards');
+        var types = this.getOption('uploader_mimetypes_wildcards');
 
         if (! Array.isArray(types)) {
             return [];
@@ -929,7 +959,7 @@ export default function FilesUploader() {
      */
     this.getAllowedExtensions = function () {
         var results = [];
-        var extensions = this.getOption('allowed_extensions');
+        var extensions = this.getOption('uploader_extensions');
 
         if (! Array.isArray(extensions)) {
             return [];

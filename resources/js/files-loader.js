@@ -108,7 +108,7 @@ export default function FilesLoader() {
             // Let's load fresh content, that will take the set options into consideration.
             self.loadFreshContent();
         }).catch(function (response) {
-            new AxiosError.handleError(response);
+            new AxiosError().handleError(response);
         });
     }
 

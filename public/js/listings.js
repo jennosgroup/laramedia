@@ -864,7 +864,7 @@ function FilesLoader() {
       // Let's load fresh content, that will take the set options into consideration.
       self.loadFreshContent();
     })["catch"](function (response) {
-      new _support_axios_error__WEBPACK_IMPORTED_MODULE_0__["default"].handleError(response);
+      new _support_axios_error__WEBPACK_IMPORTED_MODULE_0__["default"]().handleError(response);
     });
   };
 
@@ -1077,13 +1077,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ FilesUploader)
 /* harmony export */ });
-/* harmony import */ var _support_events__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./support/events */ "./resources/js/support/events.js");
-/* harmony import */ var _support_upload_handler__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./support/upload-handler */ "./resources/js/support/upload-handler.js");
-/* harmony import */ var _support_routes__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./support/routes */ "./resources/js/support/routes.js");
-/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
-/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! sweetalert2 */ "./node_modules/sweetalert2/dist/sweetalert2.all.js");
-/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(sweetalert2__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _support_axios_error__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./support/axios-error */ "./resources/js/support/axios-error.js");
+/* harmony import */ var _support_events__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./support/events */ "./resources/js/support/events.js");
+/* harmony import */ var _support_upload_handler__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./support/upload-handler */ "./resources/js/support/upload-handler.js");
+/* harmony import */ var _support_routes__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./support/routes */ "./resources/js/support/routes.js");
+/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
+/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! sweetalert2 */ "./node_modules/sweetalert2/dist/sweetalert2.all.js");
+/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(sweetalert2__WEBPACK_IMPORTED_MODULE_5__);
+
 
 
 
@@ -1095,7 +1097,7 @@ function FilesUploader() {
    *
    * @var object
    */
-  this.events = new _support_events__WEBPACK_IMPORTED_MODULE_0__["default"]();
+  this.events = new _support_events__WEBPACK_IMPORTED_MODULE_1__["default"]();
 
   /**
    * The files queue.
@@ -1216,15 +1218,17 @@ function FilesUploader() {
    */
   this.init = function () {
     var self = this;
-    window.axios.get(new _support_routes__WEBPACK_IMPORTED_MODULE_2__["default"]().getOptionsRoute()).then(function (response) {
+    window.axios.get(new _support_routes__WEBPACK_IMPORTED_MODULE_3__["default"]().getOptionsRoute()).then(function (response) {
       // We take the options from the server and add it to our options queue.
       // However, the options set through the uploader should take precedence.
-      self.setOptions(lodash__WEBPACK_IMPORTED_MODULE_3___default().assign(response.data, self.options));
+      self.setOptions(lodash__WEBPACK_IMPORTED_MODULE_4___default().assign(response.data, self.options));
       self.registerEventHandlers();
       self.registerDropzoneEventHandlers();
       self.configureDropzoneFilesInput();
       self.populateVisibilityOptions();
       self.configure();
+    })["catch"](function (response) {
+      new _support_axios_error__WEBPACK_IMPORTED_MODULE_0__["default"]().handleError(response);
     });
   };
 
@@ -1253,11 +1257,11 @@ function FilesUploader() {
     }
 
     // If the type is passed, we have to refactor the allowed types
-    if (options.hasOwnProperty('type') && options.hasOwnProperty('type_filters')) {
+    if (options.hasOwnProperty('uploader_allowed_file_types')) {
       var wildcardMimetypes = [];
       var mimetypes = [];
       var extensions = [];
-      var filters = options.type_filters[options.type];
+      var filters = options.uploader_file_types;
       filters.forEach(function (type) {
         var wildcardMimetype = self.getWildCardFromMimeType(type);
         if (self.isValidMimetype(type)) {
@@ -1269,9 +1273,31 @@ function FilesUploader() {
           wildcardMimetypes.push(wildcardMimetype);
         }
       });
-      this.options.allowed_mimetypes = mimetypes;
-      this.options.allowed_mimetypes_wildcard = wildcardMimetypes;
-      this.options.allowed_extensions = extensions;
+      this.options.uploader_mimetypes = mimetypes;
+      this.options.uploader_mimetypes_wildcard = wildcardMimetypes;
+      this.options.uploader_extensions = extensions;
+    }
+    if (options.hasOwnProperty('uploader_type') && options.hasOwnProperty('type_filters')) {
+      if (options.type_filters.hasOwnProperty(options.uploader_type)) {
+        var wildcardMimetypes = [];
+        var mimetypes = [];
+        var extensions = [];
+        var filters = options.type_filters[options.uploader_type];
+        filters.forEach(function (type) {
+          var wildcardMimetype = self.getWildCardFromMimeType(type);
+          if (self.isValidMimetype(type)) {
+            mimetypes.push(type);
+          } else {
+            extensions.push(type);
+          }
+          if (wildcardMimetype != null) {
+            wildcardMimetypes.push(wildcardMimetype);
+          }
+        });
+        this.options.uploader_mimetypes = mimetypes;
+        this.options.uploader_mimetypes_wildcard = wildcardMimetypes;
+        this.options.uploader_extensions = extensions;
+      }
     }
     return this;
   };
@@ -1350,7 +1376,7 @@ function FilesUploader() {
       if (self.validateDiskAndVisiblity()) {
         return dropzoneInputElement.click();
       }
-      sweetalert2__WEBPACK_IMPORTED_MODULE_4___default().fire({
+      sweetalert2__WEBPACK_IMPORTED_MODULE_5___default().fire({
         icon: 'error',
         title: 'Error',
         text: 'Invalid visibility selected for the chosen disk'
@@ -1362,7 +1388,7 @@ function FilesUploader() {
       if (self.validateDiskAndVisiblity()) {
         return self.processFiles(this.files);
       }
-      sweetalert2__WEBPACK_IMPORTED_MODULE_4___default().fire({
+      sweetalert2__WEBPACK_IMPORTED_MODULE_5___default().fire({
         icon: 'error',
         title: 'Error',
         text: 'Invalid visibility selected for the chosen disk'
@@ -1399,7 +1425,7 @@ function FilesUploader() {
       if (self.validateDiskAndVisiblity()) {
         return self.processFiles(event.dataTransfer.files);
       }
-      sweetalert2__WEBPACK_IMPORTED_MODULE_4___default().fire({
+      sweetalert2__WEBPACK_IMPORTED_MODULE_5___default().fire({
         icon: 'error',
         title: 'Error',
         text: 'Invalid visibility selected for the chosen disk'
@@ -1576,7 +1602,7 @@ function FilesUploader() {
    */
   this.uploadFile = function (file) {
     var self = this;
-    var handler = new _support_upload_handler__WEBPACK_IMPORTED_MODULE_1__["default"]();
+    var handler = new _support_upload_handler__WEBPACK_IMPORTED_MODULE_2__["default"]();
     var formData = new FormData();
     formData.append('file', file);
     formData.append('disk', this.getDiskValue());
@@ -1900,7 +1926,7 @@ function FilesUploader() {
    * @return array
    */
   this.getAllowedMimeTypes = function () {
-    var types = this.getOption('allowed_mimetypes');
+    var types = this.getOption('uploader_mimetypes');
     if (!Array.isArray(types)) {
       return [];
     }
@@ -1913,7 +1939,7 @@ function FilesUploader() {
    * @return void
    */
   this.getAllowedMimeTypesWildcards = function () {
-    var types = this.getOption('allowed_mimetypes_wildcards');
+    var types = this.getOption('uploader_mimetypes_wildcards');
     if (!Array.isArray(types)) {
       return [];
     }
@@ -1927,7 +1953,7 @@ function FilesUploader() {
    */
   this.getAllowedExtensions = function () {
     var results = [];
-    var extensions = this.getOption('allowed_extensions');
+    var extensions = this.getOption('uploader_extensions');
     if (!Array.isArray(extensions)) {
       return [];
     }
@@ -2055,7 +2081,7 @@ function FilesUploader() {
    * @return object
    */
   this.notifyThatMultipleUploadsNotAllowed = function () {
-    return sweetalert2__WEBPACK_IMPORTED_MODULE_4___default().fire({
+    return sweetalert2__WEBPACK_IMPORTED_MODULE_5___default().fire({
       icon: 'error',
       title: 'Error',
       text: 'You are not allowed to upload multiple files.'
@@ -2075,7 +2101,7 @@ function FilesUploader() {
     } else {
       message = 'You cannot upload no less than ' + minNumberOfFiles + ' files.';
     }
-    return sweetalert2__WEBPACK_IMPORTED_MODULE_4___default().fire({
+    return sweetalert2__WEBPACK_IMPORTED_MODULE_5___default().fire({
       icon: 'error',
       title: 'Error',
       text: message
@@ -2095,7 +2121,7 @@ function FilesUploader() {
     } else {
       message = 'You are not allowed to upload more than ' + maxNumberOfFiles + ' files.';
     }
-    return sweetalert2__WEBPACK_IMPORTED_MODULE_4___default().fire({
+    return sweetalert2__WEBPACK_IMPORTED_MODULE_5___default().fire({
       icon: 'error',
       title: 'Error',
       text: message
@@ -2406,8 +2432,8 @@ function Listings() {
       });
     });
 
-    // Show image preview or file preview
-    if (media.file_type == 'image') {
+    // Insert the image url or file name if not an image
+    if (media.is_image) {
       template.querySelector('.laramedia-files-image').src = media.display_url;
     } else {
       template.querySelector('.laramedia-files-item-name').innerHTML = media.original_name;

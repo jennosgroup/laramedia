@@ -81,11 +81,23 @@ return [
 
     /**
      * The type filters.
+     * 
+     * You should only state filetypes mentioned in allowed_file_types,
+     * except for not like types.
      */
     'type_filters' => [
         'image' => ['image/*'],
         'document' => ['pdf'],
         'none_image' => ['^image/*'],
+    ],
+
+    /**
+     * The allowed file types.
+     *
+     * If nothing defined, all types will be allowed.
+     */
+    'allowed_file_types' => [
+        'image/*', 'pdf',
     ],
 
     /**
@@ -112,15 +124,6 @@ return [
      * The maximum number of files allowed.
      */
     'max_number_of_files' => null,
-
-    /**
-     * The allowed file types.
-     *
-     * If nothing defined, all types will be allowed.
-     */
-    'allowed_file_types' => [
-        'image/*', 'pdf',
-    ],
 
     /**
      * The file input name.
