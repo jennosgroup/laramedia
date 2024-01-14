@@ -278,7 +278,7 @@ class Uploader
             'upload_path' => $this->getRelativeUploadPath(),
             'disk' => $this->getDisk(),
             'visibility' => $this->getVisibility(),
-            'author_id' => Auth::user()->{Auth::user()->getKeyName()} ?? null,
+            'author_id' => Auth::check() ? Auth::user()->{Auth::user()->getKeyName()} ?? null : null,
             'options' => [],
         ];
     }

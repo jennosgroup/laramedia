@@ -30,6 +30,6 @@ export default function Routes() {
      */
     this.getUploadRoute = function () {
         var routes = this.getRoutes();
-        return routes['store'];
+        return routes['upload'];
     }
 }

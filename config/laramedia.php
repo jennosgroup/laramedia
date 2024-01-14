@@ -132,7 +132,7 @@ return [
     /**
      * The pagination total for the files listings page.
      */
-    'pagination_total' => 90,
+    'pagination_total' => 45,
 
     /**
      * The route middlewares.
@@ -180,7 +180,7 @@ return [
     ],
 
     /**
-     * The app dot notation view path for the listings page.
+     * The view path for the listings page.
      */
     'listings_view_path' => 'listings',
 

@@ -280,7 +280,11 @@ class Finder
             return $query;
         }
 
-        // If no user login, we don't need to go further
+        // If no user logged in, mine ownership should have no result
+        if (! Auth::check() && $this->getOwnership() == 'mine') {
+            return $query->where('author_id', 'nousersoshouldfail');
+        }
+
         if (! Auth::check()) {
             return $query;
         }
