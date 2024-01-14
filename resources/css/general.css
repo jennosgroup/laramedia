@@ -14,6 +14,7 @@
 }
 
 .laramedia-btn-secondary:hover {
+	color: #1f3951;
 	background-color: #CCD1D1;
 }
 
@@ -23,6 +24,7 @@
 }
 
 .laramedia-btn-primary:hover {
+	color: #e1f0fa;
 	background-color: #2E86C1;
 }
 
