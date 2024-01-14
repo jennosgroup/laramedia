@@ -10,7 +10,9 @@
 			There are no files. You should try uploading some.
 		</div>
 	</div>
-	<button id="laramedia-files-load-more-btn" class="laramedia-btn laramedia-btn-secondary laramedia-hidden">
-		Load More
-	</button>
+	<div class="laramedia-files-load-more-btn">
+		<button id="laramedia-files-load-more-btn" class="laramedia-btn laramedia-btn-secondary laramedia-hidden">
+			Load More
+		</button>
+	</div>
 </div>

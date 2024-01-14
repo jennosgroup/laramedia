@@ -182,8 +182,10 @@ function FilesListings() {
 				self.hideFilesContainer();
 			}
 
-			if (! allFilesLoaded) {
+			if (allFilesLoaded) {
 				self.hideLoadMoreButton();
+			} else {
+				self.showLoadMoreButton();
 			}
 		});
 

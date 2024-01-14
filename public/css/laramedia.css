@@ -285,6 +285,11 @@
 	max-height: 100%;
 }
 
+.laramedia-files-load-more-btn {
+	display: flex;
+	justify-content: center;
+}
+
 .laramedia-filters-container {
 	display: flex;
 	flex-wrap: wrap;
