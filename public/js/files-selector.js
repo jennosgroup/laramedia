@@ -1733,13 +1733,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (/* binding */ Routes)
 /* harmony export */ });
 function Routes() {
+  this.getRoutes = function () {
+    return JSON.parse(document.head.querySelector("meta[name='laramedia_routes']").content);
+  };
+
   /**
    * Get the options route.
    * 
    * @return string
    */
   this.getOptionsRoute = function () {
-    return document.head.querySelector("meta[name='laramedia_options_route']").content;
+    var routes = this.getRoutes();
+    return routes['options'];
   };
 
   /**
@@ -1748,7 +1753,8 @@ function Routes() {
    * @return string
    */
   this.getFilesRoute = function () {
-    return document.head.querySelector("meta[name='laramedia_files_route']").content;
+    var routes = this.getRoutes();
+    return routes['files'];
   };
 
   /**
@@ -1757,7 +1763,8 @@ function Routes() {
    * @return string
    */
   this.getUploadRoute = function () {
-    return document.head.querySelector("meta[name='laramedia_upload_route']").content;
+    var routes = this.getRoutes();
+    return routes['store'];
   };
 }
 

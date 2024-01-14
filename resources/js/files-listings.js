@@ -5,7 +5,7 @@ import Routes from './support/routes';
 import debounce from './support/debounce';
 import Spin from './support/spin';
 
-function Listings() {
+function FilesListings() {
 	/**
 	 * The loader instance.
 	 * 
@@ -335,4 +335,4 @@ function Listings() {
 	}
 }
 
-new Listings().init();
+new FilesListings().init();

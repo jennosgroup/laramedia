@@ -1,11 +1,16 @@
 export default function Routes() {
+    this.getRoutes = function () {
+        return JSON.parse(document.head.querySelector("meta[name='laramedia_routes']").content);
+    }
+
     /**
      * Get the options route.
      * 
      * @return string
      */
     this.getOptionsRoute = function () {
-        return document.head.querySelector("meta[name='laramedia_options_route']").content;
+        var routes = this.getRoutes();
+        return routes['options'];
     }
 
     /**
@@ -14,7 +19,8 @@ export default function Routes() {
      * @return string
      */
     this.getFilesRoute = function () {
-        return document.head.querySelector("meta[name='laramedia_files_route']").content;
+        var routes = this.getRoutes();
+        return routes['files'];
     }
 
     /**
@@ -23,6 +29,7 @@ export default function Routes() {
      * @return string
      */
     this.getUploadRoute = function () {
-        return document.head.querySelector("meta[name='laramedia_upload_route']").content;
+        var routes = this.getRoutes();
+        return routes['store'];
     }
 }

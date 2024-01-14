@@ -1,8 +1,8 @@
 {
-    "/public/js/listings.js": "/public/js/listings.js",
+    "/public/js/files-listings.js": "/public/js/files-listings.js",
     "/public/js/files-selector.js": "/public/js/files-selector.js",
     "/public/css/laramedia.css": "/public/css/laramedia.css",
-    "/laravel-apps/bequia-fast-ferries/public/vendor/laramedia/js/listings.js": "/laravel-apps/bequia-fast-ferries/public/vendor/laramedia/js/listings.js",
+    "/laravel-apps/bequia-fast-ferries/public/vendor/laramedia/js/files-listings.js": "/laravel-apps/bequia-fast-ferries/public/vendor/laramedia/js/files-listings.js",
     "/laravel-apps/bequia-fast-ferries/public/vendor/laramedia/js/files-selector.js": "/laravel-apps/bequia-fast-ferries/public/vendor/laramedia/js/files-selector.js",
     "/laravel-apps/bequia-fast-ferries/public/vendor/laramedia/css/laramedia.css": "/laravel-apps/bequia-fast-ferries/public/vendor/laramedia/css/laramedia.css"
 }

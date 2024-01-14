@@ -318,6 +318,18 @@ class Laramedia extends Config
     }
 
     /**
+     * Get the template routes.
+     */
+    public static function templateRoutes(): string
+    {
+        return json_encode([
+            'options' => Laramedia::optionsRoute(),
+            'files' => Laramedia::filesRoute(),
+            'upload' => Laramedia::storeRoute(),
+        ]);
+    }
+
+    /**
      * Check if the user can execute a policy.
      */
     public static function can(string $key, Model $model = null): bool

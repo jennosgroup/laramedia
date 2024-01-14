@@ -6,22 +6,29 @@ Laramedia is a media library package for Laravel that allows you to upload and m
 
 ### Installation
 
-Install with composer via command `composer require jennosgroup/laramedia`.
+Install with composer - `composer require jennosgroup/laramedia`.
 
-## Setup
+### Setup
 
-We need to allow a few things to be accessed globally.
+Run the `php artisan migrate` command after installing the package.
 
-- Add listings js file to html head
-- php artisan migrate
-- Install SWAL
-- define files route
-- define options route
-- define upload route
-- vendor publish assets
-- files selector template global
-- files selector js file
-- template files global
+Publish the package assets with artisan command `php artisan vendor:publish --tag=laramedia-assets`
+
+In the head section of your html file, include the following, which should be higher in the head section of your html file than any of the other scripts that the package will require you to manually declare:
+
+`<meta name="laramedia_routes" content="{{ Laramedia::templateRoutes() }}">`
+
+Include the following script in your html file:
+
+`<script src="{{ asset('vendor/laramedia/js/files-selector.js') }}" defer></script>`
+
+Include the following just before the closing body element of your html file.
+
+`@include('laramedia::templates')`
+
+On the page that you wish to display the listing of all the files, include the following script in your html file.
+
+`<script src="{{ asset('vendor/laramedia/js/files-listings.js') }}" defer></script>`
 
 ## Security Vulnerabilities
 
