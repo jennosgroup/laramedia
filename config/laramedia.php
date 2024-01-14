@@ -37,7 +37,7 @@ return [
     'disks' => [
         'local' => 'Local',
         'public' => 'Public',
-        's3' => 'Cloud',
+        // 's3' => 'Cloud',
     ],
 
     /**
@@ -51,7 +51,7 @@ return [
     'disks_visibilities' => [
         'local' => ['private' => 'Private'],
         'public' => ['public' => 'Public'],
-        's3' => ['private' => 'Private', 'public' => 'Public'],
+        // 's3' => ['private' => 'Private', 'public' => 'Public'],
     ],
 
     /**
@@ -60,7 +60,7 @@ return [
     'disks_default_visibility' => [
         'local' => 'private',
         'public' => 'public',
-        's3' => 'public',
+        // 's3' => 'public',
     ],
 
     /**
@@ -88,7 +88,6 @@ return [
     'type_filters' => [
         'image' => ['image/*'],
         'document' => ['pdf'],
-        'none_image' => ['^image/*'],
     ],
 
     /**
@@ -133,7 +132,7 @@ return [
     /**
      * The pagination total for the files listings page.
      */
-    'pagination_total' => 45,
+    'pagination_total' => 90,
 
     /**
      * The route middlewares.
