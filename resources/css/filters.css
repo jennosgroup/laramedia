@@ -1,38 +1,43 @@
+.laramedia-filters-container {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	width: 100%;
+	margin-bottom: 6px;
+}
+
+.laramedia-listings-filters-left {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.laramedia-listings-filters-right {
+	display: flex;
+	flex-wrap: wrap;
+	flex-grow: 1;
+}
+
 .laramedia-filter-container {
 	display: flex;
 	align-items: center;
-	height: 48px;
-}
-
-.laramedia-filter-section-container {
-	margin-left: 8px;
-	cursor: pointer;
+	height: 36px;
+	margin-bottom: 6px;
 }
 
 .laramedia-filter-select {
-	height: 100%;
+	flex-shrink: 0;
+	height: 36px;
 	width: 148px;
-	padding: 8px;
+	background-color: #F2F4F4;
+	padding: 0 6px;
 	border-radius: 4px;
 	outline: none;
-	appearance: none;
 	border: 1px solid #eee;
 	box-sizing: border-box;
 }
 
 .laramedia-filter-select-container {
 	margin-right: 4px;
-}
-
-.laramedia-filters-container {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
-	height: 48px;
-	width: 100%;
-	padding: 0 12px;
-	margin-bottom: 6px;
-	box-sizing: border-box;
 }
 
 #laramedia-filter-search-container {
@@ -42,17 +47,31 @@
 }
 
 #laramedia-filter-search {
+	height: 100%;
 	max-width: 240px;
+	background-color: #F2F4F4;
+	padding: 0 8px;
 	border: 1px solid #eee;
+	border-radius: 4px;
+	box-sizing: border-box;
 }
 
-#laramedia-filter-active-section-container,
-#laramedia-filter-trash-section-container {
-	color: #808B96;
+.laramedia-filter-section-container {
+	margin-left: 8px;
+	cursor: pointer;
+	font-size: 26px;
+}
+
+.laramedia-filter-section-container {
+	color: #AEB6BF;
+}
+
+.laramedia-filter-section-container:hover {
+	color: #85929E;
 }
 
 #laramedia-filter-active-section-container.laramedia-current-section {
-	color: #2E86C1;
+	color: #0096FB;
 }
 
 #laramedia-filter-trash-section-container.laramedia-current-section {

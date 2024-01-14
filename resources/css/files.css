@@ -1,29 +1,30 @@
 #laramedia-files-wrapper {
 	display: flex;
 	flex-direction: column;
-	align-items: center;
 }
 
 #laramedia-files-container {
 	display: flex;
-	justify-content: center;
 	flex-wrap: wrap;
+	justify-content: center;
 	padding-bottom: 24px;
 }
 
 #laramedia-no-files-container {
 	display: flex;
 	flex-direction: column;
-	background-color: #eee;
 	width: 100%;
-	border-radius: 8px;
+	height: 240px;
+	background-color: #F2F4F4;
+	border: 1px solid #eee;
 }
 
 #laramedia-no-files-container-title {
 	display: flex;
 	justify-content: center;
+	flex-shrink: 0;
 	width: 100%;
-	padding: 24px 24px 12px 24px;
+	padding: 24px 24px 0 24px;
 	font-weight: 700;
 	font-size: 1.5rem;
 }
@@ -31,8 +32,9 @@
 #laramedia-no-files-container-content {
 	display: flex;
 	justify-content: center;
+	flex-grow: 1;
 	width: 100%;
-	padding: 0 24px 24px 24px;
+	padding: 24px;
 }
 
 .laramedia-files-item-wrapper {
@@ -46,8 +48,8 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	background-color: #eee;
-	border: 1px solid #d0d0d0;
+	background-color: #f2f4f4;
+	border: 1px solid #eee;
 	width: 148px;
 	height: 148px;
 	box-sizing: border-box;
@@ -88,7 +90,7 @@
 	flex-grow: 0;
 	width: 100%;
 	height: 50%;
-	background-color: #f9f9f9;
+	background-color: #f0f0f0;
 	padding: 6px;
 	overflow-y: auto;
 	box-sizing: border-box;

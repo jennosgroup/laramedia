@@ -9,12 +9,21 @@
 }
 
 .laramedia-btn-secondary {
-	color: #fff;
-	background-color: #85929E;
+	color: #1f3951;
+	background-color: #D6DBDF;
 }
 
 .laramedia-btn-secondary:hover {
-	background-color: #808B96;
+	background-color: #CCD1D1;
+}
+
+.laramedia-btn-primary {
+	color: #e1f0fa;
+	background-color: #3498DB;
+}
+
+.laramedia-btn-primary:hover {
+	background-color: #2E86C1;
 }
 
 .laramedia-disabled-button {

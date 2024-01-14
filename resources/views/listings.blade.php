@@ -1,10 +1,7 @@
 <div id="laramedia-listings-wrapper">
-	{{-- Listings Header --}}
-	<div id="laramedia-listings-header">
-		<button id="laramedia-files-trigger-dropzone" class="laramedia-btn laramedia-btn-secondary">
-			Add Files
-		</button>
-	</div>
+	<button id="laramedia-listings-upload-files" class="laramedia-trigger-dropzone laramedia-btn laramedia-btn-secondary">
+		Upload Files
+	</button>
 
 	<div id="laramedia-listings-body">
 

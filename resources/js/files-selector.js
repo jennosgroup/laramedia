@@ -134,7 +134,7 @@ export default function FilesSelector() {
 		var self = this;
 
 		// When the uploader button is hit
-		document.getElementById('laramedia-selector-trigger-uploader').addEventListener('click', function (event) {
+		document.querySelector('.laramedia-trigger-dropzone').addEventListener('click', function (event) {
 			document.getElementById('laramedia-selector-uploader-container').classList.remove('laramedia-hidden');
 			document.getElementById('laramedia-uploader-dropzone').classList.remove('laramedia-hidden');
 		});

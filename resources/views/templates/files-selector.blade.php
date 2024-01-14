@@ -2,7 +2,7 @@
 	<div id="laramedia-selector-wrapper" class="laramedia-modal-wrapper">
 		<div id="laramedia-selector-container" class="laramedia-modal-container">
 			<div id="laramedia-selector-header" class="laramedia-modal-header">
-				<button id="laramedia-selector-trigger-uploader" class="laramedia-modal-button">
+				<button class="laramedia-trigger-dropzone laramedia-modal-button">
 					<i class="fa-solid fa-cloud-arrow-up"></i>
 				</button>
 				<button id="laramedia-selector-close" class="laramedia-modal-button">

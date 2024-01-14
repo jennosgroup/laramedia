@@ -21,7 +21,7 @@
 	justify-content: flex-end;
 	flex-grow: 0;
 	flex-shrink: 0;
-	background-color: #f9f9f9;
+	background-color: #EAEDED;
 	height: 48px;
 }
 
@@ -38,14 +38,14 @@
 	justify-content: flex-end;
 	flex-grow: 0;
 	flex-shrink: 0;
-	background-color: #f9f9f9;
+	background-color: #EAEDED;
 	height: 48px;
 }
 
 .laramedia-modal-button {
-	background-color: #eee;
+	background-color: #f2f4f4;
 	width: 48px;
-	border: 1px solid #ccc;
+	border: 1px solid #eee;
 	cursor: pointer;
 	font-size: 18px;
 	display: flex;
@@ -54,5 +54,5 @@
 }
 
 .laramedia-modal-button:hover {
-	background-color: #E9E9E9;
+	background-color: #f0f0f0;
 }

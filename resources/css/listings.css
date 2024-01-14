@@ -1,11 +1,5 @@
 #laramedia-listings-wrapper {
-	display: flex;
-	flex-direction: column;
-}
 
-#laramedia-listings-header {
-	display: flex;
-	align-items: center;
 }
 
 #laramedia-listings-body {

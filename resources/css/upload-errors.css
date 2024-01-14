@@ -2,10 +2,10 @@
 	position: relative;
 	display: flex;
 	flex-direction: column;
-	background-color: #eee;
+	background-color: #f2f4f4;
 	padding: 6px 12px;
 	margin-bottom: 12px;
-	border: 1px solid #ccc;
+	border: 1px solid #eee;
 	border-radius: 6px;
 	box-sizing: border-box;
 	overflow: hidden;
@@ -13,9 +13,14 @@
 
 #laramedia-files-error-close {
 	position: absolute;
-	right: 10px;
+	right: 22px;
 	top: 10px;
 	cursor: pointer;
+}
+
+#laramedia-files-error-close i,
+#laramedia-files-error-close svg {
+	font-size: 24px;
 }
 
 .laramedia-files-error {

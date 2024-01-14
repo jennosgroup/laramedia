@@ -94,19 +94,6 @@ function FilesListings() {
 	this.registerEventHandlers = function () {
 		var self = this;
 
-		// Show the uploader when the add files button is clicked
-		document.getElementById('laramedia-files-trigger-dropzone').addEventListener('click', function (event) {
-			document.getElementById('laramedia-uploader-dropzone').classList.remove('laramedia-hidden'); 
-		});
-
-		// Hide the uploader when it is clicked to close
-		document.querySelector('.laramedia-uploader-dropzone-close').addEventListener('click', function (event) {
-			event.preventDefault();
-			event.stopPropagation();
-
-			event.target.closest('.laramedia-uploader-dropzone').classList.add('laramedia-hidden');
-		});
-
 		// Disk filter
 		document.getElementById('laramedia-filter-disk').addEventListener('change', function (event) {
 			self.loader.loadContentFromParameters({disk: this.value});
@@ -170,8 +157,8 @@ function FilesListings() {
 
 		// Clear files on first load
 		this.loader.events.on('first_load_begin', function () {
-			document.getElementById('laramedia-files-container').innerHTML = null;
-			document.getElementById('laramedia-files-load-more-btn').classList.add('laramedia-hidden');
+			self.clearFilesContainer();
+			self.hideLoadMoreButton();
 		});
 
 		// Things to do when file has been loaded
@@ -180,7 +167,8 @@ function FilesListings() {
 
 			self.files[file.uuid] = file;
 
-			document.getElementById('laramedia-no-files-container').classList.add('laramedia-hidden');
+			self.hideNoFilesContainer();
+			self.showFilesContainer();
 
 			self.showFilePreview(file);
 		});
@@ -190,17 +178,18 @@ function FilesListings() {
 			self.spinner.stop();
 
 			if (recentFilesCount == 0) {
-				document.getElementById('laramedia-no-files-container').classList.remove('laramedia-hidden');
+				self.showNoFilesContainer();
+				self.hideFilesContainer();
 			}
 
 			if (! allFilesLoaded) {
-				document.getElementById('laramedia-files-load-more-btn').classList.remove('laramedia-hidden');
+				self.hideLoadMoreButton();
 			}
 		});
 
 		// Things to do when the last load is completed
 		this.loader.events.on('last_load_complete', function () {
-			document.getElementById('laramedia-files-load-more-btn').classList.add('laramedia-hidden');
+			self.hideLoadMoreButton();
 		});
 	}
 
@@ -212,10 +201,40 @@ function FilesListings() {
 	this.registerUploaderEventHandlers = function () {
 		var self = this;
 
-		// Show the image preview when file uploaded successfully
 		this.uploader.events.on('upload_success', function (media, file, response) {
 			self.files[media.uuid] = media;
+
+			self.hideNoFilesContainer();
+			self.showFilesContainer();
+
 			self.showFilePreview(media, true);
+		});
+
+		this.uploader.events.on('uploads_start', function () {
+			// Reset the filters
+			var diskFilter = document.getElementById('laramedia-filter-disk');
+			diskFilter.value = diskFilter.options[0].value;
+
+			var visibilityFilter = document.getElementById('laramedia-filter-visibility');
+			visibilityFilter.value = visibilityFilter.options[0].value;
+
+			var typeFilter = document.getElementById('laramedia-filter-type');
+			typeFilter.value = typeFilter.options[0].value;
+
+			var ownershipFilter = document.getElementById('laramedia-filter-ownership');
+			ownershipFilter.value = ownershipFilter.options[0].value;
+
+			var currentSectionElement = document.querySelector('.laramedia-current-section');
+			var currentSection = currentSectionElement.getAttribute('laramedia-section');
+
+			if (currentSection != 'trash') {
+				return;
+			}
+
+			currentSectionElement.classList.remove('laramedia-current-section');
+			document.getElementById('laramedia-filter-active-section-container').classList.add('laramedia-current-section');
+			
+			self.clearFilesContainer();
 		});
 	}
 
@@ -270,17 +289,32 @@ function FilesListings() {
 
         	// When file trashed from editor
         	editor.events.on('file_trashed', function (file) {
-        		document.querySelector("[file_id='"+file.uuid+"']").remove();
+        		self.removeFileFromView(file);
+
+        		if (! self.hasFilesOnDisplay()) {
+        			self.showFilesContainer();
+        			self.showNoFilesContainer();
+        		}
         	});
 
         	// When file restored from editor
         	editor.events.on('file_restored', function (file) {
-    			document.querySelector("[file_id='"+file.uuid+"']").remove();
+    			self.removeFileFromView(file);
+
+    			if (! self.hasFilesOnDisplay()) {
+        			self.showFilesContainer();
+        			self.showNoFilesContainer();
+        		}
         	});
 
         	// When file destroyed from editor
         	editor.events.on('file_destroyed', function (file) {
-        		document.querySelector("[file_id='"+file.uuid+"']").remove();
+        		self.removeFileFromView(file);
+
+        		if (! self.hasFilesOnDisplay()) {
+        			self.showFilesContainer();
+        			self.showNoFilesContainer();
+        		}     
         	});
 
         	// Start the editor
@@ -304,6 +338,89 @@ function FilesListings() {
         } else {
         	container.append(template);
         }
+	}
+
+	/**
+	 * Check if there are files on display.
+	 * 
+	 * @return bool
+	 */
+	this.hasFilesOnDisplay = function () {
+		return document.querySelectorAll('.laramedia-files-item-wrapper').length >= 1;
+	}
+
+	/**
+	 * Clear the files container.
+	 * 
+	 * @return void
+	 */
+	this.clearFilesContainer = function () {
+		document.getElementById('laramedia-files-container').innerHTML = null;
+	}
+
+	/**
+	 * Show the files container.
+	 * 
+	 * @return void
+	 */
+	this.showFilesContainer = function () {
+		document.getElementById('laramedia-files-container').classList.remove('laramedia-hidden');
+	}
+
+	/**
+	 * Hide the files container.
+	 * 
+	 * @return void
+	 */
+	this.hideFilesContainer = function () {
+		document.getElementById('laramedia-files-container').classList.add('laramedia-hidden');
+	}
+
+	/**
+	 * Show the no files container.
+	 * 
+	 * @return void
+	 */
+	this.showNoFilesContainer = function () {
+		document.getElementById('laramedia-no-files-container').classList.remove('laramedia-hidden');
+	}
+
+	/**
+	 * Hide the files container.
+	 * 
+	 * @return void
+	 */
+	this.hideNoFilesContainer = function () {
+		document.getElementById('laramedia-no-files-container').classList.add('laramedia-hidden');
+	}
+
+	/**
+	 * Show the load more button.
+	 * 
+	 * @return void
+	 */
+	this.showLoadMoreButton = function () {
+		document.getElementById('laramedia-files-load-more-btn').classList.remove('laramedia-hidden');
+	}
+
+	/**
+	 * Hide the load more button.
+	 * 
+	 * @return void
+	 */
+	this.hideLoadMoreButton = function () {
+		document.getElementById('laramedia-files-load-more-btn').classList.add('laramedia-hidden');
+	}
+
+	/**
+	 * Remove the file from view.
+	 * 
+	 * @param  obj  file
+	 * 
+	 * @return void
+	 */
+	this.removeFileFromView = function (file) {
+		document.querySelector("[file_id='"+file.uuid+"']").remove();
 	}
 
 	/**

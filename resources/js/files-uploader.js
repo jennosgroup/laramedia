@@ -239,6 +239,23 @@ export default function FilesUploader() {
     this.registerEventHandlers = function () {
         var self = this;
 
+        // Show the uploader when the trigger is clicked
+        document.querySelectorAll('.laramedia-trigger-dropzone').forEach(function (element) {
+            element.addEventListener('click', function (event) {
+                document.getElementById('laramedia-uploader-dropzone').classList.remove('laramedia-hidden'); 
+            });
+        });
+
+        // Hide the uploader when it is clicked to close
+        document.querySelectorAll('.laramedia-uploader-dropzone-close').forEach(function (element) {
+            element.addEventListener('click', function (event) {
+                event.preventDefault();
+                event.stopPropagation();
+
+                event.target.closest('.laramedia-uploader-dropzone').classList.add('laramedia-hidden');
+            });
+        });
+
         // Hide the error section when X is clicked. Also remove the errors
         document.getElementById('laramedia-files-error-close').addEventListener('click', function (event) {
             this.parentElement.classList.add('laramedia-hidden');
@@ -548,6 +565,8 @@ export default function FilesUploader() {
      * @return void
      */
     this.uploadFiles = function (files) {
+        this.events.fire('uploads_start', []);
+        
         for (var fileId in files) {
             this.uploadFile(files[fileId]);
         }
@@ -611,6 +630,7 @@ export default function FilesUploader() {
             self.events.fire('progress_percentage_update', [self.progressPercentage, self.totalFilesCompleted, self.percentagePoint]);
 
             if (self.totalSelectedFiles == self.totalFilesCompleted) {
+                self.events.fire('uploads_finish', []);
                 self.events.fire('uploads_finish_uploaded_files', [self.uploadedFilesQueue]);
                 self.events.fire('uploads_finish_failed_files', [self.failedUploadFilesQueue]);
                 self.events.fire('uploads_finish_completed_files', [self.completedFilesQueue]);
@@ -652,8 +672,10 @@ export default function FilesUploader() {
 
         if (response.hasOwnProperty('response')) {
             template.querySelector('.laramedia-files-error-reason').innerHTML = response.response.data.message;
-        } else {
+        } else if (response.hasOwnProperty('messages')) {
             template.querySelector('.laramedia-files-error-reason').innerHTML = response.messages.join(' ');
+        } else {
+            template.querySelector('.laramedia-files-error-reason').innerHTML = 'Error with uploading file';
         }
 
         container.classList.remove('laramedia-hidden');
@@ -799,7 +821,7 @@ export default function FilesUploader() {
             return false;
         }
 
-        if (! visibilities.hasOwnProperty(visibility)) {
+        if (! visibilities.hasOwnProperty(disk)) {
             return false;
         }
 

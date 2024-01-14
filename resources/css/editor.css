@@ -7,7 +7,7 @@
 	align-items: center;
 	justify-content: center;
 	width: 50%;
-	background-color: #f9f9f9;
+	background-color: #f2f4f4;
 	padding: 24px;
 	box-sizing: border-box;
 	overflow-y: auto;
@@ -29,6 +29,11 @@
 
 .laramedia-file-editor-item-preview-container {
 	display: none;
+}
+
+.laramedia-file-editor-item-preview-container i,
+.laramedia-file-editor-item-preview-container svg {
+	font-size: 148px;
 }
 
 #laramedia-file-editor-contents-separator {
@@ -64,6 +69,11 @@
 	flex-direction: row;
 }
 
+.laramedia-file-editor-btn {
+	text-decoration: none !important;
+	margin-right: 6px;
+}
+
 .laramedia-file-editor-contents-button {
 	padding: 8px 12px;
 	background-color: #2874A6;
@@ -81,7 +91,22 @@
 }
 
 .laramedia-file-editor-form-control {
-	border: 1px solid #c9c9c9;
-	padding: 8px 4px;
+	border: 1px solid #eee;
+	padding: 4px 4px;
 	border-radius: 4px;
+	font-size: 12px;
+}
+
+#laramedia-file-editor-update-btn i,
+#laramedia-file-editor-update-btn svg,
+#laramedia-file-editor-restore-btn i,
+#laramedia-file-editor-restore-btn svg {
+	color: #3498DB;
+}
+
+#laramedia-file-editor-trash-btn i,
+#laramedia-file-editor-trash-btn svg,
+#laramedia-file-editor-destroy-btn i,
+#laramedia-file-editor-destroy-btn svg {
+	color: #E74C3C;
 }

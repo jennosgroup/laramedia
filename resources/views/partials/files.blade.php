@@ -7,7 +7,7 @@
 			Whoops!
 		</div>
 		<div id="laramedia-no-files-container-content">
-			There are no files.
+			There are no files. You should try uploading some.
 		</div>
 	</div>
 	<button id="laramedia-files-load-more-btn" class="laramedia-btn laramedia-btn-secondary laramedia-hidden">

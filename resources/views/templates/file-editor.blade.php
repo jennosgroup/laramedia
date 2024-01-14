@@ -89,7 +89,7 @@
                     <!-- Disk -->
                     <div class="laramedia-file-editor-edit-content-form-group">
                         <label for="laramedia-file-editor-disk" class="laramedia-file-editor-edit-content-label laramedia-file-editor-edit-content-title">Disk</label>
-                        <select id="laramedia-file-editor-disk" class="laramedia-file-editor-form-control laramedia-file-editor-edit-content-data">
+                        <select id="laramedia-file-editor-disk" class="laramedia-file-editor-form-control laramedia-file-editor-edit-content-data laramedia-select-filter">
                             @foreach (Laramedia::disks() as $key => $value)
                                 <option value="{{ $key }}">{{ $value }}</option>
                             @endforeach
@@ -99,7 +99,7 @@
                     <!-- Visibility -->
                     <div class="laramedia-file-editor-edit-content-form-group">
                         <label for="laramedia-file-editor-visibility" class="laramedia-file-editor-edit-content-label laramedia-file-editor-edit-content-title">Visibility</label>
-                        <select id="laramedia-file-editor-visibility" class="laramedia-file-editor-form-control laramedia-file-editor-edit-content-data">
+                        <select id="laramedia-file-editor-visibility" class="laramedia-file-editor-form-control laramedia-file-editor-edit-content-data laramedia-select-filter">
                             
                         </select>
                     </div>
@@ -112,8 +112,8 @@
 
                     <!-- Buttons -->
                     <div id="laramedia-file-editor-contents-buttons">
-                        <a id="laramedia-file-editor-contents-preview-btn" class="laramedia-file-editor-contents-button laramedia-hidden" target="_blank" href="">Preview</a>
-                        <a id="laramedia-file-editor-contents-download-btn" class="laramedia-file-editor-contents-button laramedia-hidden" target="_blank" href="">Download</a>
+                        <a id="laramedia-file-editor-contents-preview-btn" class="laramedia-file-editor-btn laramedia-btn laramedia-btn-primary laramedia-hidden" target="_blank" href="">Preview</a>
+                        <a id="laramedia-file-editor-contents-download-btn" class="laramedia-file-editor-btn laramedia-btn laramedia-btn-primary laramedia-hidden" target="_blank" href="">Download</a>
                     </div>
                 </div>
             </div>
