@@ -14,15 +14,15 @@ class CheckIfFileTypeValid
      */
     public static function execute(UploadedFile $file): bool
     {
-        if (! static::validateMimeType($file)) {
-            return false;
+        if (static::validateMimeType($file)) {
+            return true;
         }
 
-        if (! static::validateExtension($file)) {
-            return false;
+        if (static::validateExtension($file)) {
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     /**
