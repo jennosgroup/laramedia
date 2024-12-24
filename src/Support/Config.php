@@ -256,7 +256,7 @@ class Config
      */
     public static function tablePrefix(): string
     {
-        return config(static::$configFileName.'.table_prefix', 'lfl_');
+        return config(static::$configFileName.'.table_prefix', 'laramedia_');
     }
 
     /**
@@ -265,7 +265,7 @@ class Config
     public static function tableNames(): array
     {
         return config(static::$configFileName.'.table_names', [
-            'media' => 'Media',
+            'media' => 'media',
         ]);
     }
 
