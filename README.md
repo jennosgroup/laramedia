@@ -4,7 +4,7 @@
 
 1. [About](#about)
 2. [Installation](#installation)
-3. [Setup](###setup)
+3. [Setup](#setup)
 4. [Setup Files Listing Page](#setup-files-listings-page)
 5. [Using The Files Selector](#using-the-files-selector)
 6. [File Properties](#file-properties)
@@ -108,6 +108,52 @@ document.getElementById('file-selector').addEventListener('click', function () {
 From there, it's up to your imagination to do whatever you please with the file.
 
 ### File Properties
+
+- alt_text
+- author_id
+- base64url_route 
+- caption
+- created_at
+- deleted_at
+- description
+- destroy_route
+- disk
+- display_url 
+- download_route
+- file_extension
+- file_height
+- file_size
+- file_type
+- file_width
+- human_created_at
+- human_dimensions
+- human_filesize
+- is_image
+- is_not_image
+- local_path
+- mimetype
+- name
+- options
+- original_name
+- original_public_url
+- preview_route
+- public_url
+- restore_route
+- title
+- trash_route
+- update_route
+- updated_at
+- upload_path
+- user_can_destroy
+- user_can_download
+- user_can_preview
+- user_can_restore
+- user_can_trash
+- user_can_update
+- user_can_view
+- uuid
+- view_route
+- visibility
 
 ### Security Vulnerabilities
 
