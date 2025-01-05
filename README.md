@@ -21,11 +21,11 @@ Install with composer - `composer require jennosgroup/laramedia`.
 
 ### Setup
 
-Run the `php artisan migrate` command after installing the package.
-
 Publish the package configuration file with artisan command `php artisan vendor:publish --tag=laramedia-config`.
 
 Publish the package assets with artisan command `php artisan vendor:publish --tag=laramedia-assets`.
+
+Once you happy with the default configuration settings, run the `php artisan migrate` command after installing the package.
 
 In the head section of your html file, include the following block of code before your stylesheets and scripts declaration:
 
