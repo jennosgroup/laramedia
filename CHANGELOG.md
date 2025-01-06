@@ -1,6 +1,6 @@
 # Release Notes
 
-### V1.0.4 - 2025-01-05
+### V1.0.5 - 2025-01-05
 
 - Fixed lowercase letter in use statement declaration
 
