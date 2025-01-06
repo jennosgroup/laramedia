@@ -2,8 +2,8 @@
 
 namespace JennosGroup\Laramedia\Support;
 
-use illuminate\Database\Eloquent\Model;
-use illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class Laramedia extends Config
 {
