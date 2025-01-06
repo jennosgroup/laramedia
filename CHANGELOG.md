@@ -1,5 +1,9 @@
 # Release Notes
 
+### V1.0.4 - 2025-01-05
+
+- Fixed lowercase letter in use statement declaration
+
 ### V1.0.3 - 2024-24-12
 
 - Fixed inappropriate check for file type upload.
